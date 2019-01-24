@@ -4,7 +4,6 @@ import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder
 import htsjdk.variant.vcf.VCFHeader
 import org.apache.commons.io.output.ByteArrayOutputStream
-import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
@@ -40,12 +39,14 @@ object SeqTenderVCF {
         //first file chunk - do not preappend with a header
         if(file.getStart == 0)
           iterator.map(_._2)
-        else
-          Iterator(new Text(os.toByteArray())) ++ iterator.map(_._2)
+        else {
+          val bytes = os.toByteArray()
+          //preappend next partitions with header - but remove last sign ('/n')
+          Iterator(new Text(bytes.take(bytes.length-1))) ++ iterator.map(_._2)
+        }
 
       }
       .pipeVCF(command)
-
   }
 
 
