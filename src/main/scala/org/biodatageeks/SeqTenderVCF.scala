@@ -9,7 +9,7 @@ import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
 import org.apache.spark.rdd.{HadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.seqdoop.hadoop_bam.util.{VCFHeaderReader, WrapSeekable}
+import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec, VCFHeaderReader, WrapSeekable}
 
 import scala.collection.mutable
 import org.biodatageeks.CustomFunctions._
@@ -19,6 +19,11 @@ object SeqTenderVCF {
 
   def pipeVCF(path:String, command:String, spark: SparkSession): RDD[VariantContext] ={
     val bc = broadCastVCFHeaders(path,spark)
+
+    spark
+      .sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
+      classOf[BGZFCodec].getCanonicalName,
+      classOf[BGZFEnhancedGzipCodec].getCanonicalName)
 
     spark
       .sparkContext

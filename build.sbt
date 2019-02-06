@@ -26,8 +26,8 @@ libraryDependencies += "com.holdenkarau" % "spark-testing-base_2.11" % "2.2.0_0.
 
 libraryDependencies += "org.apache.spark" %% "spark-hive"       % "2.0.0" % "test"
 
-libraryDependencies += "org.apache.avro" % "avro-ipc" % "1.7.7"
-libraryDependencies += "org.apache.avro" % "avro-mapred" % "1.7.7"
+//libraryDependencies += "org.apache.avro" % "avro-ipc" % "1.7.7"
+//libraryDependencies += "org.apache.avro" % "avro-mapred" % "1.7.7"
 
 
 
