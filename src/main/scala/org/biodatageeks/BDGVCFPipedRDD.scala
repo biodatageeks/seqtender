@@ -1,13 +1,12 @@
+
 package org.apache.spark.rdd
 
 import java.io._
-import java.util.StringTokenizer
 import java.util.concurrent.atomic.AtomicReference
 
 import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.vcf.{VCFCodec, VCFHeader, VCFHeaderLine}
 import htsjdk.tribble.readers.{AsciiLineReader, AsciiLineReaderIterator}
-import org.apache.hadoop.io.Text
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
@@ -18,14 +17,14 @@ import org.apache.spark.{Partition, SparkEnv, TaskContext}
 import org.apache.spark.util.Utils
 
 class BDGVCFPipedRDD[T: ClassTag](
-                                            prev: RDD[T],
-                                            command: Seq[String],
-                                            envVars: Map[String, String] = Map.empty,
-                                            printPipeContext: (String => Unit) => Unit,
-                                            printRDDElement: (T, String => Unit) => Unit,
-                                            separateWorkingDir: Boolean,
-                                            bufferSize: Int,
-                                            encoding: String)
+                                   prev: RDD[T],
+                                   command: Seq[String],
+                                   envVars: Map[String, String] = Map.empty,
+                                   printPipeContext: (String => Unit) => Unit,
+                                   printRDDElement: (T, String => Unit) => Unit,
+                                   separateWorkingDir: Boolean,
+                                   bufferSize: Int,
+                                   encoding: String)
   extends RDD[VariantContext](prev) {
 
   override def getPartitions: Array[Partition] = firstParent[T].partitions
@@ -196,13 +195,12 @@ class BDGVCFPipedRDD[T: ClassTag](
 }
 
 object BDGVCFPipedRDD {
-  // Split a string into words using a standard StringTokenizer
+  // Wrap command (or piped commands) into a shell script
   def tokenize(command: String): Seq[String] = {
     val buf = new ArrayBuffer[String]
-    val tok = new StringTokenizer(command)
-    while(tok.hasMoreElements) {
-      buf += tok.nextToken()
-    }
+    buf += "/bin/sh"
+    buf += "-c"
+    buf += command
     buf
   }
 }

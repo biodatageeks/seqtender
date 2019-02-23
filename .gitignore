@@ -1,2 +1,12 @@
 *.class
 *.log
+*.cache
+
+build/
+
+.DS_Store
+
+target/*
+.idea/*
+project/target/*
+project/project/target/*
