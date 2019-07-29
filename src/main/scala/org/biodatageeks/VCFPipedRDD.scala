@@ -62,17 +62,18 @@ class VCFPipedRDD[T: ClassTag](
       val currentDir = new File(".")
       logDebug("currentDir = " + currentDir.getAbsolutePath())
       val taskDirFile = new File(taskDirectory)
+      println(s"taskDirFile = ${taskDirFile.getAbsolutePath()}")
       taskDirFile.mkdirs()
 
       try {
         val tasksDirFilter = new NotEqualsFileNameFilter("tasks")
-
         // Need to add symlinks to jars, files, and directories.  On Yarn we could have
         // directories and other files not known to the SparkContext that were added via the
         // Hadoop distributed cache.  We also don't want to symlink to the /tasks directories we
         // are creating here.
         for (file <- currentDir.list(tasksDirFilter)) {
           val fileWithDir = new File(currentDir, file)
+          println(fileWithDir.getAbsolutePath())
           Utils.symlink(new File(fileWithDir.getAbsolutePath()),
             new File(taskDirectory + File.separator + fileWithDir.getName()))
         }
