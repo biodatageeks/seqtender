@@ -17,7 +17,7 @@ object TestFQInOut {
 
     val alignment = SeqTenderAlignment
       .pipeAlignment(
-        args(0),
+        args(0), args(1),
         ""/*,
         sparkSession*/
       )
