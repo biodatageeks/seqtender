@@ -12,3 +12,4 @@ project/target/*
 project/project/target/*
 
 bdg-seqtender.iml
+data/genome_ecoli.fa
