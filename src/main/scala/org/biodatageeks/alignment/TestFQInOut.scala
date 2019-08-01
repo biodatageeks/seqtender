@@ -1,5 +1,6 @@
 package org.biodatageeks.alignment
 
+import org.apache.hadoop.io.Text
 import org.apache.spark.sql.SparkSession
 
 object TestFQInOut {
@@ -8,21 +9,22 @@ object TestFQInOut {
     args.foreach(tmp => println(tmp))
     println("Fuck you, dear")
 
-    /*val sparkSession = SparkSession
+    val sparkSession = SparkSession
       .builder()
       .master("local[2]")
       .getOrCreate()
 
-    println("Spark session built")*/
+    println("Spark session built")
 
     val alignment = SeqTenderAlignment
       .pipeAlignment(
         args(0), args(1),
-        ""/*,
-        sparkSession*/
+        "",
+        sparkSession
       )
 
-    // sparkSession.time(println(alignment.count()))
-  }
+    /*alignment.map { text => text.toString }.collect()
+      .foreach { line => println(line) }*/
 
+  }
 }
