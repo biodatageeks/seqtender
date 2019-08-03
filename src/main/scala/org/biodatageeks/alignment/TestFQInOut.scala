@@ -4,6 +4,7 @@ import org.apache.hadoop.io.Text
 import org.apache.spark.sql.SparkSession
 
 object TestFQInOut {
+  val pathWrite = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/int.txt"
 
   def main(args: Array[String]): Unit = {
     args.foreach(tmp => println(tmp))
@@ -23,8 +24,10 @@ object TestFQInOut {
         sparkSession
       )
 
-    /*alignment.map { text => text.toString }.collect()
-      .foreach { line => println(line) }*/
+    alignment.map(_.toString).collect().foreach(line => println(line))
+
+    //val intRdd = sparkSession.sparkContext.parallelize(Seq(1, 2, 3, 4, 5))
+    alignment.saveAsTextFile(pathWrite)
 
   }
 }

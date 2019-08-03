@@ -11,7 +11,7 @@ import scala.collection.mutable
 
 object SeqTenderAlignment {
 
-  def pipeAlignment(referencePath: String, readsPath: String, command: String, sparkSession: SparkSession)/*: RDD[Text]*/ = {
+  def pipeAlignment(referencePath: String, readsPath: String, command: String, sparkSession: SparkSession): RDD[Text] = {
     val pathRead = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/text.txt"
     val pathWrite = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/int.txt"
     /*
@@ -50,35 +50,24 @@ object SeqTenderAlignment {
         classOf[Text],
         sparkSession.sparkContext.defaultMinPartitions)
       .asInstanceOf[HadoopRDD[LongWritable, Text]]
-      .mapPartitionsWithInputSplit{ (inputSplit, iterator) =>
+      .mapPartitionsWithInputSplit { (inputSplit, iterator) =>
         val file = inputSplit.asInstanceOf[FileSplit]
-        println("length", file.getLength)
+        /*
+          /*while (iterator.hasNext)
+            println("x", iterator.next()._2)*/
 
-        // println("it", iterator)
+          var retList = iterator.toList*/
 
-        /*while(iterator.hasNext)
-          println("x", iterator.next()._2)*/
+        val mappedIterator = iterator.map(_._2)
 
-        var retList = iterator.toList
+        var tempList = List[Text]()
+        mappedIterator.foreach(line => tempList = new Text(line + "xxx") :: tempList)
 
-        retList.foreach(println("??", _))
+        var result = Iterator[Text]()
+        result = tempList.reverseIterator ++ Seq(new Text("4"), new Text("6"))
 
-        // retList.map(_._2).iterator
-
-        println("next", retList)
-
-        retList.map(_._2).iterator
-        //retList.iterator
-
-
-      }.map( _.toString).collect().foreach(line => println(line))
-
-    /*val intRdd = sparkSession.sparkContext.parallelize(Seq(1, 2, 3, 4, 5))
-    intRdd.saveAsTextFile(pathWrite)*/
-
-    /*
-    sparkSession.sparkContext
-      .textFile(pathRead)*/
+        result
+      }
 
   }
 
