@@ -5,14 +5,16 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
 import scala.reflect.ClassTag
-
+/*
+1st arg - .fa file - with reference genome
+data/genome_ecoli.fa
+2nd arg - .fq file - with reads
+data/e_coli_1000.fq
+*/
 object TestFQInOut {
   val pathWrite = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/output.txt"
 
   def main(args: Array[String]): Unit = {
-    args.foreach(tmp => println(tmp))
-    println("Fuck you, dear")
-
     val sparkSession = SparkSession
       .builder()
       .master("local[2]")
