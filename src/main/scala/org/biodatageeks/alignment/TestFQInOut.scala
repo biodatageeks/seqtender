@@ -5,43 +5,34 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
 import scala.reflect.ClassTag
+
 /*
-1st arg - .fa file - with reference genome
-data/genome_ecoli.fa
-2nd arg - .fq file - with reads
+1st arg - (input) fq file - with reads
 data/e_coli_1000.fq
+2nd arg - (output) txt file
 */
 object TestFQInOut {
-  val pathWrite = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/output.txt"
-
   def main(args: Array[String]): Unit = {
     val sparkSession = SparkSession
       .builder()
       .master("local[2]")
       .getOrCreate()
 
-    println("Spark session built")
-
     val alignment = SeqTenderAlignment
-      .pipeAlignment(
-        args(0), args(1),
+      .pipeReads(
+        args(0),
         "",
         sparkSession
       )
 
-     alignment.map(_.toString).collect().foreach(line => println(line))
+    alignment.map(_.toString).collect().foreach(line => println(line))
 
-    //val intRdd = sparkSession.sparkContext.parallelize(Seq(1, 2, 3, 4, 5))
-    // alignment.coalesce(1).saveAsTextFile(pathWrite)
-
-    saveRddToFile(sparkSession, alignment)
-
+    saveRddToFile(sparkSession, alignment, args(1))
   }
 
-  def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[T]): Unit = {
+  def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[T], pathWrite: String): Unit = {
     val filesystem = FileSystem.get(sparkSession.sparkContext.hadoopConfiguration)
     val outputStream = filesystem.create(new Path(pathWrite))
-    outputStream.writeBytes("xxx")
     rdd.map(_.toString).collect().foreach(line => outputStream.writeBytes(s"\n$line"))
     outputStream.close()
   }

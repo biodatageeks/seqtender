@@ -1,7 +1,6 @@
 package org.biodatageeks.alignment
 
 import org.apache.hadoop.io.Text
-import org.apache.hadoop.mapreduce.lib.input.FileSplit
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
@@ -9,16 +8,7 @@ import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 object SeqTenderAlignment {
 
-  def pipeAlignment(referencePath: String, readsPath: String, command: String, sparkSession: SparkSession): RDD[Text] = {
-    val pathRead = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/text.txt"
-    val pathWrite = "/home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/bdg-seqtender/data/int.txt"
-
-    /*
-    // open reference genome file
-    val faReader = new FastaSequenceFile(new File(referencePath), false)
-    println("reference name", faReader.nextSequence().length())
-    */
-
+  def pipeReads(readsPath: String, command: String, sparkSession: SparkSession): RDD[Text] = {
     // sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 40000)
 
     sparkSession.sparkContext
@@ -29,13 +19,6 @@ object SeqTenderAlignment {
         sparkSession.sparkContext.hadoopConfiguration)
       .asInstanceOf[NewHadoopRDD[Text, SequencedFragment]]
       .mapPartitionsWithInputSplit { (inputSplit, iterator) =>
-        val file = inputSplit.asInstanceOf[FileSplit]
-        /*
-          /*while (iterator.hasNext)
-            println("x", iterator.next()._2)*/
-
-          var retList = iterator.toList*/
-
         val mappedIterator = iterator.map(_._2)
 
         var tempList = List[Text]()
@@ -44,8 +27,6 @@ object SeqTenderAlignment {
         val result = tempList.reverseIterator
 
         result
-
       }
   }
-
 }

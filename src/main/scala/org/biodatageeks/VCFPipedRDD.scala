@@ -62,7 +62,6 @@ class VCFPipedRDD[T: ClassTag](
       val currentDir = new File(".")
       logDebug("currentDir = " + currentDir.getAbsolutePath())
       val taskDirFile = new File(taskDirectory)
-      println(s"taskDirFile = ${taskDirFile.getAbsolutePath()}")
       taskDirFile.mkdirs()
 
       try {
@@ -73,7 +72,6 @@ class VCFPipedRDD[T: ClassTag](
         // are creating here.
         for (file <- currentDir.list(tasksDirFilter)) {
           val fileWithDir = new File(currentDir, file)
-          println(fileWithDir.getAbsolutePath())
           Utils.symlink(new File(fileWithDir.getAbsolutePath()),
             new File(taskDirectory + File.separator + fileWithDir.getName()))
         }
