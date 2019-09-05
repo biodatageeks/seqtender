@@ -12,7 +12,7 @@ object TestVCFInOut {
       .getOrCreate()
 
     val vc = SeqTenderVCF
-      .pipe(
+      .pipeVCF(
         args(1),
         "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
         ss)

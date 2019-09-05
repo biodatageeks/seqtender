@@ -7,7 +7,7 @@ import scala.collection.Map
 
 class CustomFunctions(rdd: RDD[Text]) {
 
-  def process(command: String, env: Map[String, String] = Map.empty) =
+  def pipeVCF(command: String, env: Map[String, String] = Map.empty) =
     new VCFPipedRDD(
       rdd,
       VCFPipedRDD.tokenize(command),

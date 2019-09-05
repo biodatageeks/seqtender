@@ -16,7 +16,7 @@ import scala.collection.mutable
 
 object SeqTenderVCF {
 
-  def pipe(path: String, command: String, spark: SparkSession): RDD[VariantContext] = {
+  def pipeVCF(path: String, command: String, spark: SparkSession): RDD[VariantContext] = {
     val bc = broadCastVCFHeaders(path, spark)
 
     spark
@@ -49,7 +49,7 @@ object SeqTenderVCF {
           Iterator(new Text(bytes.take(bytes.length - 1))) ++ iterator.map(_._2)
         }
       }
-      .process(command)
+      .pipeVCF(command)
   }
 
 
