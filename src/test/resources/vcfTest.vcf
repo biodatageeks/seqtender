@@ -1,0 +1,10 @@
+##fileformat=VCFv4.0
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=AF,Number=.,Type=Float,Description="Allele Frequency">
+##contig=<ID=11,assembly=b37,length=135006516>
+##FILTER=<ID=PASS,Description="All filters passed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	sample
+11	61395	rs371609562	CTT	C	100	PASS	AC=4645;AF=0.927516;AN=5008;NS=2504;DP=5268;EAS_AF=0.9921;AMR_AF=0.9712;AFR_AF=0.767;EUR_AF=0.9871;SAS_AF=0.9857;VT=INDEL;GRCH37_POS=61395;GRCH37_REF=CTT;GRCH37_38_REF_STRING_MATCH;CSQ=-|intergenic_variant|MODIFIER|||||||||||||||rs371609562||||deletion||||||||||||||||0.9275|www0.767|0.9712|0.9921|0.9871|0.9857||||||||||||0.9921|EAS||||||||	GT	1|1
+11	73015	rs558785434	C	T	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=19543;EAS_AF=0;AMR_AF=0;AFR_AF=0.0008;EUR_AF=0;SAS_AF=0;AA=C|||;VT=SNP;GRCH37_POS=73015;GRCH37_REF=C;GRCH37_38_REF_STRING_MATCH;CSQ=T|upstream_gene_variant|MODIFIER|WBP1LP10|ENSG00000253826|Transcript|ENST00000519787|processed_pseudogene||||||||||rs558785434|2765|1||SNV|HGNC|HGNC:51470|YES|||||||||||||0.0002|0.0008|0|0|0|0||||||||||||0.0008|AFR||||||||	GT	0|0

@@ -23,10 +23,10 @@ object SeqTenderVCF {
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
 
     val rdds = makeVCFRDDs(spark, inputPath)
-      rdds.pipeVCF(command)
+    rdds.pipeVCF(command)
   }
 
-  private def makeVCFRDDs(spark: SparkSession, inputPath: String): RDD[Text] = {
+  def makeVCFRDDs(spark: SparkSession, inputPath: String): RDD[Text] = {
     val bc = broadCastVCFHeaders(inputPath, spark)
 
     spark
@@ -62,7 +62,7 @@ object SeqTenderVCF {
     val headerMap = new mutable.HashMap[String, VCFHeader]()
 
     status.foreach(fs => headerMap(fs.getPath.toString) = VCFHeaderReader
-          .readHeaderFrom(WrapSeekable.openPath(ss.sparkContext.hadoopConfiguration, new Path(fs.getPath.toUri))))
+      .readHeaderFrom(WrapSeekable.openPath(ss.sparkContext.hadoopConfiguration, new Path(fs.getPath.toUri))))
 
     ss.sparkContext.broadcast(headerMap)
   }
