@@ -1,7 +1,8 @@
 package org.biodatageeks
 
-import org.apache.spark.TaskContext
+import org.apache.spark.{Accumulator, TaskContext}
 import org.apache.spark.sql.SparkSession
+import org.scalacheck.Prop.True
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
@@ -13,7 +14,6 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     .builder()
     .master("local[2]")
     .getOrCreate()
-
 
   val inputPath = getClass.getClassLoader.getResource("vcfTest.vcf").getPath
 
@@ -33,10 +33,10 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
 
     val headerLines =
-      "##xfileformat=VCFv4.2\n##FILTER=<ID=PASS,Description=\"All filters passed\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">\n##contig=<ID=11,assembly=b37,length=135006516>\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample"
+      "##fileformat=VCFv4.2\n##FILTER=<ID=PASS,Description=\"All filters passed\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">\n##contig=<ID=11,assembly=b37,length=135006516>\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample"
 
     val rdds = SeqTenderVCF.makeVCFRDDs(sparkSession, inputPath)
-    var containHeader: Boolean = true
+    val containHeader = sparkSession.sparkContext.accumulator(0, "containHeader")
     rdds.foreachPartition(it => {
       // we don't have to check first partition, because it always has the header
       if (TaskContext.getPartitionId != 0) {
@@ -45,18 +45,12 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
           file += it
         })
 
-        println("check")
-        if (!file.contains(headerLines)) {
-          println("not contain")
-          containHeader = false
-        }
-        println(containHeader)
+        if (!file.contains(headerLines))
+          containHeader.add(1)
       }
     })
 
-    println(containHeader)
-
-    assert(containHeader === true)
+    assert(containHeader.value === 0)
   }
 
   test("should return number of elements in vcf rdd - number of lines in input file (without header)") {
