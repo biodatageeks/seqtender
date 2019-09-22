@@ -35,6 +35,8 @@ object SeqTenderVCF {
         classOf[TextInputFormat],
         classOf[LongWritable],
         classOf[Text], spark.sparkContext.defaultMinPartitions)
+      // how to change numer of partitions? Does defaultMinPartitions always equal 2?
+      // Changing number of threads or "mapred.max.split.size" doesn't change anything
       .asInstanceOf[HadoopRDD[LongWritable, Text]]
       .mapPartitionsWithInputSplit { (inputSplit, iterator) ⇒
         val file = inputSplit.asInstanceOf[FileSplit]

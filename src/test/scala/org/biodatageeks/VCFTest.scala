@@ -1,7 +1,7 @@
 package org.biodatageeks
 
+import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.SeqTenderVCF.makeVCFRDDs
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
@@ -27,43 +27,45 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     assert(rdds.getNumPartitions === 2)
   }
 
-  test("yyy") {
+  test("should return true when each partition (except first) has the headerLines") {
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
 
-    val headerLines = Array("##FILTER=<ID=PASS,Description=\"All filters passed\">", "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">",
-      "##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">",
-      "##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">", "##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">",
-      "##contig=<ID=11,assembly=b37,length=135006516>", "#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT sample",
-      "#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT sample",
-    "##fileformat=VCFv4.2\n##FILTER=<ID=PASS,Description=\"All filters passed\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">\n##contig=<ID=11,assembly=b37,length=135006516>\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample")
-
+    val headerLines =
+      "##xfileformat=VCFv4.2\n##FILTER=<ID=PASS,Description=\"All filters passed\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">\n##contig=<ID=11,assembly=b37,length=135006516>\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample"
 
     val rdds = SeqTenderVCF.makeVCFRDDs(sparkSession, inputPath)
-    var containHeader: Boolean = false
-
+    var containHeader: Boolean = true
     rdds.foreachPartition(it => {
-      var header = ArrayBuffer[String]()
-      it.map(_.toString).foreach(it => {
-        header += it
-      })
+      // we don't have to check first partition, because it always has the header
+      if (TaskContext.getPartitionId != 0) {
+        var file = ArrayBuffer[String]()
+        it.map(_.toString).foreach(it => {
+          file += it
+        })
 
-      println(s"header\n$header")
-      println()
-      println()
-      headerLines.foreach(headerLine => {
-        println()
-        println(s"$headerLine, $containHeader")
-        containHeader = header.contains(headerLine)
-      })
+        println("check")
+        if (!file.contains(headerLines)) {
+          println("not contain")
+          containHeader = false
+        }
+        println(containHeader)
+      }
     })
 
     println(containHeader)
 
-    println("rdd:")
-    rdds.map(_.toString).collect().foreach( it => println(s"xx $it"))
+    assert(containHeader === true)
+  }
 
-    assert(3 === 1 + 1)
+  test("should return number of elements in vcf rdd - number of lines in input file (without header)") {
+    val vc = SeqTenderVCF
+      .pipeVCF(
+        inputPath,
+        "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
+        sparkSession)
+
+    assert(vc.count() === 2)
   }
 }
