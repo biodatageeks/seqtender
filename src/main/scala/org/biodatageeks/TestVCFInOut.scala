@@ -13,7 +13,7 @@ object TestVCFInOut {
 
     val vc = SeqTenderVCF
       .pipeVCF(
-        args(1),
+        args(0),
         "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
         ss)
     ss.time(println(vc.count()))
