@@ -31,8 +31,8 @@ object TestFQInOut {
   }
 
   def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[T], pathWrite: String): Unit = {
-    val filesystem = FileSystem.get(sparkSession.sparkContext.hadoopConfiguration)
-    val outputStream = filesystem.create(new Path(pathWrite))
+    val fileSystem = FileSystem.get(sparkSession.sparkContext.hadoopConfiguration)
+    val outputStream = fileSystem.create(new Path(pathWrite))
     rdd.map(_.toString).collect().foreach(line => outputStream.writeBytes(s"\n$line"))
     outputStream.close()
   }

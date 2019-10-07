@@ -24,10 +24,17 @@ object SeqTenderAlignment {
         spark.sparkContext.hadoopConfiguration)
       .asInstanceOf[NewHadoopRDD[Text, SequencedFragment]]
       .mapPartitionsWithInputSplit { (inputSplit, iterator) =>
-        val mappedIterator = iterator.map(_._2)
-
+        //val mappedIterator = iterator.map(_._2)
         var tempList = List[Text]()
-        mappedIterator.foreach(line => tempList = new Text(line.getSequence) :: tempList)
+
+        for(read <- iterator) {
+          // sequence and quality
+          tempList = new Text(read._2.getQuality) :: new Text("+") :: new Text(read._2.getSequence.toString) ::
+            // read name
+            new Text(s"@${read._1.toString}") :: tempList
+        }
+
+        /*mappedIterator.foreach(line => tempList = new Text(line.toString) :: tempList)*/
 
         tempList.reverseIterator
       }
