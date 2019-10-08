@@ -51,13 +51,20 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     assert(notContainHeader.value === 0)
   }
 
-  test("should return number of biallelic variants in vcf rdd") {
+  test("should return number of biallelic variants in vcf rdd and any variant mustn't be multiallelic") {
     val vc = SeqTenderVCF
       .pipeVCF(
         inputPath,
         "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
         sparkSession)
 
+    var areMultiallelicVariants = false
+    vc.collect().foreach(v => {
+      if(v.getAlleles.size() != 1)
+        areMultiallelicVariants = true
+    })
+
+    assert(areMultiallelicVariants, false)
     assert(vc.count() === 24)
   }
 }
