@@ -1,8 +1,8 @@
 package org.biodatageeks
 
-import org.apache.spark.{Accumulator, TaskContext}
+import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
-import org.scalacheck.Prop.True
+import org.apache.spark.util.AccumulatorV2
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
@@ -34,7 +34,7 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       "##fileformat=VCFv4.2\n##FILTER=<ID=PASS,Description=\"All filters passed\">\n##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n##INFO=<ID=AF,Number=A,Type=Float,Description=\"Allele Frequency, for each ALT allele, in the same order as listed\">\n##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">\n##INFO=<ID=NS,Number=1,Type=Integer,Description=\"Number of Samples With Data\">\n##contig=<ID=11,assembly=b37,length=135006516>\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample"
 
     val rdds = SeqTenderVCF.makeVCFRDDs(sparkSession, inputPath)
-    val notContainHeader = sparkSession.sparkContext.accumulator(0, "notContainHeader")
+    val notContainHeader = sparkSession.sparkContext.longAccumulator
     rdds.foreachPartition(it => {
       // we don't have to check first partition, because it always has the header (by default)
       if (TaskContext.getPartitionId != 0) {
@@ -51,13 +51,13 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     assert(notContainHeader.value === 0)
   }
 
-  test("should return number of elements in vcf rdd - number of lines in input file (without header)") {
+  test("should return number of biallelic variants in vcf rdd") {
     val vc = SeqTenderVCF
       .pipeVCF(
         inputPath,
         "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
         sparkSession)
 
-    assert(vc.count() === 20)
+    assert(vc.count() === 24)
   }
 }
