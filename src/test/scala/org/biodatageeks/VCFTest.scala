@@ -58,13 +58,8 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
         "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
         sparkSession)
 
-    var areMultiallelicVariants = false
-    vc.collect().foreach(v => {
-      if(v.getAlleles.size() != 1)
-        areMultiallelicVariants = true
-    })
-
-    assert(areMultiallelicVariants, false)
+    // if variant is biallelic, getAlleles method returns 2 -> list of alleles contains reference allele
+    assert(!vc.collect.exists(v => v.getAlleles.size != 2), true)
     assert(vc.count() === 24)
   }
 }
