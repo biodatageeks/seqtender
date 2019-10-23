@@ -16,20 +16,27 @@ import scala.collection.mutable
 
 object SeqTenderVCF {
 
-  def pipeVCF(path: String, command: String, spark: SparkSession): RDD[VariantContext] = {
-    val bc = broadCastVCFHeaders(path, spark)
-
+  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContext] = {
     spark
       .sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
 
+    val rdds = makeVCFRDDs(spark, inputPath)
+    rdds.pipeVCF(command)
+  }
+
+  def makeVCFRDDs(spark: SparkSession, inputPath: String): RDD[Text] = {
+    val bc = broadCastVCFHeaders(inputPath, spark)
+
     spark
       .sparkContext
-      .hadoopFile(path,
+      .hadoopFile(inputPath,
         classOf[TextInputFormat],
         classOf[LongWritable],
         classOf[Text], spark.sparkContext.defaultMinPartitions)
+      // how to change numer of partitions? Does defaultMinPartitions always equal 2?
+      // Changing number of threads or "mapred.max.split.size" doesn't change anything
       .asInstanceOf[HadoopRDD[LongWritable, Text]]
       .mapPartitionsWithInputSplit { (inputSplit, iterator) ⇒
         val file = inputSplit.asInstanceOf[FileSplit]
@@ -49,9 +56,7 @@ object SeqTenderVCF {
           Iterator(new Text(bytes.take(bytes.length - 1))) ++ iterator.map(_._2)
         }
       }
-      .pipeVCF(command)
   }
-
 
   private def broadCastVCFHeaders(path: String, ss: SparkSession) = {
     val fs = FileSystem.get(ss.sparkContext.hadoopConfiguration)
@@ -59,10 +64,8 @@ object SeqTenderVCF {
     val headerMap = new mutable.HashMap[String, VCFHeader]()
 
     status.foreach(fs => headerMap(fs.getPath.toString) = VCFHeaderReader
-          .readHeaderFrom(WrapSeekable.openPath(ss.sparkContext.hadoopConfiguration, new Path(fs.getPath.toUri))))
+      .readHeaderFrom(WrapSeekable.openPath(ss.sparkContext.hadoopConfiguration, new Path(fs.getPath.toUri))))
 
     ss.sparkContext.broadcast(headerMap)
   }
-
-
 }
