@@ -2,7 +2,6 @@ package org.biodatageeks
 
 import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.util.AccumulatorV2
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
