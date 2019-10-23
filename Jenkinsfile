@@ -5,7 +5,7 @@ import net.sf.json.JSONObject
 
 author = ""
 message = ""
-channel = "#project-cannoli"
+channel = "#project-sequila"
 
 def getGitAuthor = {
     def commit = sh(returnStdout: true, script: 'git rev-parse HEAD')
