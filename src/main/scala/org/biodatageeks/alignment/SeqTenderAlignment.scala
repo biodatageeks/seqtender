@@ -1,18 +1,22 @@
 package org.biodatageeks.alignment
 
+import htsjdk.samtools.SAMRecord
 import org.apache.hadoop.io.Text
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
+import org.biodatageeks.CustomFunctions._
 
 
 object SeqTenderAlignment {
 
-  def pipeReads(readsPath: String, command: String, sparkSession: SparkSession): RDD[Text] = {
+  def pipeReads(readsPath: String, command: String, sparkSession: SparkSession): RDD[SAMRecord] = {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 40000)
 
     println(sparkSession.sparkContext.hadoopConfiguration.get("mapred.max.split.size"))
-    makeFQRdds(sparkSession, readsPath)
+
+    val rdds = makeFQRdds(sparkSession, readsPath)
+    rdds.pipeFQ(command)
   }
 
   def makeFQRdds(spark: SparkSession, inputPath: String): RDD[Text] = {
