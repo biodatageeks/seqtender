@@ -27,7 +27,7 @@ object TestFQInOut {
 
     alignment.map(_.toString).collect().foreach(line => println(line))
 
-    saveRddToFile(sparkSession, alignment, args(1))
+   // saveRddToFile(sparkSession, alignment, args(1))
   }
 
   def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[T], pathWrite: String): Unit = {
