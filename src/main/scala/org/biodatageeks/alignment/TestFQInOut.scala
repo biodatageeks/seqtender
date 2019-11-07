@@ -44,10 +44,6 @@ object TestFQInOut {
   }
 
   def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[SAMRecord], pathWrite: String): Unit = {
-    /*val fileSystem = FileSystem.get(sparkSession.sparkContext.hadoopConfiguration)
-    val outputStream = fileSystem.create(new Path(pathWrite))
-    rdd.map(_.toString).collect().foreach(line => outputStream.writeBytes(s"\n$line"))
-    outputStream.close()*/
     val samTextWriter = new SAMTextWriter(new File(pathWrite))
     samTextWriter.writeHeader(rdd.first().getHeader.getTextHeader)
     rdd.collect().foreach(record => samTextWriter.writeAlignment(record))
