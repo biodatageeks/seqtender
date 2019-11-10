@@ -23,7 +23,7 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
   test("should make rdds on 2 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 40000)
 
-    val rdds = SeqTenderAlignment.makeFQRdds(sparkSession, inputPath)
+    val rdds = SeqTenderAlignment.makeReadRdds(sparkSession, inputPath)
 
     assert(rdds.getNumPartitions === 2)
   }

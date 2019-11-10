@@ -18,7 +18,7 @@ class CustomFunctions(rdd: RDD[Text]) {
       encoding = "UTF-8",
       bufferSize = 8192)
 
-  def pipeFQ(command: String, env: Map[String, String] = Map.empty) =
+  def pipeRead(command: String, env: Map[String, String] = Map.empty) =
     new FQPipedRDD(
       rdd,
       FQPipedRDD.tokenize(command),

@@ -4,8 +4,8 @@ import htsjdk.samtools.SAMRecord
 import org.apache.hadoop.io.Text
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 import org.biodatageeks.CustomFunctions._
+import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
 object SeqTenderAlignment {
@@ -15,32 +15,27 @@ object SeqTenderAlignment {
 
     println(sparkSession.sparkContext.hadoopConfiguration.get("mapred.max.split.size"))
 
-    val rdds = makeFQRdds(sparkSession, readsPath)
-    rdds.pipeFQ(command)
+    val rdds = makeReadRdds(sparkSession, readsPath)
+    rdds.pipeRead(command)
   }
 
-  def makeFQRdds(spark: SparkSession, inputPath: String): RDD[Text] = {
-    spark.sparkContext
+  def makeReadRdds(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
+    sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[FastqInputFormat],
         classOf[Text],
         classOf[SequencedFragment],
-        spark.sparkContext.hadoopConfiguration)
+        sparkSession.sparkContext.hadoopConfiguration)
       .asInstanceOf[NewHadoopRDD[Text, SequencedFragment]]
-      .mapPartitionsWithInputSplit { (inputSplit, iterator) =>
-        //val mappedIterator = iterator.map(_._2)
-        var tempList = List[Text]()
+      .mapPartitionsWithInputSplit { (_, iterator) =>
 
-        for(read <- iterator) {
-          // sequence and quality
-          tempList = new Text(read._2.getQuality) :: new Text("+") :: new Text(read._2.getSequence.toString) ::
-            // read name
-            new Text(s"@${read._1.toString}") :: tempList
-        }
-
-        /*mappedIterator.foreach(line => tempList = new Text(line.toString) :: tempList)*/
-
-        tempList.reverseIterator
+        // convert reads iterator to text one;
+        // piping method requires text iterator
+        iterator.map(it => convertReadToText(it))
       }
+  }
+
+  def convertReadToText(read: (Text, SequencedFragment)): Text = {
+    new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
   }
 }
