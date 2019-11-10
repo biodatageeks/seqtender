@@ -35,6 +35,7 @@ object SeqTenderAlignment {
       }
   }
 
+  // convert single read to text, which can be read by specified program
   def convertReadToText(read: (Text, SequencedFragment)): Text = {
     new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
   }
