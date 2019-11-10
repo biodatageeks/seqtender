@@ -26,7 +26,7 @@ object TestFQInOut {
     val command = "docker run --rm -i " +
       "-v /home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/data/:/data " +
       "quay.io/biocontainers/bowtie2:2.3.4.3--py27h2d50403_0 " +
-      "bowtie2 -x /data/bowtie2_index/e_coli - " /* + args(1)*/ + " "
+      "bowtie2 -x /data/bowtie2_index/e_coli - " /* + args(1)*/
 
     val alignment = SeqTenderAlignment
       .pipeReads(

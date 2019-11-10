@@ -140,7 +140,54 @@ class FQPipedRDD[T: ClassTag](
       .validationStringency(ValidationStringency.SILENT);
 
     val samReader = factory.open(samInputResource)
-    samReader.iterator().asScala
+    val samIterator = samReader.iterator().asScala
+
+    new Iterator[SAMRecord] {
+      def next(): SAMRecord = {
+        if (!hasNext()) {
+          throw new NoSuchElementException()
+        }
+        samIterator.next()
+      }
+
+      def hasNext(): Boolean = {
+        val result = if (samIterator.hasNext) {
+          true
+        } else {
+          val exitStatus = process.waitFor()
+          cleanup()
+          if (exitStatus != 0) {
+            throw new IllegalStateException(s"Subprocess exited with status $exitStatus. " +
+              s"Command ran: " + command.mkString(" "))
+          }
+          false
+        }
+        propagateChildException()
+        result
+      }
+
+      private def cleanup(): Unit = {
+        // cleanup task working directory if used
+        if (workInTaskDirectory) {
+          scala.util.control.Exception.ignoring(classOf[IOException]) {
+            Utils.deleteRecursively(new File(taskDirectory))
+          }
+          logDebug(s"Removed task working directory $taskDirectory")
+        }
+      }
+
+      private def propagateChildException(): Unit = {
+        val t = childThreadException.get()
+        if (t != null) {
+          val commandRan = command.mkString(" ")
+          logError(s"Caught exception while running pipe() operator. Command ran: $commandRan. " +
+            s"Exception: ${t.getMessage}")
+          process.destroy()
+          cleanup()
+          throw t
+        }
+      }
+    }
   }
 }
 
