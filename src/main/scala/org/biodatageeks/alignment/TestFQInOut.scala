@@ -23,24 +23,23 @@ object TestFQInOut {
       .getOrCreate()
 
     // /home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/data/bowtie2_index/e_coli
-    val command = "docker run --rm -i " +
+    /*val command = "docker run --rm -i " +
       "-v /home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/data/:/data " +
       "quay.io/biocontainers/bowtie2:2.3.4.3--py27h2d50403_0 " +
-      "bowtie2 -x /data/bowtie2_index/e_coli - " /* + args(1)*/
+      "bowtie2 -x /data/bowtie2_index/e_coli - " */
+
+    val commandBuilder = new CommandBuilder(readsPath = args(0), indexPath = args(1), tool = "bowtie2")
 
     val alignment = SeqTenderAlignment
       .pipeReads(
-        args(0),
-        command,
+        commandBuilder,
         sparkSession
       )
 
     //alignment.map(_.toString).collect().foreach(line => println(line))
-    //println(alignment.take(2).head.toString)
     //    sparkSession.time(println(alignment.count()))
 
     saveRddToFile(sparkSession, alignment, args(2))
-//    println(alignment.first().getHeader())
   }
 
   def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[SAMRecord], pathWrite: String): Unit = {
