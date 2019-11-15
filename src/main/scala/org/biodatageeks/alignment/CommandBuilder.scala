@@ -7,7 +7,7 @@ class CommandBuilder(readsPath: String,
                       indexPath: String,
                       tool: String,
                       image: String = null,
-                      interleaved: Boolean = false) {
+                      interleaved: Boolean = false) { // interleaved - flag from user or from extension
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -49,7 +49,11 @@ class CommandBuilder(readsPath: String,
   }
 
   private def bowtie2CommandBuilder(): String = {
-    var command = s"bowtie2 -x /data/${indexSplitPath._2} - "
+    var command = s"bowtie2 -x "
+    if(getReadsExtension == ReadsExtension.FA) command += "-f "
+    command += s"/data/${indexSplitPath._2} "
+    if(interleaved) command += "--interleaved "
+    command += "- "
 
     command
   }
