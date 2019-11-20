@@ -28,7 +28,12 @@ object TestFQInOut {
       "quay.io/biocontainers/bowtie2:2.3.4.3--py27h2d50403_0 " +
       "bowtie2 -x /data/bowtie2_index/e_coli - " */
 
-    val commandBuilder = new CommandBuilder(readsPath = args(0), indexPath = args(1), tool = "bowtie2")
+    val commandBuilder = new CommandBuilder(
+      readsPath = args(0),
+      indexPath = args(1),
+      tool = "bowtie2",
+      interleaved = true
+    )
 
     val alignment = SeqTenderAlignment
       .pipeReads(

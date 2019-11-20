@@ -18,12 +18,16 @@ object SeqTenderAlignment {
 
     if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       println("fastq")
-    } else if(readsDescription.getReadsExtension.equals(ReadsExtension.FA)) {
+      val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
+      rdds.pipeRead(readsDescription.getCommand)
+    } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
       println("fasta")
+      val rdds = makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
+      rdds.pipeRead(readsDescription.getCommand)
     }
 
-    val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
-    rdds.pipeRead(readsDescription.getCommand)
+//    val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
+//    rdds.pipeRead(readsDescription.getCommand)
   }
 
   def makeReadRddsFromFQ(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
@@ -42,7 +46,7 @@ object SeqTenderAlignment {
       }
   }
 
-  def makeReadRddsFromFa(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
+  def makeReadRddsFromFA(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
     sparkSession
       .sparkContext
       .hadoopFile(inputPath,

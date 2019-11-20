@@ -7,7 +7,7 @@ class CommandBuilder(readsPath: String,
                       indexPath: String,
                       tool: String,
                       image: String = null,
-                      interleaved: Boolean = false) { // interleaved - flag from user or from extension
+                      interleaved: Boolean = false) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -50,9 +50,14 @@ class CommandBuilder(readsPath: String,
 
   private def bowtie2CommandBuilder(): String = {
     var command = s"bowtie2 -x "
-    if(getReadsExtension == ReadsExtension.FA) command += "-f "
     command += s"/data/${indexSplitPath._2} "
-    if(interleaved) command += "--interleaved "
+    if(getReadsExtension == ReadsExtension.FA) {
+      command += "-f "
+    }
+    if(interleaved) {
+      command += "--interleaved "
+    }
+
     command += "- "
 
     command
@@ -61,7 +66,7 @@ class CommandBuilder(readsPath: String,
   private def getExtension(filePath: String): ReadsExtension = {
     val extension = filePath.split("\\.").last
     val faExtensions: List[String] = List("fa", "fasta", ".mfa", ".fna")
-    val fqExtensions: List[String] = List("fq", "fastq", "ifq") // "ifastq"?
+    val fqExtensions: List[String] = List("fq", "fastq", "ifq")
 
     if (faExtensions.contains(extension.toLowerCase))
       ReadsExtension.FA
