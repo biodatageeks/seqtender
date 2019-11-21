@@ -16,18 +16,13 @@ object SeqTenderAlignment {
 
     println(sparkSession.sparkContext.hadoopConfiguration.get("mapred.max.split.size"))
 
-    if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
-      println("fastq")
-      val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
-      rdds.pipeRead(readsDescription.getCommand)
+    val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
+      makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
-      println("fasta")
-      val rdds = makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
-      rdds.pipeRead(readsDescription.getCommand)
-    }
+      makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
+    } // todo: throw exception when extension isn't fa or fq
 
-//    val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
-//    rdds.pipeRead(readsDescription.getCommand)
+    rdds.pipeRead(readsDescription.getCommand)
   }
 
   def makeReadRddsFromFQ(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
@@ -61,6 +56,8 @@ object SeqTenderAlignment {
 
   // convert single read to text, which can be read by specified program
   private def convertReadToText(read: (Text, SequencedFragment)): Text = {
-    new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
+    val tmp = new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
+//    println(tmp)
+    tmp
   }
 }

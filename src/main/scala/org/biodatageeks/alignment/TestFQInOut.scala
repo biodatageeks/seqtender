@@ -9,11 +9,10 @@ import org.apache.spark.sql.SparkSession
 import scala.reflect.ClassTag
 
 /*
-1st arg - (input) fq file - with reads
+1st arg - (input) fq/fa file - with reads
 data/e_coli_1000.fq
 2nd arg - (input) fa file - with reference genome
-
-3rd arg - (output) txt file
+3rd arg - (output) sam file
 */
 object TestFQInOut {
   def main(args: Array[String]): Unit = {
@@ -31,9 +30,11 @@ object TestFQInOut {
     val commandBuilder = new CommandBuilder(
       readsPath = args(0),
       indexPath = args(1),
-      tool = "bowtie2",
-      interleaved = true
+      tool = "minimap2"/*,
+      interleaved = true*/
     )
+
+    println(commandBuilder.getCommand)
 
     val alignment = SeqTenderAlignment
       .pipeReads(
