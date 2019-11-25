@@ -30,8 +30,8 @@ object TestFQInOut {
     val commandBuilder = new CommandBuilder(
       readsPath = args(0),
       indexPath = args(1),
-      tool = "minimap2"/*,
-      interleaved = true*/
+      tool = "bowtie2",
+      interleaved = true
     )
 
     println(commandBuilder.getCommand)

@@ -61,9 +61,8 @@ class CommandBuilder(readsPath: String,
     bowtie2CommandBuilder()
   }
 
-  // todo: not works -> exception while generating SAMRecords
   private def bowtieCommandBuilder(): String = {
-    var command = "bowtie "
+    var command = "bowtie -S "
     command += s"/data/${indexSplitPath._2} "
     if(getReadsExtension == ReadsExtension.FA) command += "-f "
     if(interleaved) command += "--interleaved "
@@ -71,7 +70,10 @@ class CommandBuilder(readsPath: String,
     command
   }
 
-  // works
+  // bowtie and bowtie2 commands are similar -
+  // move out common part or do not change it ->
+  // easier to change commands in future (if it'll be necessarily)
+
   private def bowtie2CommandBuilder(): String = {
     var command = "bowtie2 -x " // should change hardcoded 'bowtie2' to ${Constants.bowtie2ToolName} ?
     command += s"/data/${indexSplitPath._2} "
@@ -81,7 +83,6 @@ class CommandBuilder(readsPath: String,
     command
   }
 
-  // works
   private def minimap2CommandBuilder(): String = {
     var command = "minimap2 -a -x map-ont "
     command += s"/data/${indexSplitPath._2} "
@@ -89,7 +90,6 @@ class CommandBuilder(readsPath: String,
     command
   }
 
-  // works
   private def bwaCommandBuilder(): String = {
     var command = "bwa mem "
     if(interleaved) command += "-p "
