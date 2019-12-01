@@ -16,18 +16,13 @@ object SeqTenderAlignment {
 
     println(sparkSession.sparkContext.hadoopConfiguration.get("mapred.max.split.size"))
 
-    if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
-      println("fastq")
-      val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
-      rdds.pipeRead(readsDescription.getCommand)
+    val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
+      makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
-      println("fasta")
-      val rdds = makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
-      rdds.pipeRead(readsDescription.getCommand)
-    }
+      makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
+    } // todo: throw exception when extension isn't fa or fq
 
-//    val rdds = makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
-//    rdds.pipeRead(readsDescription.getCommand)
+    rdds.pipeRead(readsDescription.getCommand)
   }
 
   def makeReadRddsFromFQ(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
