@@ -45,6 +45,7 @@ class CommandBuilder(readsPath: String,
       else if (tool.toLowerCase() == Constants.bwaToolName)
         return Constants.defaultBWAImage
 
+      // todo: throw exception when tool name is unknown
       Constants.defaultBowtie2Image
   }
 
@@ -58,6 +59,7 @@ class CommandBuilder(readsPath: String,
     else if (tool.toLowerCase() == Constants.bwaToolName)
       return bwaCommandBuilder()
 
+    // todo: throw exception when tool name is unknown
     bowtie2CommandBuilder()
   }
 
