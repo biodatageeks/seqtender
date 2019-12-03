@@ -15,9 +15,9 @@ object InputPaths {
   val bowtie2Index: String = changeIndexPath("bowtie2_index")
   val bowtie2IndexDirectory: String = bowtie2Index.splitAt(bowtie2Index.lastIndexOf("/") + 1)._1
 
-  val faReadsPath: String = adjustPathToJenkins(getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fa").getPath)
-  val fqReadsPath: String = adjustPathToJenkins(getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fq").getPath)
-  val ifqReadsPath: String = adjustPathToJenkins(getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.ifq").getPath)
+  val faReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fa").getPath
+  val fqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fq").getPath
+  val ifqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.ifq").getPath
 
   // it is necessary, because we can't get a path to nonspecific file
   private def changeIndexPath(finalDirectory: String): String = {
