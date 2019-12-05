@@ -2,7 +2,7 @@ import scala.util.Properties
 
 name := """bdg-seqtender"""
 
-version := "0.1-SNAPSHOT"
+version := "0.2-SNAPSHOT"
 
 organization := "org.biodatageeks"
 
@@ -26,15 +26,6 @@ libraryDependencies += "com.holdenkarau" % "spark-testing-base_2.11" % "2.2.0_0.
 
 libraryDependencies += "org.apache.spark" %% "spark-hive"       % "2.0.0" % "test"
 
-//libraryDependencies += "org.apache.avro" % "avro-ipc" % "1.7.7"
-//libraryDependencies += "org.apache.avro" % "avro-mapred" % "1.7.7"
-
-
-
-//libraryDependencies += "org.bdgenomics.adam" %% "adam-core-spark2" % "0.22.0"
-//libraryDependencies += "org.bdgenomics.adam" %% "adam-apis-spark2" % "0.22.0"
-//libraryDependencies += "org.bdgenomics.adam" %% "adam-cli-spark2" % "0.22.0"
-//libraryDependencies += "org.bdgenomics.utils" %% "utils-misc-spark2" % "0.2.10"
 libraryDependencies += "org.scala-lang" % "scala-library" % "2.11.8"
 libraryDependencies += "org.rogach" %% "scallop" % "3.1.2"
 
@@ -48,7 +39,6 @@ libraryDependencies += "com.github.potix2" %% "spark-google-spreadsheets" % "0.5
 
 libraryDependencies += "ch.cern.sparkmeasure" %% "spark-measure" % "0.13"
 
-//libraryDependencies += "org.broadinstitute" % "gatk-native-bindings" % "1.0.0"
 libraryDependencies += "org.apache.logging.log4j" % "log4j-core" % "2.11.0"
 libraryDependencies += "org.apache.logging.log4j" % "log4j-api" % "2.11.0"
 
@@ -71,10 +61,7 @@ libraryDependencies += "org.biodatageeks" % "bdg-performance_2.11" % "0.1-SNAPSH
 fork := true
 fork in Test := true
 //parallelExecution in Test := false
-//javaOptions in Test += "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=9999"
-//javaOptions in run += "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=9999"
 
-//javaOptions in run += "-Dseq.metastore.dir=/Users/marek/data/output/metastore"
 
 javaOptions in Test ++= Seq(
   "-Dlog4j.debug=false",
