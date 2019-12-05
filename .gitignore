@@ -10,3 +10,7 @@ target/*
 .idea/*
 project/target/*
 project/project/target/*
+
+bdg-seqtender.iml
+data/*
+tasks/*

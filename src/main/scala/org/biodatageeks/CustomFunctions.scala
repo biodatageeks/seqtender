@@ -1,7 +1,7 @@
 package org.biodatageeks
 
 import org.apache.hadoop.io.Text
-import org.apache.spark.rdd.{RDD, VCFPipedRDD}
+import org.apache.spark.rdd.{FQPipedRDD, RDD, VCFPipedRDD}
 
 import scala.collection.Map
 
@@ -11,6 +11,17 @@ class CustomFunctions(rdd: RDD[Text]) {
     new VCFPipedRDD(
       rdd,
       VCFPipedRDD.tokenize(command),
+      env,
+      null,
+      null,
+      true,
+      encoding = "UTF-8",
+      bufferSize = 8192)
+
+  def pipeRead(command: String, env: Map[String, String] = Map.empty) =
+    new FQPipedRDD(
+      rdd,
+      FQPipedRDD.tokenize(command),
       env,
       null,
       null,

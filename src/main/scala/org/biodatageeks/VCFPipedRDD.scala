@@ -15,6 +15,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 
+
+
+
+
 class VCFPipedRDD[T: ClassTag](
                                 prev: RDD[T],
                                 command: Seq[String],
@@ -60,20 +64,19 @@ class VCFPipedRDD[T: ClassTag](
     logDebug("taskDirectory = " + taskDirectory)
     if (separateWorkingDir) {
       val currentDir = new File(".")
-      logDebug("currentDir = " + currentDir.getAbsolutePath())
+      logDebug("currentDir = " + currentDir.getAbsolutePath)
       val taskDirFile = new File(taskDirectory)
       taskDirFile.mkdirs()
 
       try {
         val tasksDirFilter = new NotEqualsFileNameFilter("tasks")
-
         // Need to add symlinks to jars, files, and directories.  On Yarn we could have
         // directories and other files not known to the SparkContext that were added via the
         // Hadoop distributed cache.  We also don't want to symlink to the /tasks directories we
         // are creating here.
         for (file <- currentDir.list(tasksDirFilter)) {
           val fileWithDir = new File(currentDir, file)
-          Utils.symlink(new File(fileWithDir.getAbsolutePath()),
+          Utils.symlink(new File(fileWithDir.getAbsolutePath),
             new File(taskDirectory + File.separator + fileWithDir.getName()))
         }
         processBuilder.directory(taskDirFile)
