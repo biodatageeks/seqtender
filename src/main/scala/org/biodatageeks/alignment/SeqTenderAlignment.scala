@@ -14,8 +14,6 @@ object SeqTenderAlignment {
   def pipeReads(readsDescription: CommandBuilder, sparkSession: SparkSession): RDD[SAMRecord] = {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 40000)
 
-    println(sparkSession.sparkContext.hadoopConfiguration.get("mapred.max.split.size"))
-
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
