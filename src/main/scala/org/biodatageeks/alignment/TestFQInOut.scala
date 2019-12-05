@@ -34,8 +34,6 @@ object TestFQInOut {
       interleaved = true
     )
 
-    println(commandBuilder.getCommand)
-
     val alignment = SeqTenderAlignment
       .pipeReads(
         commandBuilder,
