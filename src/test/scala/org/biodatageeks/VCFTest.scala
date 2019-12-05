@@ -9,12 +9,12 @@ import scala.collection.mutable.ArrayBuffer
 
 class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
 
-  val sparkSession = SparkSession
+  val sparkSession: SparkSession = SparkSession
     .builder()
     .master("local[2]")
     .getOrCreate()
 
-  val inputPath = getClass.getClassLoader.getResource("vcfTest.vcf").getPath
+  val inputPath: String = getClass.getClassLoader.getResource("vcfTest.vcf").getPath
 
   before {
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",

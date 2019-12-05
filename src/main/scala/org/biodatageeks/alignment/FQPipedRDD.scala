@@ -58,7 +58,7 @@ class FQPipedRDD[T: ClassTag](
     logDebug("taskDirectory = " + taskDirectory)
     if (separateWorkingDir) {
       val currentDir = new File(".")
-      logDebug("currentDir = " + currentDir.getAbsolutePath())
+      logDebug("currentDir = " + currentDir.getAbsolutePath)
       val taskDirFile = new File(taskDirectory)
       taskDirFile.mkdirs()
 
@@ -70,8 +70,8 @@ class FQPipedRDD[T: ClassTag](
         // are creating here.
         for (file <- currentDir.list(tasksDirFilter)) {
           val fileWithDir = new File(currentDir, file)
-          Utils.symlink(new File(fileWithDir.getAbsolutePath()),
-            new File(taskDirectory + File.separator + fileWithDir.getName()))
+          Utils.symlink(new File(fileWithDir.getAbsolutePath),
+            new File(taskDirectory + File.separator + fileWithDir.getName))
         }
         processBuilder.directory(taskDirFile)
         workInTaskDirectory = true

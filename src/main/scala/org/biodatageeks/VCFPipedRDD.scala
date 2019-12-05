@@ -15,6 +15,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 
+
+
+
+
 class VCFPipedRDD[T: ClassTag](
                                 prev: RDD[T],
                                 command: Seq[String],
@@ -60,7 +64,7 @@ class VCFPipedRDD[T: ClassTag](
     logDebug("taskDirectory = " + taskDirectory)
     if (separateWorkingDir) {
       val currentDir = new File(".")
-      logDebug("currentDir = " + currentDir.getAbsolutePath())
+      logDebug("currentDir = " + currentDir.getAbsolutePath)
       val taskDirFile = new File(taskDirectory)
       taskDirFile.mkdirs()
 
@@ -72,7 +76,7 @@ class VCFPipedRDD[T: ClassTag](
         // are creating here.
         for (file <- currentDir.list(tasksDirFilter)) {
           val fileWithDir = new File(currentDir, file)
-          Utils.symlink(new File(fileWithDir.getAbsolutePath()),
+          Utils.symlink(new File(fileWithDir.getAbsolutePath),
             new File(taskDirectory + File.separator + fileWithDir.getName()))
         }
         processBuilder.directory(taskDirFile)
