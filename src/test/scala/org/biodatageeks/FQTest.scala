@@ -8,16 +8,21 @@ import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
 // todo: read about PrivateMethodTester
 class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
-
-  val sparkSession: SparkSession = SparkSession
-    .builder()
-    .master("local[2]")
-    .getOrCreate()
+  var sparkSession: SparkSession = _
 
   before {
+    sparkSession = SparkSession
+      .builder()
+      .master("local[2]")
+      .getOrCreate()
+
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
+  }
+
+  after {
+    sparkSession.close()
   }
 
   // bowtie's tests
@@ -54,9 +59,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie") {
@@ -67,9 +73,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie") {
@@ -81,9 +88,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
   }
 
   // bowtie2's tests
@@ -120,9 +128,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie2") {
@@ -133,9 +142,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie2") {
@@ -147,9 +157,13 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+    println("bowtie2")
+    collectedSam.foreach(it => println(it.getAlignmentStart))
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   // minimap2's tests
@@ -186,9 +200,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
   }
 
   test("should return number of aligned and unaligned fasta reads by minimap2") {
@@ -199,9 +214,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by minimap2") {
@@ -213,9 +229,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 2)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 2)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
   }
 
   // bwa's tests
@@ -252,9 +269,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
   test("should return number of aligned and unaligned fasta reads by bwa") {
@@ -265,9 +283,10 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bwa") {
@@ -279,8 +298,9 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val collectedSam = sam.collect
 
-    assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
-    assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 }
