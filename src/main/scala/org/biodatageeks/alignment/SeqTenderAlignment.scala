@@ -12,7 +12,6 @@ import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 object SeqTenderAlignment {
 
   def pipeReads(readsDescription: CommandBuilder, sparkSession: SparkSession): RDD[SAMRecord] = {
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 40000)
 
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
