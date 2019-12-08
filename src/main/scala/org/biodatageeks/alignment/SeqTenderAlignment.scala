@@ -15,10 +15,6 @@ object SeqTenderAlignment {
 
   def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
 
-    sparkSession
-      .conf
-      .set(InternalParams.BAM_IO_LIB, "disq")
-
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {

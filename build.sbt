@@ -50,6 +50,9 @@ libraryDependencies += "org.apache.derby" % "derbyclient" % "10.14.2.0"
 
 libraryDependencies += "org.biodatageeks" % "bdg-performance_2.11" % "0.1-SNAPSHOT"
 
+libraryDependencies += "org.disq-bio" % "disq" % "0.3.4"
+
+
 
 
 
