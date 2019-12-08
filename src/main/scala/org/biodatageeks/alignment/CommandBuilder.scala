@@ -26,23 +26,25 @@ class CommandBuilder(readsPath: String,
   }
 
   private def buildCommand: String = {
-    var command = "docker run --rm -i "
+    val command = new StringBuilder("docker run --rm -i ")
+    command.append(s"-v ${indexSplitPath._1}:/data ")
+
     val imageToCommand = if (image != null) image else getImage
+    command.append(s"${imageToCommand} ${toolBuilder()}")
 
-    command += s"-v ${indexSplitPath._1}:/data "
-    command += s"${imageToCommand} ${toolBuilder()}"
-
-    command
+    command.toString()
   }
 
     private def getImage: String = {
-      if (tool.toLowerCase() == Constants.bowtieToolName)
+      val toolInLowerCase = tool.toLowerCase()
+
+      if (toolInLowerCase == Constants.bowtieToolName)
         return Constants.defaultBowtieImage
-      else if (tool.toLowerCase() == Constants.bowtie2ToolName)
+      else if (toolInLowerCase == Constants.bowtie2ToolName)
         return Constants.defaultBowtie2Image
-      else if (tool.toLowerCase() == Constants.minimap2ToolName)
+      else if (toolInLowerCase == Constants.minimap2ToolName)
         return Constants.defaultMinimap2Image
-      else if (tool.toLowerCase() == Constants.bwaToolName)
+      else if (toolInLowerCase == Constants.bwaToolName)
         return Constants.defaultBWAImage
 
       // todo: throw exception when tool name is unknown
@@ -50,13 +52,15 @@ class CommandBuilder(readsPath: String,
   }
 
   private def toolBuilder(): String = {
-    if (tool.toLowerCase() == Constants.bowtieToolName)
+    val toolInLowerCase = tool.toLowerCase()
+
+    if (toolInLowerCase == Constants.bowtieToolName)
       return bowtieCommandBuilder()
-    else if (tool.toLowerCase() == Constants.bowtie2ToolName)
+    else if (toolInLowerCase == Constants.bowtie2ToolName)
       return bowtie2CommandBuilder()
-    else if (tool.toLowerCase() == Constants.minimap2ToolName)
+    else if (toolInLowerCase == Constants.minimap2ToolName)
       return minimap2CommandBuilder()
-    else if (tool.toLowerCase() == Constants.bwaToolName)
+    else if (toolInLowerCase == Constants.bwaToolName)
       return bwaCommandBuilder()
 
     // todo: throw exception when tool name is unknown
@@ -64,49 +68,46 @@ class CommandBuilder(readsPath: String,
   }
 
   private def bowtieCommandBuilder(): String = {
-    var command = "bowtie -S "
-    command += s"/data/${indexSplitPath._2} "
-    if(getReadsExtension == ReadsExtension.FA) command += "-f "
-    if(interleaved) command += "--interleaved "
-    command += "- "
-    command
+    val command = new StringBuilder(s"${Constants.bowtieToolName} -S ")
+    command.append(s"/data/${indexSplitPath._2} ")
+
+    if(getReadsExtension == ReadsExtension.FA) command.append("-f ")
+    if(interleaved) command.append("--interleaved ")
+
+    command.append("- ").toString()
   }
 
-  // bowtie and bowtie2 commands are similar -
-  // move out common part or do not change it ->
-  // easier to change commands in future (if it'll be necessarily)
-
   private def bowtie2CommandBuilder(): String = {
-    var command = "bowtie2 -x " // should change hardcoded 'bowtie2' to ${Constants.bowtie2ToolName} ?
-    command += s"/data/${indexSplitPath._2} "
-    if(getReadsExtension == ReadsExtension.FA) command += "-f "
-    if(interleaved) command += "--interleaved "
-    command += "- "
-    command
+    val command = new StringBuilder(s"${Constants.bowtie2ToolName} -x ")
+    command.append(s"/data/${indexSplitPath._2} ")
+
+    if(getReadsExtension == ReadsExtension.FA) command.append("-f ")
+    if(interleaved) command.append("--interleaved ")
+
+    command.append("- ").toString()
   }
 
   private def minimap2CommandBuilder(): String = {
-    var command = "minimap2 -a -x map-ont "
-    command += s"/data/${indexSplitPath._2} "
-    command += "- "
-    command
+    val command = new StringBuilder(s"${Constants.minimap2ToolName} -a -x map-ont ")
+    command.append(s"/data/${indexSplitPath._2} ")
+    command.append("- ").toString()
   }
 
   private def bwaCommandBuilder(): String = {
-    var command = "bwa mem "
-    if(interleaved) command += "-p "
-    command += s"/data/${indexSplitPath._2} "
-    command += "- "
-    command
+    val command = new StringBuilder(s"${Constants.bwaToolName} mem ")
+
+    if(interleaved) command.append("-p ")
+
+    command.append(s"/data/${indexSplitPath._2} ")
+    command.append("- ").toString()
   }
 
-
   private def getExtension(filePath: String): ReadsExtension = {
-    val extension = filePath.split("\\.").last
+    val extension = filePath.split("\\.").last.toLowerCase
 
-    if (Constants.faExtensions.contains(extension.toLowerCase))
+    if (Constants.faExtensions.contains(extension))
       ReadsExtension.FA
-    else if (Constants.fqExtensions.contains(extension.toLowerCase))
+    else if (Constants.fqExtensions.contains(extension))
       ReadsExtension.FQ
     else ReadsExtension.OTHER
   }
