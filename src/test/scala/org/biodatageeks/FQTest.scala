@@ -1,15 +1,24 @@
 package org.biodatageeks
 
-import htsjdk.samtools.SAMRecord
+import java.io.File
+
+import com.holdenkarau.spark.testing.RDDComparisons
+import htsjdk.samtools.{SAMRecord, SamReaderFactory}
+import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.{CommandBuilder, Constants, SeqTenderAlignment}
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
+import org.biodatageeks.CustomRDDSAMRecordFunctions._
+
 
 // todo: read about PrivateMethodTester
-class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
+class FQTest extends FunSuite
+  with BeforeAndAfter
+  with PrivateMethodTester
+  with RDDComparisons{
 
-  val sparkSession: SparkSession = SparkSession
+  implicit val sparkSession: SparkSession = SparkSession
     .builder()
     .master("local[2]")
     .getOrCreate()
@@ -28,7 +37,7 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       tool = Constants.bowtie2ToolName
     )
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
+    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
 
     assert(rdds.getNumPartitions === 2)
   }
@@ -40,7 +49,7 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       tool = Constants.bowtie2ToolName
     )
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
+    val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
 
     assert(rdds.getNumPartitions === 2)
   }
@@ -52,7 +61,7 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       tool = Constants.bowtie2ToolName
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val sam = SeqTenderAlignment.pipeReads(readsDescription)
 
     assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
@@ -65,7 +74,7 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       tool = Constants.bowtie2ToolName
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val sam = SeqTenderAlignment.pipeReads(readsDescription)
 
     assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
@@ -78,9 +87,40 @@ class FQTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
       tool = Constants.bowtie2ToolName
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription, sparkSession)
+    val sam = SeqTenderAlignment.pipeReads(readsDescription)
 
     assert(sam.collect.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(sam.collect.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should save RDD[SAMRecord] to BAM") {
+
+
+    val outputPath = "/tmp/test.bam"
+    FileUtils.deleteQuietly(new File(outputPath))
+    val readsDescription = new CommandBuilder(
+      readsPath = InputPaths.ifqReadsPath,
+      indexPath = InputPaths.bowtie2Index,
+      tool = Constants.bowtie2ToolName
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    sam.saveAsBAMFile(outputPath)
+
+    val samReader = SamReaderFactory.makeDefault().open(new File(outputPath))
+    import collection.JavaConverters._
+    val readRecords = samReader.iterator().asScala.toArray
+
+    //equal count
+    assert(sam.count() === readRecords.length)
+
+    //RNEXT problem (7th column diff "=" <> "*") in case of unmapped reads - hadoop-bam
+//    r3/1    4       *       0       0       *       =       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
+//
+//    r3/1    4       *       0       0       *       *       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
+
+    assertRDDEquals(sam.filter(_.getReferenceName != "*"), sparkSession.sparkContext.parallelize(readRecords.filter(_.getReferenceName != "*") ) )
+
+
   }
 }

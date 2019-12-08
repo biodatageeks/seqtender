@@ -5,24 +5,30 @@ import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.TextInputFormat
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomFunctions._
+import org.biodatageeks.CustomRDDTextFunctions._
+import org.biodatageeks.conf.InternalParams
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
 object SeqTenderAlignment {
 
-  def pipeReads(readsDescription: CommandBuilder, sparkSession: SparkSession): RDD[SAMRecord] = {
+
+  def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
+
+    sparkSession
+      .conf
+      .set(InternalParams.BAM_IO_LIB, "disq")
 
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
-      makeReadRddsFromFQ(sparkSession, readsDescription.getReadsPath)
+      makeReadRddsFromFQ(readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
-      makeReadRddsFromFA(sparkSession, readsDescription.getReadsPath)
+      makeReadRddsFromFA(readsDescription.getReadsPath)
     } // todo: throw exception when extension isn't fa or fq
 
     rdds.pipeRead(readsDescription.getCommand)
   }
 
-  def makeReadRddsFromFQ(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
+  def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession ): RDD[Text] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[FastqInputFormat],
@@ -38,7 +44,7 @@ object SeqTenderAlignment {
       }
   }
 
-  def makeReadRddsFromFA(sparkSession: SparkSession, inputPath: String): RDD[Text] = {
+  def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
     sparkSession
       .sparkContext
       .hadoopFile(inputPath,

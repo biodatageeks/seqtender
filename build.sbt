@@ -8,7 +8,7 @@ organization := "org.biodatageeks"
 
 scalaVersion := "2.11.8"
 
-val DEFAULT_SPARK_2_VERSION = "2.2.2"
+val DEFAULT_SPARK_2_VERSION = "2.4.3"
 val DEFAULT_HADOOP_VERSION = "2.6.5"
 
 
@@ -22,20 +22,18 @@ libraryDependencies +=  "org.apache.spark" % "spark-sql_2.11" % sparkVersion
 libraryDependencies +=  "org.apache.spark" %% "spark-hive" % sparkVersion
 libraryDependencies +=  "org.apache.spark" %% "spark-hive-thriftserver" % sparkVersion
 
-libraryDependencies += "com.holdenkarau" % "spark-testing-base_2.11" % "2.2.0_0.7.4" % "test" excludeAll ExclusionRule(organization = "javax.servlet") excludeAll (ExclusionRule("org.apache.hadoop"))
+libraryDependencies += "org.seqdoop" % "hadoop-bam" % "7.10.0"
+
+libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "2.4.3_0.12.0" % "test" excludeAll ExclusionRule(organization = "javax.servlet") excludeAll (ExclusionRule("org.apache.hadoop"))
 
 libraryDependencies += "org.apache.spark" %% "spark-hive"       % "2.0.0" % "test"
 
 libraryDependencies += "org.scala-lang" % "scala-library" % "2.11.8"
 libraryDependencies += "org.rogach" %% "scallop" % "3.1.2"
 
-
 libraryDependencies += "org.hammerlab.bdg-utils" %% "cli" % "0.3.0"
 
-libraryDependencies += "com.github.samtools" % "htsjdk" % "2.18.1"
-
-
-libraryDependencies += "com.github.potix2" %% "spark-google-spreadsheets" % "0.5.0"
+libraryDependencies += "com.github.samtools" % "htsjdk" % "2.21.1"
 
 libraryDependencies += "ch.cern.sparkmeasure" %% "spark-measure" % "0.13"
 
@@ -45,13 +43,10 @@ libraryDependencies += "org.apache.logging.log4j" % "log4j-api" % "2.11.0"
 libraryDependencies += "com.intel.gkl" % "gkl" % "0.8.5-1-darwin-SNAPSHOT"
 libraryDependencies += "com.intel.gkl" % "gkl" % "0.8.5-1-linux-SNAPSHOT"
 
-libraryDependencies += "org.hammerlab.bam" %% "load" % "1.2.0-M1"
-
 libraryDependencies += "de.ruedigermoeller" % "fst" % "2.57"
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.7"
 libraryDependencies += "org.eclipse.jetty" % "jetty-servlet" % "9.3.24.v20180605"
 libraryDependencies += "org.apache.derby" % "derbyclient" % "10.14.2.0"
-
 
 libraryDependencies += "org.biodatageeks" % "bdg-performance_2.11" % "0.1-SNAPSHOT"
 
