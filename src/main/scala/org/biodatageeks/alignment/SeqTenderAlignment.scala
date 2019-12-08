@@ -3,6 +3,7 @@ package org.biodatageeks.alignment
 import htsjdk.samtools.SAMRecord
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.TextInputFormat
+import org.apache.log4j.Logger
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.CustomRDDTextFunctions._
@@ -12,9 +13,19 @@ import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 object SeqTenderAlignment {
 
+  val logger = Logger.getLogger(getClass.getName)
 
   def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
 
+    logger.info(
+      s"""
+         |#########################
+         |Runnig alignment process with command:
+         |${readsDescription.getCommand}
+         |with path:
+         |${readsDescription.getReadsPath}
+         |########################
+         |""".stripMargin)
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(readsDescription.getReadsPath)
     } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {

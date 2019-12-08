@@ -36,7 +36,7 @@ class CustomRDDSAMRecordFunctions(rdd : RDD[SAMRecord]) {
 
   private def saveHaadopBAMAsBAMFile(path:String)(implicit sparkSession: SparkSession) = {
 
-    logger.info("Using Hadoop-bam write method")
+    logger.info("Using Hadoop-bam write method for saving SAMRecords")
 
     val nullPathString = "/tmp/null.bam"
     //Fix for Spark saveAsNewHadoopfile
@@ -61,21 +61,25 @@ class CustomRDDSAMRecordFunctions(rdd : RDD[SAMRecord]) {
 
   private def saveDISQASBAMFile(path:String)(implicit sparkSession: SparkSession) = {
 
-    logger.info("Using disq write method")
+    logger.info("Using disq write method for saving SAMRecords")
 
     //sorting SAMRecords RDD and  updating header to coordinate order
     lazy val sortedRDD = rdd.sortBy( r=> (r.getReferenceName, r.getStart))
     lazy val header = rdd.first().getHeader
     header.setSortOrder(SortOrder.coordinate)
     lazy val reads = new HtsjdkReadsRdd(header,sortedRDD)
+    val baiEnable = BaiWriteOption.ENABLE
+    val sbiEnable = SbiWriteOption.ENABLE
     HtsjdkReadsRddStorage
       .makeDefault(sparkSession.sparkContext)
       .write(reads,
         path,
         ReadsFormatWriteOption.BAM,
-        BaiWriteOption.ENABLE,
-        SbiWriteOption.ENABLE)
+        baiEnable,
+        sbiEnable)
+    logger.info (s"BAM file ${path} saved, with: BAI: ${baiEnable.toString}, SBI: ${sbiEnable.toString}.")
   }
+
 
 }
 
