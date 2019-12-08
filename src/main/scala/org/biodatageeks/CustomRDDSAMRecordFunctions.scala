@@ -19,7 +19,7 @@ class CustomRDDSAMRecordFunctions(rdd : RDD[SAMRecord]) {
 
   val logger = Logger.getLogger(getClass.getName)
 
-
+  import org.biodatageeks.CustomRDDSAMRecordFunctions._
   def saveAsBAMFile(path:String)(implicit sparkSession: SparkSession) = {
 
      val bamReadMethod =
