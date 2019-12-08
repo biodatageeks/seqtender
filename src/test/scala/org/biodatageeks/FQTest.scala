@@ -103,6 +103,7 @@ class FQTest extends FunSuite
 
     val outputPath = s"/tmp/test_${method}.bam"
     FileUtils.deleteQuietly(new File(outputPath))
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtie2Index,
