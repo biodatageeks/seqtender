@@ -101,6 +101,8 @@ assemblyMergeStrategy in assembly := {
   case "log4j.properties" => MergeStrategy.last
   case "parquet.thrift" => MergeStrategy.last
   case "plugin.xml" => MergeStrategy.last
+  case "git.properties" => MergeStrategy.last
+  case "codegen/config.fmpp" => MergeStrategy.last
 
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
