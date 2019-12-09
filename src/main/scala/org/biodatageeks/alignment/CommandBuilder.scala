@@ -74,6 +74,10 @@ class CommandBuilder(readsPath: String,
     command.append(s"/data/${indexSplitPath._2} ")
 
     if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
+
+    if (readGroupId != null && !readGroupId.isEmpty && readGroup != null && !readGroup.isEmpty)
+      command.append(s"--sam-RG ID:$readGroupId --sam-RG $readGroup ")
+
     if (interleaved) command.append("--interleaved ")
 
     command.append("- ").toString()
@@ -85,10 +89,9 @@ class CommandBuilder(readsPath: String,
 
     if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
 
-    if (readGroupId != null && !readGroupId.isEmpty)
-      command.append(s"--rg-id $readGroupId ")
-    if (readGroup != null && !readGroup.isEmpty)
-      command.append(s"--rg $readGroup ")
+    // I changed this condition, because read group cannot exist without read group id
+    if (readGroupId != null && !readGroupId.isEmpty && readGroup != null && !readGroup.isEmpty)
+      command.append(s"--rg-id $readGroupId --rg $readGroup ")
 
     if (interleaved) command.append("--interleaved ")
 
@@ -97,12 +100,19 @@ class CommandBuilder(readsPath: String,
 
   private def minimap2CommandBuilder(): String = {
     val command = new StringBuilder(s"${Constants.minimap2ToolName} -a -x map-ont ")
+
+    if (readGroupId != null && !readGroupId.isEmpty && readGroup != null && !readGroup.isEmpty)
+      command.append(s"""-R "@RG\\tID:$readGroupId\\t$readGroup" """)
+
     command.append(s"/data/${indexSplitPath._2} ")
     command.append("- ").toString()
   }
 
   private def bwaCommandBuilder(): String = {
     val command = new StringBuilder(s"${Constants.bwaToolName} mem ")
+
+    if (readGroupId != null && !readGroupId.isEmpty && readGroup != null && !readGroup.isEmpty)
+      command.append(s"""-R "@RG\\tID:$readGroupId\\t$readGroup" """)
 
     if (interleaved) command.append("-p ")
 

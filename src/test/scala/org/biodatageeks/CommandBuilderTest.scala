@@ -18,6 +18,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S ")
     correctCommand.append("/data/e_coli_short ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
     correctCommand.append("- ")
 
     assert(commandBuilder.getCommand === correctCommand.toString)
@@ -35,7 +36,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S /data/e_coli_short ")
-    correctCommand.append("--interleaved ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} --interleaved ")
     correctCommand.append("- ")
 
     assert(commandBuilder.getCommand === correctCommand.toString)
@@ -54,6 +55,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("bowtie -S ")
     correctCommand.append("/data/e_coli_short ")
     correctCommand.append("-f ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
     correctCommand.append("- ")
 
     assert(commandBuilder.getCommand === correctCommand.toString)
@@ -125,6 +127,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -143,6 +146,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -160,6 +164,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -178,6 +183,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
     correctCommand.append("bwa mem ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -195,7 +201,8 @@ class CommandBuilderTest extends FunSuite {
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
-    correctCommand.append("bwa mem -p ")
+    correctCommand.append("bwa mem ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" -p """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -213,6 +220,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
     correctCommand.append("bwa mem ")
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
