@@ -101,6 +101,8 @@ assemblyMergeStrategy in assembly := {
   case "log4j.properties" => MergeStrategy.last
   case "parquet.thrift" => MergeStrategy.last
   case "plugin.xml" => MergeStrategy.last
+  case "git.properties" => MergeStrategy.last
+  case "codegen/config.fmpp" => MergeStrategy.last
 
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
@@ -108,11 +110,11 @@ assemblyMergeStrategy in assembly := {
 }
 
 /* only for releasing assemblies*/
-//artifact in (Compile, assembly) := {
-//  val art = (artifact in (Compile, assembly)).value
-//  art.withClassifier(Some("assembly"))
-//}
-//addArtifact(artifact in (Compile, assembly), assembly)
+artifact in (Compile, assembly) := {
+ val art = (artifact in (Compile, assembly)).value
+ art.withClassifier(Some("assembly"))
+}
+addArtifact(artifact in (Compile, assembly), assembly)
 
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
 
