@@ -4,12 +4,12 @@ import org.biodatageeks.alignment.ReadsExtension.ReadsExtension
 
 // todo: rename class name
 class CommandBuilder(readsPath: String,
-                      indexPath: String,
-                      tool: String,
-                      image: String = null,
-                      interleaved: Boolean = false,
-                      readGroupId : Option[String] = Some(Constants.defaultBowtieRGId),
-                      readGroup: Option[String] = Some(Constants.defaultBowtieRG) ) {
+                     indexPath: String,
+                     tool: String,
+                     image: String = null,
+                     interleaved: Boolean = false,
+                     readGroupId : String = Constants.defaultBowtieRGId,
+                     readGroup: String = Constants.defaultBowtieRG ) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -37,7 +37,7 @@ class CommandBuilder(readsPath: String,
     command
   }
 
-    private def getImage: String = {
+  private def getImage: String = {
     if (tool.toLowerCase() == Constants.bowtie2ToolName)
       return Constants.defaultBowtie2Image
 
@@ -58,14 +58,13 @@ class CommandBuilder(readsPath: String,
     command += s"/data/${indexSplitPath._2} "
     if(getReadsExtension == ReadsExtension.FA) command += "-f "
     if(interleaved) command += "--interleaved "
-    readGroupId match{
-      case Some(rgId) => command += s"--rg-id ${rgId} "
-      case _ => None
-    }
-    readGroup match{
-      case Some(rg) => command += s"--rg ${rg} "
-      case _ => None
-    }
+
+    if (readGroupId != null && !readGroupId.isEmpty)
+      command += s"--rg-id $readGroupId "
+
+    if (readGroup != null && !readGroup.isEmpty)
+      command +=  s"--rg $readGroup "
+
     command += "- "
     command
   }
