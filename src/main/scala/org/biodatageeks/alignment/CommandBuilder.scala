@@ -7,7 +7,9 @@ class CommandBuilder(readsPath: String,
                       indexPath: String,
                       tool: String,
                       image: String = null,
-                      interleaved: Boolean = false) {
+                      interleaved: Boolean = false,
+                      readGroupId : Option[String] = Some(Constants.defaultBowtieRGId),
+                      readGroup: Option[String] = Some(Constants.defaultBowtieRG) ) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -83,6 +85,14 @@ class CommandBuilder(readsPath: String,
 
     if(getReadsExtension == ReadsExtension.FA) command.append("-f ")
     if(interleaved) command.append("--interleaved ")
+    readGroupId match{
+      case Some(rgId) => command.append(s"--rg-id ${rgId} ")
+      case _ => None
+    }
+    readGroup match{
+      case Some(rg) => command.append(s"--rg ${rg} ")
+      case _ => None
+    }
 
     command.append("- ").toString()
   }
