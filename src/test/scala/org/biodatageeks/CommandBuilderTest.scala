@@ -13,14 +13,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bowtieToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtieIndexDirectory}:/data " +
-      s"${Constants.defaultBowtieImage} " +
-      "bowtie -S " +
-      "/data/e_coli_short " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtieImage} ")
+    correctCommand.append("bowtie -S ")
+    correctCommand.append("/data/e_coli_short ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bowtie command to align interleaved fq reads") {
@@ -31,14 +31,14 @@ class CommandBuilderTest extends FunSuite {
       interleaved = true
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtieIndexDirectory}:/data " +
-      s"${Constants.defaultBowtieImage} " +
-      "bowtie -S /data/e_coli_short " +
-      "--interleaved " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtieImage} ")
+    correctCommand.append("bowtie -S /data/e_coli_short ")
+    correctCommand.append("--interleaved ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bowtie command to align fa reads") {
@@ -48,15 +48,15 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bowtieToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtieIndexDirectory}:/data " +
-      s"${Constants.defaultBowtieImage} " +
-      "bowtie -S " +
-      "/data/e_coli_short " +
-      "-f " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtieImage} ")
+    correctCommand.append("bowtie -S ")
+    correctCommand.append("/data/e_coli_short ")
+    correctCommand.append("-f ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   // bowtie2's tests
@@ -67,14 +67,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bowtie2ToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtie2IndexDirectory}:/data " +
-      s"${Constants.defaultBowtie2Image} " +
-      "bowtie2 -x " +
-      s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtie2Image} ")
+    correctCommand.append("bowtie2 -x ")
+    correctCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bowtie2 command to align interleaved fq reads") {
@@ -85,14 +85,14 @@ class CommandBuilderTest extends FunSuite {
       interleaved = true
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtie2IndexDirectory}:/data " +
-      s"${Constants.defaultBowtie2Image} " +
-      "bowtie2 -x /data/e_coli_short " +
-      s"--interleaved --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtie2Image} ")
+    correctCommand.append("bowtie2 -x /data/e_coli_short ")
+    correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} --interleaved ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bowtie2 command to align fa reads") {
@@ -102,15 +102,15 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bowtie2ToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bowtie2IndexDirectory}:/data " +
-      s"${Constants.defaultBowtie2Image} " +
-      "bowtie2 -x " +
-      "/data/e_coli_short " +
-      s"-f --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBowtie2Image} ")
+    correctCommand.append("bowtie2 -x ")
+    correctCommand.append("/data/e_coli_short ")
+    correctCommand.append(s"-f --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   // minimap2's tests
@@ -121,14 +121,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.minimap2ToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultMinimap2Image} " +
-      "minimap2 -a -x map-ont " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMinimap2Image} ")
+    correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct minimap2 command to align interleaved fq reads") {
@@ -139,14 +139,14 @@ class CommandBuilderTest extends FunSuite {
       interleaved = true
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultMinimap2Image} " +
-      "minimap2 -a -x map-ont " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMinimap2Image} ")
+    correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct minimap2 command to align fa reads") {
@@ -156,14 +156,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.minimap2ToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultMinimap2Image} " +
-      "minimap2 -a -x map-ont " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMinimap2Image} ")
+    correctCommand.append("minimap2 -a -x map-ont ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   // bwa's tests
@@ -174,14 +174,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bwaToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultBWAImage} " +
-      "bwa mem " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBWAImage} ")
+    correctCommand.append("bwa mem ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bwa command to align interleaved fq reads") {
@@ -192,14 +192,14 @@ class CommandBuilderTest extends FunSuite {
       interleaved = true
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultBWAImage} " +
-      "bwa mem -p " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBWAImage} ")
+    correctCommand.append("bwa mem -p ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString)
   }
 
   test("should make correct bwa command to align fa reads") {
@@ -209,14 +209,14 @@ class CommandBuilderTest extends FunSuite {
       tool = Constants.bwaToolName
     )
 
-    val correctCommand = "docker run --rm -i " +
-      s"-v ${InputPaths.bwaIndexDirectory}:/data " +
-      s"${Constants.defaultBWAImage} " +
-      "bwa mem " +
-      "/data/e_coli_short.fa " +
-      "- "
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultBWAImage} ")
+    correctCommand.append("bwa mem ")
+    correctCommand.append("/data/e_coli_short.fa ")
+    correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand)
+    assert(commandBuilder.getCommand === correctCommand.toString())
   }
 
 }

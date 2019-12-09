@@ -34,10 +34,6 @@ class FQTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.clear()
   }
 
-  after {
-    sparkSession.close()
-  }
-
   // bowtie's tests
   test("should make fastq rdds on 2 partitions by bowtie") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
@@ -171,9 +167,6 @@ class FQTest extends FunSuite
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
     val collectedSam = sam.collect
-
-    println("bowtie2")
-    collectedSam.foreach(it => println(it.getAlignmentStart))
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)

@@ -4,12 +4,12 @@ import org.biodatageeks.alignment.ReadsExtension.ReadsExtension
 
 // todo: rename class name
 class CommandBuilder(readsPath: String,
-                      indexPath: String,
-                      tool: String,
-                      image: String = null,
-                      interleaved: Boolean = false,
-                      readGroupId : Option[String] = Some(Constants.defaultBowtieRGId),
-                      readGroup: Option[String] = Some(Constants.defaultBowtieRG) ) {
+                     indexPath: String,
+                     tool: String,
+                     image: String = null,
+                     interleaved: Boolean = false,
+                     readGroupId: String = Constants.defaultBowtieRGId,
+                     readGroup: String = Constants.defaultBowtieRG) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -37,20 +37,20 @@ class CommandBuilder(readsPath: String,
     command.toString()
   }
 
-    private def getImage: String = {
-      val toolInLowerCase = tool.toLowerCase()
+  private def getImage: String = {
+    val toolInLowerCase = tool.toLowerCase()
 
-      if (toolInLowerCase == Constants.bowtieToolName)
-        return Constants.defaultBowtieImage
-      else if (toolInLowerCase == Constants.bowtie2ToolName)
-        return Constants.defaultBowtie2Image
-      else if (toolInLowerCase == Constants.minimap2ToolName)
-        return Constants.defaultMinimap2Image
-      else if (toolInLowerCase == Constants.bwaToolName)
-        return Constants.defaultBWAImage
+    if (toolInLowerCase == Constants.bowtieToolName)
+      return Constants.defaultBowtieImage
+    else if (toolInLowerCase == Constants.bowtie2ToolName)
+      return Constants.defaultBowtie2Image
+    else if (toolInLowerCase == Constants.minimap2ToolName)
+      return Constants.defaultMinimap2Image
+    else if (toolInLowerCase == Constants.bwaToolName)
+      return Constants.defaultBWAImage
 
-      // todo: throw exception when tool name is unknown
-      Constants.defaultBowtie2Image
+    // todo: throw exception when tool name is unknown
+    Constants.defaultBowtie2Image
   }
 
   private def toolBuilder(): String = {
@@ -73,8 +73,8 @@ class CommandBuilder(readsPath: String,
     val command = new StringBuilder(s"${Constants.bowtieToolName} -S ")
     command.append(s"/data/${indexSplitPath._2} ")
 
-    if(getReadsExtension == ReadsExtension.FA) command.append("-f ")
-    if(interleaved) command.append("--interleaved ")
+    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
+    if (interleaved) command.append("--interleaved ")
 
     command.append("- ").toString()
   }
@@ -83,16 +83,14 @@ class CommandBuilder(readsPath: String,
     val command = new StringBuilder(s"${Constants.bowtie2ToolName} -x ")
     command.append(s"/data/${indexSplitPath._2} ")
 
-    if(getReadsExtension == ReadsExtension.FA) command.append("-f ")
-    if(interleaved) command.append("--interleaved ")
-    readGroupId match{
-      case Some(rgId) => command.append(s"--rg-id ${rgId} ")
-      case _ => None
-    }
-    readGroup match{
-      case Some(rg) => command.append(s"--rg ${rg} ")
-      case _ => None
-    }
+    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
+
+    if (readGroupId != null && !readGroupId.isEmpty)
+      command.append(s"--rg-id $readGroupId ")
+    if (readGroup != null && !readGroup.isEmpty)
+      command.append(s"--rg $readGroup ")
+
+    if (interleaved) command.append("--interleaved ")
 
     command.append("- ").toString()
   }
@@ -106,7 +104,7 @@ class CommandBuilder(readsPath: String,
   private def bwaCommandBuilder(): String = {
     val command = new StringBuilder(s"${Constants.bwaToolName} mem ")
 
-    if(interleaved) command.append("-p ")
+    if (interleaved) command.append("-p ")
 
     command.append(s"/data/${indexSplitPath._2} ")
     command.append("- ").toString()
