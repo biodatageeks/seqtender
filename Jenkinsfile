@@ -85,7 +85,7 @@ node {
             echo 'Publishing to ZSI-BIO snapshots repository....'
             sh "SBT_OPTS='-XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=2G -Xmx2G' ${tool name: 'sbt-0.13.15', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'}/bin/sbt 'set test in publish := {}' publish"
         }
-        stage('Package sequila-py') {
+        stage('Package seqtender-py') {
                 sh 'bash -c "source /sequila/bin/activate && cd python && python3.6 setup.py sdist bdist_wheel &&  twine check dist/* && twine upload -r zsibio dist/* && deactivate"'
         }
         stage('Code stats') {
