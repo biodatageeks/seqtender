@@ -9,7 +9,7 @@ import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
 import org.apache.spark.rdd.{HadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomFunctions._
+import org.biodatageeks.CustomRDDTextFunctions._
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec, VCFHeaderReader, WrapSeekable}
 
 import scala.collection.mutable

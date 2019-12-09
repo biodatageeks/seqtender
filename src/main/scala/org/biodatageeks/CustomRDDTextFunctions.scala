@@ -5,7 +5,7 @@ import org.apache.spark.rdd.{FQPipedRDD, RDD, VCFPipedRDD}
 
 import scala.collection.Map
 
-class CustomFunctions(rdd: RDD[Text]) {
+class CustomRDDTextFunctions(rdd: RDD[Text]) {
 
   def pipeVCF(command: String, env: Map[String, String] = Map.empty) =
     new VCFPipedRDD(
@@ -31,6 +31,7 @@ class CustomFunctions(rdd: RDD[Text]) {
 
 }
 
-object CustomFunctions {
-  implicit def addCustomFunctions(rdd: RDD[Text]) = new CustomFunctions(rdd)
+
+object CustomRDDTextFunctions {
+  implicit def addCustomFunctions(rdd: RDD[Text]) = new CustomRDDTextFunctions(rdd)
 }

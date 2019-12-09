@@ -17,7 +17,7 @@ data/e_coli_1000.fq
 */
 object TestFQInOut {
   def main(args: Array[String]): Unit = {
-    val sparkSession = SparkSession
+    implicit val sparkSession = SparkSession
       .builder()
       .master("local[2]")
       .getOrCreate()
@@ -37,8 +37,7 @@ object TestFQInOut {
 
     val alignment = SeqTenderAlignment
       .pipeReads(
-        commandBuilder,
-        sparkSession
+        commandBuilder
       )
 
     //alignment.map(_.toString).collect().foreach(line => println(line))
