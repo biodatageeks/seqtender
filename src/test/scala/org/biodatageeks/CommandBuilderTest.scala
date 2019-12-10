@@ -61,9 +61,6 @@ class CommandBuilderTest extends FunSuite {
       s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} -f " +
       "- "
 
-    println (correctCommand )
-    println (commandBuilder.getCommand )
-
     assert(commandBuilder.getCommand === correctCommand)
   }
 
