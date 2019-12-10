@@ -38,7 +38,7 @@ class CommandBuilderTest extends FunSuite {
       s"-v ${InputPaths.bowtie2IndexDirectory}:/data " +
       s"${Constants.defaultBowtie2Image} " +
       "bowtie2 -x /data/e_coli_short " +
-      s"--interleaved --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} " +
+      s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} --interleaved " +
       "- "
 
     assert(commandBuilder.getCommand === correctCommand)
@@ -58,7 +58,7 @@ class CommandBuilderTest extends FunSuite {
       s"${Constants.defaultBowtie2Image} " +
       "bowtie2 -x " +
       "/data/e_coli_short " +
-      s"-f --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} " +
+      s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} -f " +
       "- "
 
     assert(commandBuilder.getCommand === correctCommand)

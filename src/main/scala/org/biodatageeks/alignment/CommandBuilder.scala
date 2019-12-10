@@ -56,8 +56,6 @@ class CommandBuilder(readsPath: String,
   private def bowtie2CommandBuilder(): String = {
     var command = "bowtie2 -x "
     command += s"/data/${indexSplitPath._2} "
-    if(getReadsExtension == ReadsExtension.FA) command += "-f "
-    if(interleaved) command += "--interleaved "
 
     if (readGroupId == null || readGroupId.isEmpty)
       command += s"--rg-id ${Constants.defaultBowtieRGId} "
@@ -68,6 +66,9 @@ class CommandBuilder(readsPath: String,
       command +=  s"--rg ${Constants.defaultBowtieRG} "
     else
       command +=  s"--rg ${readGroup} "
+
+    if(getReadsExtension == ReadsExtension.FA) command += "-f "
+    if(interleaved) command += "--interleaved "
 
     command += "- "
     command
