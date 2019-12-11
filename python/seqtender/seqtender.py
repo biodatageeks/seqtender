@@ -27,13 +27,19 @@ class  SeqTenderAlignment:
         reads.saveAsBAMFile(path,self.session._jsparkSession )
 
 
-class  SeqTenderAnnotation:
-    def __init__(self,session: SparkSession):
+class SeqTenderAnnotation:
+
+    def __init__(self, session: SparkSession):
+        """Creates a new SeqTenderAnnotation.
+        """
         self.session = session
 
     def pipe_variants(self, path, command):
-        return self.session._jvm.org.biodatageeks.SeqTenderVCF.pipeVCF(path, command, self.session)
+        return self.session._jvm.org.biodatageeks.SeqTenderVCF.pipeVCF(path, command, self.session._jsparkSession)
 
-    def save_variants(self):
-        pass
+    def save_variants(self, path, rdd):
+        variants = self.session._jvm.org.biodatageeks.CustomVariantContextFunctions.addCustomFunctions(rdd)
+        variants.saveDISQAsVCFFile(path,self.session._jsparkSession )
+
+
 
