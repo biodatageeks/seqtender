@@ -35,8 +35,8 @@ class SeqTenderAnnotation:
         """
         self.session = session
 
-    def pipe_variants(self, command):
-        return self.session._jvm.org.biodatageeks.SeqTenderVCF(self.session._jsparkSession, command)
+    def pipe_variants(self, path, command):
+        return self.session._jvm.org.biodatageeks.SeqTenderVCF(path, command, self.session._jsparkSession)
 
     def save_variants(self, path, rdd):
         pass
