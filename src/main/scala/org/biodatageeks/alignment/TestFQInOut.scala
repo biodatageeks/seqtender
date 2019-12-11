@@ -25,7 +25,9 @@ object TestFQInOut {
       readsPath = args(0),
       indexPath = args(1),
       tool = "bowtie2",
-      interleaved = true
+      interleaved = true,
+      readGroup="",
+      readGroupId = ""
     )
 
     val alignment = SeqTenderAlignment

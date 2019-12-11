@@ -66,7 +66,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -84,7 +86,9 @@ class CommandBuilderTest extends FunSuite {
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -101,7 +105,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -109,7 +115,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtie2Image} ")
     correctCommand.append("bowtie2 -x ")
     correctCommand.append("/data/e_coli_short ")
-    correctCommand.append(s"-f --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} -f ")
     correctCommand.append("- ")
 
     assert(commandBuilder.getCommand === correctCommand.toString)

@@ -8,8 +8,8 @@ class CommandBuilder(readsPath: String,
                      tool: String,
                      image: String = null,
                      interleaved: Boolean = false,
-                     readGroupId: String = Constants.defaultBowtieRGId,
-                     readGroup: String = Constants.defaultBowtieRG) {
+                     readGroupId : String ,
+                     readGroup: String ) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -87,12 +87,18 @@ class CommandBuilder(readsPath: String,
     val command = new StringBuilder(s"${Constants.bowtie2ToolName} -x ")
     command.append(s"/data/${indexSplitPath._2} ")
 
-    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
-
     // I changed this condition, because read group cannot exist without read group id
-    if (readGroupId != null && !readGroupId.isEmpty && readGroup != null && !readGroup.isEmpty)
-      command.append(s"--rg-id $readGroupId --rg $readGroup ")
+    if (readGroupId == null || readGroupId.isEmpty)
+      command.append(s"--rg-id ${Constants.defaultBowtieRGId} ")
+    else
+      command.append(s"--rg-id $readGroupId ")
 
+    if (readGroup == null || readGroup.isEmpty)
+      command.append(s"--rg ${Constants.defaultBowtieRG} ")
+    else
+      command.append(s"--rg ${readGroup} ")
+
+    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
     if (interleaved) command.append("--interleaved ")
 
     command.append("- ").toString()

@@ -109,7 +109,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
@@ -121,7 +123,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
@@ -133,7 +137,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -147,7 +153,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -162,7 +170,9 @@ class FQTest extends FunSuite
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -323,7 +333,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -338,12 +350,12 @@ class FQTest extends FunSuite
 
     //Prior adding disq dependency there was a problem with unmapped reads for hadoop-bam
     //RNEXT problem (7th column diff "=" <> "*") in case of unmapped reads - hadoop-bam
-//    r3/1    4       *       0       0       *       =       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
-//
-//    r3/1    4       *       0       0       *       *       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
+    //    r3/1    4       *       0       0       *       =       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
+    //
+    //    r3/1    4       *       0       0       *       *       0       0       CGATGCAGATGCGTACCACCTGGACCAGGCCTTTC     EDCCCBAAAA@@@@?>===<;;9:99987776554     RG:Z:dummy      YT:Z:UU
 
 
-    assertRDDEquals(sam, sparkSession.sparkContext.parallelize(readRecords) )
+    assertRDDEquals(sam, sparkSession.sparkContext.parallelize(readRecords))
   }
 
   test("should save RDD[SAMRecord] to BAM with disq") {
@@ -363,7 +375,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -376,13 +390,14 @@ class FQTest extends FunSuite
     //equal count
     assert(sam.count() === readRecords.length)
     //equal contents
-    assertRDDEquals(sam, sparkSession.sparkContext.parallelize(readRecords) )
+    assertRDDEquals(sam, sparkSession.sparkContext.parallelize(readRecords))
+
+    // should have RG
+    assert(!samReader.getFileHeader.getReadGroups.isEmpty)
 
     //assert indexes
     assert(sbiIndex.exists())
     assert(baiIndex.exists())
-
-
 
 
   }
