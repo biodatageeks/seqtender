@@ -7,28 +7,30 @@ import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
-import org.apache.spark.rdd.{HadoopRDD, RDD}
+import org.apache.spark.broadcast.Broadcast
+import org.apache.spark.rdd.{HadoopRDD, RDD, VariantContextWithHeaderBDG}
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.CustomRDDTextFunctions._
+import org.seqdoop.hadoop_bam.VariantContextWithHeader
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec, VCFHeaderReader, WrapSeekable}
 
 import scala.collection.mutable
 
+case class VariantContextWithHeaderRDD(headers:mutable.HashMap[String, VCFHeader],rdd: RDD[VariantContext]  )
+
 object SeqTenderVCF {
 
-  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContext] = {
+  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContextWithHeaderBDG] = {
     spark
       .sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
-
     val rdds = makeVCFRDDs(spark, inputPath)
     rdds.pipeVCF(command)
   }
 
   def makeVCFRDDs(spark: SparkSession, inputPath: String): RDD[Text] = {
     val bc = broadCastVCFHeaders(inputPath, spark)
-
     spark
       .sparkContext
       .hadoopFile(inputPath,
@@ -56,7 +58,7 @@ object SeqTenderVCF {
       }
   }
 
-  private def broadCastVCFHeaders(path: String, ss: SparkSession) = {
+   def broadCastVCFHeaders(path: String, ss: SparkSession) = {
     val fs = FileSystem.get(ss.sparkContext.hadoopConfiguration)
     val status = fs.globStatus(new Path(path))
     val headerMap = new mutable.HashMap[String, VCFHeader]()

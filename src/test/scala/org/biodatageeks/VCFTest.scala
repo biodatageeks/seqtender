@@ -1,15 +1,24 @@
 package org.biodatageeks
 
+import java.io.File
+
+import com.holdenkarau.spark.testing.RDDComparisons
+import org.apache.commons.io.FileUtils
 import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
+import org.biodatageeks.CustomVariantContextFunctions._
+import htsjdk.variant.vcf.VCFFileReader
 
 import scala.collection.mutable.ArrayBuffer
 
-class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
+class VCFTest extends FunSuite
+  with BeforeAndAfter
+  with PrivateMethodTester
+  with RDDComparisons{
 
-  val sparkSession: SparkSession = SparkSession
+  implicit val sparkSession: SparkSession = SparkSession
     .builder()
     .master("local[2]")
     .getOrCreate()
@@ -60,5 +69,27 @@ class VCFTest extends FunSuite with BeforeAndAfter with PrivateMethodTester {
     // if variant is biallelic, getAlleles method returns 2 -> list of alleles contains reference allele
     assert(!vc.collect.exists(v => v.getAlleles.size != 2), true)
     assert(vc.count() === 24)
+  }
+
+  test ("should save RDD[VariantContext] to vcf.gz file with disq") {
+
+    val testVCF = getClass.getClassLoader.getResource("coriell_chr1_spark.vcf").getPath
+    val outputPath = s"/tmp/test_disq.vcf.gz"
+    val outFile = new File(outputPath)
+    FileUtils.deleteQuietly(outFile)
+
+    val vc = SeqTenderVCF
+      .pipeVCF(
+        testVCF,
+        "docker run --rm -i biodatageeks/bdg-vt:latest vt decompose - ",
+        sparkSession)
+    vc.saveAsVCFFile(outputPath)
+
+    val vcfReader = new VCFFileReader(outFile, false)
+    import collection.JavaConverters._
+    val vcfRecords = vcfReader.iterator().asScala.toArray
+    assert(vc.map(_.getVariantContext).count === vcfRecords.length)
+    assertRDDEquals(vc.map(_.getVariantContext.toStringDecodeGenotypes), sparkSession.sparkContext.parallelize(vcfRecords.map(_.toStringDecodeGenotypes)) )
+
   }
 }

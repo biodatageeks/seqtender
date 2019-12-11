@@ -25,3 +25,15 @@ class  SeqTenderAlignment:
         reads = self.session._jvm.org.biodatageeks.CustomRDDSAMRecordFunctions.addCustomFunctions(rdd)
         self.session._jsparkSession.conf().set("org.biodatageeks.seqtender.bamIOLib","disq")
         reads.saveAsBAMFile(path,self.session._jsparkSession )
+
+
+class  SeqTenderAnnotation:
+    def __init__(self,session: SparkSession):
+        self.session = session
+
+    def pipe_variants(self, path, command):
+        return self.session._jvm.org.biodatageeks.SeqTenderVCF.pipeVCF(path, command, self.session)
+
+    def save_variants(self):
+        pass
+

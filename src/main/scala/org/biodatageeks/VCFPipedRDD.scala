@@ -8,6 +8,7 @@ import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.vcf.{VCFCodec, VCFHeader}
 import org.apache.spark.util.Utils
 import org.apache.spark.{Partition, SparkEnv, TaskContext}
+import org.seqdoop.hadoop_bam.VariantContextWithHeader
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
@@ -15,7 +16,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 
-
+class VariantContextWithHeaderBDG(val context: VariantContext, val header: VCFHeader) extends VariantContext(context) {
+  def getHeader: VCFHeader = header
+  def getVariantContext = context
+}
 
 
 
@@ -28,7 +32,7 @@ class VCFPipedRDD[T: ClassTag](
                                 separateWorkingDir: Boolean,
                                 bufferSize: Int,
                                 encoding: String)
-  extends RDD[VariantContext](prev) {
+  extends RDD[VariantContextWithHeaderBDG](prev) {
 
   override def getPartitions: Array[Partition] = firstParent[T].partitions
 
@@ -43,7 +47,7 @@ class VCFPipedRDD[T: ClassTag](
     }
   }
 
-  override def compute(split: Partition, context: TaskContext): Iterator[VariantContext] = {
+  override def compute(split: Partition, context: TaskContext): Iterator[VariantContextWithHeaderBDG] = {
     val processBuilder = new ProcessBuilder(command.asJava)
     // Add the environmental variables to the process.
     val currentEnvVars = processBuilder.environment()
@@ -148,12 +152,13 @@ class VCFPipedRDD[T: ClassTag](
 
     //  val lines = Source.fromInputStream(process.getInputStream)(encoding).getLines
 
-    new Iterator[VariantContext] {
-      def next(): VariantContext = {
+    new Iterator[VariantContextWithHeaderBDG] {
+      def next(): VariantContextWithHeaderBDG = {
         if (!hasNext()) {
           throw new NoSuchElementException()
         }
-        codec.decode(lri.next())
+        new VariantContextWithHeaderBDG(codec.decode(lri.next()), header)
+
       }
 
       def hasNext(): Boolean = {
