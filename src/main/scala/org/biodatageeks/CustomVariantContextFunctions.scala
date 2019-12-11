@@ -13,7 +13,7 @@ class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeaderBDG]) {
   val logger = Logger.getLogger(getClass.getName)
   def saveAsVCFFile(path:String)(implicit sparkSession: SparkSession) = saveDISQAsVCFFile(path)
 
-  private def saveDISQAsVCFFile(path:String)(implicit sparkSession: SparkSession) = {
+  def saveDISQAsVCFFile(path:String)(implicit sparkSession: SparkSession) = {
       //FIXME add support for multiple files
 
     val variants = rdd.map(_.getVariantContext)
