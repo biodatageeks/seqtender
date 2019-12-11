@@ -40,4 +40,4 @@ class SeqTenderAnnotation:
 
     def save_variants(self, path, rdd):
         variants = self.session._jvm.org.biodatageeks.CustomVariantContextFunctions.addCustomFunctions(rdd)
-        variants.saveDISQAsVCFFile(path,self.session._jsparkSession )
+        variants.saveDISQAsVCFFile(self, path,self.session._jsparkSession )
