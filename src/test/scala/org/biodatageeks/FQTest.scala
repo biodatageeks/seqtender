@@ -40,7 +40,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
@@ -52,7 +54,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
@@ -64,7 +68,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -78,7 +84,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -93,7 +101,9 @@ class FQTest extends FunSuite
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -188,7 +198,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
@@ -200,7 +212,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
@@ -212,7 +226,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -226,7 +242,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -241,7 +259,9 @@ class FQTest extends FunSuite
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -257,7 +277,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
@@ -269,7 +291,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
@@ -281,7 +305,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -295,7 +321,9 @@ class FQTest extends FunSuite
     val readsDescription = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)
@@ -310,7 +338,9 @@ class FQTest extends FunSuite
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(readsDescription)

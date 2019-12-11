@@ -10,7 +10,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -29,7 +31,9 @@ class CommandBuilderTest extends FunSuite {
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -46,7 +50,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -54,8 +60,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S ")
     correctCommand.append("/data/e_coli_short ")
-    correctCommand.append("-f ")
-    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} -f ")
     correctCommand.append("- ")
 
     assert(commandBuilder.getCommand === correctCommand.toString)
@@ -126,7 +131,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -145,7 +152,9 @@ class CommandBuilderTest extends FunSuite {
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -163,7 +172,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -182,7 +193,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.fqReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -201,7 +214,9 @@ class CommandBuilderTest extends FunSuite {
       readsPath = InputPaths.ifqReadsPath,
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      interleaved = true
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -219,7 +234,9 @@ class CommandBuilderTest extends FunSuite {
     val commandBuilder = new CommandBuilder(
       readsPath = InputPaths.faReadsPath,
       indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
