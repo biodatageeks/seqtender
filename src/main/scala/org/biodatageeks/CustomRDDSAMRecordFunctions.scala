@@ -28,13 +28,13 @@ class CustomRDDSAMRecordFunctions(rdd : RDD[SAMRecord]) {
           .get(InternalParams.BAM_IO_LIB)
 
         bamReadMethod match {
-              case "hadoop-bam" => saveHaadopBAMAsBAMFile(path)
+              case "hadoop-bam" => saveHadoopBAMAsBAMFile(path)
               case "disq" =>  saveDISQASBAMFile(path)
               case _ => throw new Exception (s"Uknown BAM write method: ${bamReadMethod}.")
         }
      }
 
-  private def saveHaadopBAMAsBAMFile(path:String)(implicit sparkSession: SparkSession) = {
+  private def saveHadoopBAMAsBAMFile(path:String)(implicit sparkSession: SparkSession) = {
 
     logger.info("Using Hadoop-bam write method for saving SAMRecords")
 
