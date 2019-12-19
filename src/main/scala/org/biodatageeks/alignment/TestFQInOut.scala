@@ -9,24 +9,17 @@ import org.apache.spark.sql.SparkSession
 import scala.reflect.ClassTag
 
 /*
-1st arg - (input) fq file - with reads
+1st arg - (input) fq/fa file - with reads
 data/e_coli_1000.fq
 2nd arg - (input) fa file - with reference genome
-
-3rd arg - (output) txt file
+3rd arg - (output) sam file
 */
 object TestFQInOut {
   def main(args: Array[String]): Unit = {
-    implicit val sparkSession = SparkSession
+    implicit val sparkSession: SparkSession = SparkSession
       .builder()
       .master("local[2]")
       .getOrCreate()
-
-    // /home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/data/bowtie2_index/e_coli
-    /*val command = "docker run --rm -i " +
-      "-v /home/patrycja/Pulpit/Praca_inzynierska/00_Seqtender/data/:/data " +
-      "quay.io/biocontainers/bowtie2:2.3.4.3--py27h2d50403_0 " +
-      "bowtie2 -x /data/bowtie2_index/e_coli - " */
 
     val commandBuilder = new CommandBuilder(
       readsPath = args(0),
@@ -45,10 +38,10 @@ object TestFQInOut {
     //alignment.map(_.toString).collect().foreach(line => println(line))
     //    sparkSession.time(println(alignment.count()))
 
-    saveRddToFile(sparkSession, alignment, args(2))
+    saveRddToFile(alignment, args(2))
   }
 
-  def saveRddToFile[T: ClassTag](sparkSession: SparkSession, rdd: RDD[SAMRecord], pathWrite: String): Unit = {
+  def saveRddToFile[T: ClassTag](rdd: RDD[SAMRecord], pathWrite: String): Unit = {
     val samTextWriter = new SAMTextWriter(new File(pathWrite))
     val collectedRdd = rdd.collect()
 

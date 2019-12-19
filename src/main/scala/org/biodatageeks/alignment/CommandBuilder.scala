@@ -8,8 +8,8 @@ class CommandBuilder(readsPath: String,
                      tool: String,
                      image: String = null,
                      interleaved: Boolean = false,
-                     readGroupId : String ,
-                     readGroup: String ) {
+                     readGroupId: String,
+                     readGroup: String) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
   private val readsExtension: ReadsExtension = getExtension(readsPath)
@@ -28,58 +28,109 @@ class CommandBuilder(readsPath: String,
   }
 
   private def buildCommand: String = {
-    var command = "docker run --rm -i "
+    val command = new StringBuilder("docker run --rm -i ")
+    command.append(s"-v ${indexSplitPath._1}:/data ")
+
     val imageToCommand = if (image != null) image else getImage
+    command.append(s"${imageToCommand} ${toolBuilder()}")
 
-    command += s"-v ${indexSplitPath._1}:/data "
-    command += s"${imageToCommand} ${toolBuilder()}"
-
-    command
+    command.toString()
   }
 
   private def getImage: String = {
-    if (tool.toLowerCase() == Constants.bowtie2ToolName)
-      return Constants.defaultBowtie2Image
+    val toolInLowerCase = tool.toLowerCase()
 
-    // todo: add another tools
+    if (toolInLowerCase == Constants.bowtieToolName)
+      return Constants.defaultBowtieImage
+    else if (toolInLowerCase == Constants.bowtie2ToolName)
+      return Constants.defaultBowtie2Image
+    else if (toolInLowerCase == Constants.minimap2ToolName)
+      return Constants.defaultMinimap2Image
+    else if (toolInLowerCase == Constants.bwaToolName)
+      return Constants.defaultBWAImage
+
+    // todo: throw exception when tool name is unknown
     Constants.defaultBowtie2Image
   }
 
   private def toolBuilder(): String = {
-    if (tool.toLowerCase() == Constants.bowtie2ToolName)
-      return bowtie2CommandBuilder()
+    val toolInLowerCase = tool.toLowerCase()
 
-    // todo: add another tools
+    if (toolInLowerCase == Constants.bowtieToolName)
+      return bowtieCommandBuilder()
+    else if (toolInLowerCase == Constants.bowtie2ToolName)
+      return bowtie2CommandBuilder()
+    else if (toolInLowerCase == Constants.minimap2ToolName)
+      return minimap2CommandBuilder()
+    else if (toolInLowerCase == Constants.bwaToolName)
+      return bwaCommandBuilder()
+
+    // todo: throw exception when tool name is unknown
     bowtie2CommandBuilder()
   }
 
+  private def bowtieCommandBuilder(): String = {
+    val command = new StringBuilder(s"${Constants.bowtieToolName} -S ")
+    command.append(s"/data/${indexSplitPath._2} ")
+
+    command.append(s"--sam-RG ID:$getReadGroupId --sam-RG $getReadGroup ")
+
+    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
+    if (interleaved) command.append("--interleaved ")
+
+    command.append("- ").toString()
+  }
+
   private def bowtie2CommandBuilder(): String = {
-    var command = "bowtie2 -x "
-    command += s"/data/${indexSplitPath._2} "
+    val command = new StringBuilder(s"${Constants.bowtie2ToolName} -x ")
+    command.append(s"/data/${indexSplitPath._2} ")
 
-    if (readGroupId == null || readGroupId.isEmpty)
-      command += s"--rg-id ${Constants.defaultBowtieRGId} "
-    else
-      command += s"--rg-id $readGroupId "
+    command.append(s"--rg-id $getReadGroupId --rg $getReadGroup ")
 
-    if (readGroup == null || readGroup.isEmpty)
-      command +=  s"--rg ${Constants.defaultBowtieRG} "
-    else
-      command +=  s"--rg ${readGroup} "
+    if (getReadsExtension == ReadsExtension.FA) command.append("-f ")
+    if (interleaved) command.append("--interleaved ")
 
-    if(getReadsExtension == ReadsExtension.FA) command += "-f "
-    if(interleaved) command += "--interleaved "
+    command.append("- ").toString()
+  }
 
-    command += "- "
-    command
+  private def minimap2CommandBuilder(): String = {
+    val command = new StringBuilder(s"${Constants.minimap2ToolName} -a -x map-ont ")
+
+    command.append(s"""-R "@RG\\tID:${getReadGroupId}\\t${getReadGroup}" """)
+
+    command.append(s"/data/${indexSplitPath._2} ")
+    command.append("- ").toString()
+  }
+
+  private def bwaCommandBuilder(): String = {
+    val command = new StringBuilder(s"${Constants.bwaToolName} mem ")
+
+    command.append(s"""-R "@RG\\tID:$getReadGroupId\\t$getReadGroup" """)
+
+    if (interleaved) command.append("-p ")
+
+    command.append(s"/data/${indexSplitPath._2} ")
+    command.append("- ").toString()
+  }
+
+  private def getReadGroupId: String = {
+    if (readGroupId != null && !readGroupId.isEmpty)
+      readGroupId
+    else Constants.defaultBowtieRGId
+  }
+
+  private def getReadGroup: String = {
+    if (readGroup != null && !readGroup.isEmpty)
+      readGroup
+    else Constants.defaultBowtieRG
   }
 
   private def getExtension(filePath: String): ReadsExtension = {
-    val extension = filePath.split("\\.").last
+    val extension = filePath.split("\\.").last.toLowerCase
 
-    if (Constants.faExtensions.contains(extension.toLowerCase))
+    if (Constants.faExtensions.contains(extension))
       ReadsExtension.FA
-    else if (Constants.fqExtensions.contains(extension.toLowerCase))
+    else if (Constants.fqExtensions.contains(extension))
       ReadsExtension.FQ
     else ReadsExtension.OTHER
   }

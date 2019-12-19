@@ -13,7 +13,7 @@ import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 object SeqTenderAlignment {
 
-  val logger = Logger.getLogger(getClass.getName)
+  val logger: Logger = Logger.getLogger(getClass.getName)
 
   def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
 
@@ -35,7 +35,7 @@ object SeqTenderAlignment {
     rdds.pipeRead(readsDescription.getCommand)
   }
 
-  def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession ): RDD[Text] = {
+  def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[FastqInputFormat],
