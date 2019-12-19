@@ -7,7 +7,7 @@ import org.apache.log4j.Logger
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.CustomRDDTextFunctions._
-import org.biodatageeks.conf.InternalParams
+import org.biodatageeks.shared.IllegalFileExtensionException
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
@@ -20,7 +20,7 @@ object SeqTenderAlignment {
     logger.info(
       s"""
          |#########################
-         |Runnig alignment process with command:
+         |Running alignment process with command:
          |${readsDescription.getCommand}
          |with path:
          |${readsDescription.getReadsPath}
@@ -28,9 +28,9 @@ object SeqTenderAlignment {
          |""".stripMargin)
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(readsDescription.getReadsPath)
-    } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
+    } else if (readsDescription.getReadsExtension.equals(ReadsExtension.FA)) {
       makeReadRddsFromFA(readsDescription.getReadsPath)
-    } // todo: throw exception when extension isn't fa or fq
+    } else throw IllegalFileExtensionException("Reads file isn't a fasta or fastq file")
 
     rdds.pipeRead(readsDescription.getCommand)
   }

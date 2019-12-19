@@ -250,4 +250,18 @@ class CommandBuilderTest extends FunSuite {
     assert(commandBuilder.getCommand === correctCommand.toString())
   }
 
+  test("should throw IllegalArgumentException when try build command with unknown tool name") {
+
+    val thrown = intercept[IllegalArgumentException] {
+      new CommandBuilder(
+        readsPath = InputPaths.fqReadsPath,
+        indexPath = InputPaths.bowtieIndex,
+        tool = "unknownToolName",
+        readGroup = Constants.defaultBowtieRG,
+        readGroupId = Constants.defaultBowtieRGId
+      )
+    }
+
+    assert(thrown.getMessage === "Unknown tool name")
+  }
 }

@@ -6,17 +6,16 @@ import com.holdenkarau.spark.testing.RDDComparisons
 import htsjdk.samtools.{SAMRecord, SamReaderFactory}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.alignment.{CommandBuilder, Constants, SeqTenderAlignment}
-import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
-import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 import org.biodatageeks.CustomRDDSAMRecordFunctions._
+import org.biodatageeks.alignment.{CommandBuilder, Constants, SeqTenderAlignment}
 import org.biodatageeks.conf.InternalParams
+import org.biodatageeks.shared.IllegalFileExtensionException
+import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
 
-// todo: read about PrivateMethodTester
 class FQTest extends FunSuite
   with BeforeAndAfter
-  with PrivateMethodTester
   with RDDComparisons {
 
   implicit val sparkSession: SparkSession = SparkSession
@@ -113,6 +112,23 @@ class FQTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
   }
 
+  // todo: simplify all of this kind of test -> after change pipeReads args
+  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bowtie)") {
+    val readsDescription = new CommandBuilder(
+      readsPath = InputPaths.invalidReadsPath,
+      indexPath = InputPaths.bowtieIndex,
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val thrown = intercept[IllegalFileExtensionException] {
+      SeqTenderAlignment.pipeReads(readsDescription)
+    }
+
+    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
+  }
+
   // bowtie2's tests
   test("should make fastq rdds on 2 partitions by bowtie2") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
@@ -190,6 +206,22 @@ class FQTest extends FunSuite
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bowtie2)") {
+    val readsDescription = new CommandBuilder(
+      readsPath = InputPaths.invalidReadsPath,
+      indexPath = InputPaths.bowtie2Index,
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val thrown = intercept[IllegalFileExtensionException] {
+      SeqTenderAlignment.pipeReads(readsDescription)
+    }
+
+    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
   }
 
   // minimap2's tests
@@ -271,6 +303,22 @@ class FQTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
   }
 
+  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by minimap2)") {
+    val readsDescription = new CommandBuilder(
+      readsPath = InputPaths.invalidReadsPath,
+      indexPath = InputPaths.referenceGenomePath,
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val thrown = intercept[IllegalFileExtensionException] {
+      SeqTenderAlignment.pipeReads(readsDescription)
+    }
+
+    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
+  }
+
   // bwa's tests
   test("should make fastq rdds on 2 partitions by bwa") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
@@ -348,6 +396,22 @@ class FQTest extends FunSuite
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bwa)") {
+    val readsDescription = new CommandBuilder(
+      readsPath = InputPaths.invalidReadsPath,
+      indexPath = InputPaths.bwaIndex,
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val thrown = intercept[IllegalFileExtensionException] {
+      SeqTenderAlignment.pipeReads(readsDescription)
+    }
+
+    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
   }
 
   test("should save RDD[SAMRecord] to BAM with Hadoop-BAM") {

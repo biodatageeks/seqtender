@@ -41,32 +41,28 @@ class CommandBuilder(readsPath: String,
     val toolInLowerCase = tool.toLowerCase()
 
     if (toolInLowerCase == Constants.bowtieToolName)
-      return Constants.defaultBowtieImage
+      Constants.defaultBowtieImage
     else if (toolInLowerCase == Constants.bowtie2ToolName)
-      return Constants.defaultBowtie2Image
+      Constants.defaultBowtie2Image
     else if (toolInLowerCase == Constants.minimap2ToolName)
-      return Constants.defaultMinimap2Image
+      Constants.defaultMinimap2Image
     else if (toolInLowerCase == Constants.bwaToolName)
-      return Constants.defaultBWAImage
-
-    // todo: throw exception when tool name is unknown
-    Constants.defaultBowtie2Image
+      Constants.defaultBWAImage
+    else throw new IllegalArgumentException("Unknown tool name")
   }
 
   private def toolBuilder(): String = {
     val toolInLowerCase = tool.toLowerCase()
 
     if (toolInLowerCase == Constants.bowtieToolName)
-      return bowtieCommandBuilder()
+      bowtieCommandBuilder()
     else if (toolInLowerCase == Constants.bowtie2ToolName)
-      return bowtie2CommandBuilder()
+      bowtie2CommandBuilder()
     else if (toolInLowerCase == Constants.minimap2ToolName)
-      return minimap2CommandBuilder()
+      minimap2CommandBuilder()
     else if (toolInLowerCase == Constants.bwaToolName)
-      return bwaCommandBuilder()
-
-    // todo: throw exception when tool name is unknown
-    bowtie2CommandBuilder()
+      bwaCommandBuilder()
+    else throw new IllegalArgumentException("Unknown tool name")
   }
 
   private def bowtieCommandBuilder(): String = {
