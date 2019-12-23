@@ -6,7 +6,7 @@ import org.apache.hadoop.mapred.TextInputFormat
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomRDDTextFunctions._
+import org.biodatageeks.shared.CustomRDDTextFunctions._
 import org.biodatageeks.shared.IllegalFileExtensionException
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
@@ -26,6 +26,7 @@ object SeqTenderAlignment {
          |${readsDescription.getReadsPath}
          |########################
          |""".stripMargin)
+
     val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(readsDescription.getReadsPath)
     } else if (readsDescription.getReadsExtension.equals(ReadsExtension.FA)) {

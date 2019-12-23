@@ -1,4 +1,4 @@
-package org.biodatageeks
+package org.biodatageeks.annotation
 
 import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder
@@ -7,11 +7,9 @@ import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
-import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.rdd.{HadoopRDD, RDD, VariantContextWithHeaderBDG}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomRDDTextFunctions._
-import org.seqdoop.hadoop_bam.VariantContextWithHeader
+import org.biodatageeks.shared.CustomRDDTextFunctions._
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec, VCFHeaderReader, WrapSeekable}
 
 import scala.collection.mutable

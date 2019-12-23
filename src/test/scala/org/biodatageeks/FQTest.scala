@@ -6,7 +6,7 @@ import com.holdenkarau.spark.testing.RDDComparisons
 import htsjdk.samtools.{SAMRecord, SamReaderFactory}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomRDDSAMRecordFunctions._
+import org.biodatageeks.alignment.CustomRDDSAMRecordFunctions._
 import org.biodatageeks.alignment.{CommandBuilder, Constants, SeqTenderAlignment}
 import org.biodatageeks.conf.InternalParams
 import org.biodatageeks.shared.IllegalFileExtensionException

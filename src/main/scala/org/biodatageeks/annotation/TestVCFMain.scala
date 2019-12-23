@@ -1,8 +1,8 @@
-package org.biodatageeks
+package org.biodatageeks.annotation
 
 import org.apache.spark.sql.SparkSession
 
-object TestVCFInOut {
+object TestVCFMain {
 
   def main(args: Array[String]): Unit = {
     val ss = SparkSession

@@ -1,11 +1,9 @@
-package org.biodatageeks
-import htsjdk.variant.variantcontext.VariantContext
-import org.apache.hadoop.io.Text
+package org.biodatageeks.annotation
+
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{RDD, VariantContextWithHeaderBDG}
 import org.apache.spark.sql.SparkSession
 import org.disq_bio.disq.{HtsjdkVariantsRdd, HtsjdkVariantsRddStorage, VariantsFormatWriteOption}
-import org.seqdoop.hadoop_bam.VariantContextWithHeader
 
 
 class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeaderBDG]) {

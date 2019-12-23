@@ -12,7 +12,7 @@ class CommandBuilder(readsPath: String,
                      readGroup: String) {
 
   private val indexSplitPath: (String, String) = indexPath.splitAt(indexPath.lastIndexOf("/") + 1)
-  private val readsExtension: ReadsExtension = getExtension(readsPath)
+  private val readsExtension: ReadsExtension = AlignmentTools.getReadsExtension(readsPath)
   private val command: String = buildCommand
 
   def getReadsPath: String = {
@@ -119,15 +119,5 @@ class CommandBuilder(readsPath: String,
     if (readGroup != null && !readGroup.isEmpty)
       readGroup
     else Constants.defaultBowtieRG
-  }
-
-  private def getExtension(filePath: String): ReadsExtension = {
-    val extension = filePath.split("\\.").last.toLowerCase
-
-    if (Constants.faExtensions.contains(extension))
-      ReadsExtension.FA
-    else if (Constants.fqExtensions.contains(extension))
-      ReadsExtension.FQ
-    else ReadsExtension.OTHER
   }
 }

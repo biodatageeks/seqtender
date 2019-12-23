@@ -1,25 +1,21 @@
-package org.biodatageeks
+package org.biodatageeks.alignment
 
 import htsjdk.samtools.SAMFileHeader.SortOrder
 import htsjdk.samtools.SAMRecord
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
-import org.apache.hadoop.io.{NullWritable, Text}
-import org.apache.hadoop.mapred.JobConf
+import org.apache.hadoop.io.NullWritable
 import org.apache.log4j.Logger
-import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.biodatageeks.conf.InternalParams
 import org.biodatageeks.formats.BDGBAMOutputFormat
-import org.disq_bio.disq.{BaiWriteOption, HtsjdkReadsRdd, HtsjdkReadsRddStorage, ReadsFormatWriteOption, SbiWriteOption}
-import org.seqdoop.hadoop_bam.{BAMInputFormat, BAMOutputFormat, SAMRecordWritable}
+import org.disq_bio.disq._
+import org.seqdoop.hadoop_bam.SAMRecordWritable
 
 class CustomRDDSAMRecordFunctions(rdd : RDD[SAMRecord]) {
 
   val logger = Logger.getLogger(getClass.getName)
-
-  import org.biodatageeks.CustomRDDSAMRecordFunctions._
   def saveAsBAMFile(path:String)(implicit sparkSession: SparkSession) = {
 
      val bamReadMethod =

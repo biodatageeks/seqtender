@@ -13,6 +13,7 @@ project/project/target/*
 
 bdg-seqtender.iml
 data/*
+tasks
 tasks/*
 
 __pycache__/*
