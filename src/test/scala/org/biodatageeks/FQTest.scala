@@ -98,6 +98,24 @@ class FQTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
   }
 
+  test("should return number of aligned and unaligned fastq reads by bowtie - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultBowtieImage} ")
+    freestyleCommand.append("bowtie -t ")// -t - print time required for the process
+    freestyleCommand.append("--threads 2 ") // --threads - number of threads
+    freestyleCommand.append("-S ")
+    freestyleCommand.append("/data/e_coli_short ")
+    freestyleCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append("- ")
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+  }
+
   // bowtie2's tests
   test("should return number of aligned and unaligned fastq reads by bowtie2") {
     val command = CommandBuilder.buildCommand(
@@ -146,6 +164,23 @@ class FQTest extends FunSuite
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should return number of aligned and unaligned fastq reads by bowtie2 - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultBowtie2Image} ")
+    freestyleCommand.append("bowtie2 -t ") // -t - print time required for the process
+    freestyleCommand.append("--threads 2 ") // --threads - number of threads
+    freestyleCommand.append("-x ") // --threads - number of threads
+    freestyleCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append("- ")
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
   // minimap2's tests
@@ -198,6 +233,23 @@ class FQTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
   }
 
+  test("should return number of aligned and unaligned fastq reads by minimap2 - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultMinimap2Image} ")
+    freestyleCommand.append("minimap2 -a -x map-ont --seed 42 ") // --seed - for randomizing equally best hits
+    freestyleCommand.append("-t 2 ") // -t - number of threads
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append("/data/e_coli_short.fa ")
+    freestyleCommand.append("- ")
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+  }
+
   // bwa's tests
   test("should return number of aligned and unaligned fastq reads by bwa") {
     val command = CommandBuilder.buildCommand(
@@ -246,6 +298,22 @@ class FQTest extends FunSuite
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should return number of aligned and unaligned fastq reads by bwa - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultBWAImage} ")
+    freestyleCommand.append("bwa mem -t 2 ") // -t - number of threads
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append("/data/e_coli_short.fa ")
+    freestyleCommand.append("- ")
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
   // exception
