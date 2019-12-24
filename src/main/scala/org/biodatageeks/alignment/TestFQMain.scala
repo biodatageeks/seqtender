@@ -15,8 +15,8 @@ object TestFQMain {
       .master("local[2]")
       .getOrCreate()
 
-    val commandBuilder = new CommandBuilder(
-      readsPath = args(0),
+    val command = CommandBuilder.buildCommand(
+      AlignmentTools.getReadsExtension(args(0)),
       indexPath = args(1),
       tool = "bowtie2",
       interleaved = true,
@@ -25,9 +25,7 @@ object TestFQMain {
     )
 
     val alignment = SeqTenderAlignment
-      .pipeReads(
-        commandBuilder
-      )
+      .pipeReads(args(0), command)
 
     //alignment.map(_.toString).collect().foreach(line => println(line))
     //    sparkSession.time(println(alignment.count()))

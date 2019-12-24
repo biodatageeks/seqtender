@@ -7,7 +7,7 @@ import htsjdk.samtools.{SAMRecord, SamReaderFactory}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.CustomRDDSAMRecordFunctions._
-import org.biodatageeks.alignment.{CommandBuilder, Constants, SeqTenderAlignment}
+import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants, SeqTenderAlignment}
 import org.biodatageeks.conf.InternalParams
 import org.biodatageeks.shared.IllegalFileExtensionException
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -33,46 +33,32 @@ class FQTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.clear()
   }
 
-  // bowtie's tests
-  test("should make fastq rdds on 2 partitions by bowtie") {
+  // split files tests
+  test("should make fastq rdds on 3 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
-      indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
+    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(InputPaths.fqReadsPath)
 
     assert(rdds.getNumPartitions === 3)
   }
 
-  test("should make fasta rdds on 2 partitions by bowtie") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
-      indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
+  test("should make fasta rdds on 2 partitions") {
+    val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
 
     assert(rdds.getNumPartitions === 2)
   }
 
+  //bowtie's tests
   test("should return number of aligned and unaligned fastq reads by bowtie") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
@@ -80,15 +66,15 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
@@ -96,8 +82,8 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
@@ -105,70 +91,24 @@ class FQTest extends FunSuite
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
   }
 
-  // todo: simplify all of this kind of test -> after change pipeReads args
-  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bowtie)") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.invalidReadsPath,
-      indexPath = InputPaths.bowtieIndex,
-      tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val thrown = intercept[IllegalFileExtensionException] {
-      SeqTenderAlignment.pipeReads(readsDescription)
-    }
-
-    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
-  }
-
   // bowtie2's tests
-  test("should make fastq rdds on 2 partitions by bowtie2") {
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
-      indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 3)
-  }
-
-  test("should make fasta rdds on 2 partitions by bowtie2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
-      indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 2)
-  }
-
   test("should return number of aligned and unaligned fastq reads by bowtie2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
@@ -176,15 +116,15 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
@@ -192,8 +132,8 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
@@ -201,69 +141,24 @@ class FQTest extends FunSuite
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
-  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bowtie2)") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.invalidReadsPath,
-      indexPath = InputPaths.bowtie2Index,
-      tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val thrown = intercept[IllegalFileExtensionException] {
-      SeqTenderAlignment.pipeReads(readsDescription)
-    }
-
-    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
-  }
-
   // minimap2's tests
-  test("should make fastq rdds on 2 partitions by minimap2") {
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
-      indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 3)
-  }
-
-  test("should make fasta rdds on 2 partitions by minimap2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
-      indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 2)
-  }
-
   test("should return number of aligned and unaligned fastq reads by minimap2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
@@ -271,15 +166,15 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned fasta reads by minimap2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
@@ -287,8 +182,8 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by minimap2") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
@@ -296,69 +191,24 @@ class FQTest extends FunSuite
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 2)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
   }
 
-  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by minimap2)") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.invalidReadsPath,
-      indexPath = InputPaths.referenceGenomePath,
-      tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val thrown = intercept[IllegalFileExtensionException] {
-      SeqTenderAlignment.pipeReads(readsDescription)
-    }
-
-    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
-  }
-
   // bwa's tests
-  test("should make fastq rdds on 2 partitions by bwa") {
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
-      indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 3)
-  }
-
-  test("should make fasta rdds on 2 partitions by bwa") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
-      indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(readsDescription.getReadsPath)
-
-    assert(rdds.getNumPartitions === 2)
-  }
-
   test("should return number of aligned and unaligned fastq reads by bwa") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
@@ -366,15 +216,15 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned fasta reads by bwa") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
@@ -382,8 +232,8 @@ class FQTest extends FunSuite
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bwa") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
@@ -391,29 +241,25 @@ class FQTest extends FunSuite
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
     assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
-  test("should thrown IllegalFileExtensionException when try align reads with invalid extension (by bwa)") {
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.invalidReadsPath,
-      indexPath = InputPaths.bwaIndex,
-      tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
-    )
+  // exception
+  test("should thrown IllegalFileExtensionException when try align reads with invalid extension") {
+    val command = "command"
 
     val thrown = intercept[IllegalFileExtensionException] {
-      SeqTenderAlignment.pipeReads(readsDescription)
+      SeqTenderAlignment.pipeReads(InputPaths.invalidReadsPath, command)
     }
 
     assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
   }
 
+  // save RDD tests
   test("should save RDD[SAMRecord] to BAM with Hadoop-BAM") {
 
     val method = "hadoop-bam"
@@ -424,15 +270,15 @@ class FQTest extends FunSuite
     val outputPath = s"/tmp/test_${method}.bam"
     FileUtils.deleteQuietly(new File(outputPath))
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     sam.saveAsBAMFile(outputPath)
 
     val samReader = SamReaderFactory.makeDefault().open(new File(outputPath))
@@ -466,15 +312,15 @@ class FQTest extends FunSuite
     FileUtils.deleteQuietly(baiIndex)
     FileUtils.deleteQuietly(sbiIndex)
 
-    val readsDescription = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
       readGroupId = Constants.defaultBowtieRGId
     )
 
-    val sam = SeqTenderAlignment.pipeReads(readsDescription)
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     sam.saveAsBAMFile(outputPath)
 
     val samReader = SamReaderFactory.makeDefault().open(new File(outputPath))

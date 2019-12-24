@@ -15,25 +15,26 @@ object SeqTenderAlignment {
 
   val logger: Logger = Logger.getLogger(getClass.getName)
 
-  def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
+  def pipeReads(readsPath: String, command: String)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
 
     logger.info(
       s"""
          |#########################
          |Running alignment process with command:
-         |${readsDescription.getCommand}
+         |$command
          |with path:
-         |${readsDescription.getReadsPath}
+         |$readsPath
          |########################
          |""".stripMargin)
 
-    val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
-      makeReadRddsFromFQ(readsDescription.getReadsPath)
-    } else if (readsDescription.getReadsExtension.equals(ReadsExtension.FA)) {
-      makeReadRddsFromFA(readsDescription.getReadsPath)
+    val readsExtension = AlignmentTools.getReadsExtension(readsPath)
+    val rdds = if(readsExtension.equals(ReadsExtension.FQ)) {
+      makeReadRddsFromFQ(readsPath)
+    } else if (readsExtension.equals(ReadsExtension.FA)) {
+      makeReadRddsFromFA(readsPath)
     } else throw IllegalFileExtensionException("Reads file isn't a fasta or fastq file")
 
-    rdds.pipeRead(readsDescription.getCommand)
+    rdds.pipeRead(command)
   }
 
   def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
