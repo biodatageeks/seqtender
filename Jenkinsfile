@@ -92,6 +92,14 @@ node {
            echo 'Gathering code stats....'
            sh "${tool name: 'sbt-0.13.15', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'}/bin/sbt stats"
         }
+
+        stage('Performance testing') {
+                sh "ssh bdg-perf@cdh00 rm -rf /tmp/pipeline-benchmark*ipynb"
+                sh "scp performance/bdg_perf/pipeline-benchmark.ipynb bdg-perf@cdh00:/tmp"
+                sh 'ssh bdg-perf@cdh00 ". ~/.profile; seq 10 10 60 | xargs  -i papermill /tmp/pipeline-benchmark.ipynb /tmp/pipeline-benchmark_{}.ipynb -p executor_num {} -k seq-edu"'
+                sh './build_perf_report.sh'
+                         }
+
     } catch (e) {
         currentBuild.result = "FAIL"
     }
