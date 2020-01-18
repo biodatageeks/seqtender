@@ -14,7 +14,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
 
-class FQTest extends FunSuite
+class AlignmentTest extends FunSuite
   with BeforeAndAfter
   with RDDComparisons {
 
@@ -43,6 +43,7 @@ class FQTest extends FunSuite
   }
 
   test("should make fasta rdds on 2 partitions") {
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
 
     assert(rdds.getNumPartitions === 2)
@@ -61,8 +62,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie") {
@@ -77,8 +78,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie") {
@@ -94,8 +95,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 14)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 12)
   }
 
   test("should return number of aligned and unaligned fastq reads by bowtie - freestyle command") {
@@ -112,8 +113,43 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  // bowtie - quality tests
+  test("should returns correct fastq alignments' details by bowtie") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.bowtieIndex,
+      tool = Constants.bowtieToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r481 = collectedSam("r481")
+    assert(r481.getAlignmentStart === 13938)
+    assert(r481.getCigarString === "35M")
+    assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getContig === "e_coli:15000-66000")
+
+    val r779 = collectedSam("r779")
+    assert(r779.getAlignmentStart === 31224)
+    assert(r779.getCigarString === "35M")
+    assert(r779.getReadString === "CGAAAAGCTGGGGATGGCAAAACGCGTTAAACCGA")
+    assert(r779.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r779.getContig === "e_coli:15000-66000")
+
+    val r1000 = collectedSam("r1000")
+    assert(r1000.getAlignmentStart === 484)
+    assert(r1000.getCigarString === "75M")
+    assert(r1000.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
+    assert(r1000.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000.getContig === "e_coli:15000-66000")
   }
 
   // bowtie2's tests
@@ -129,7 +165,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
@@ -145,7 +181,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
@@ -162,7 +198,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
@@ -179,8 +215,43 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  // bowtie2 - quality tests
+  test("should returns correct fastq alignments' details by bowtie2") { // todo: ask: should I check all of reads?
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.bowtie2Index,
+      tool = Constants.bowtie2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r481 = collectedSam("r481")
+    assert(r481.getAlignmentStart === 13938)
+    assert(r481.getCigarString === "35M")
+    assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getContig === "e_coli:15000-66000")
+
+    val r1001 = collectedSam("r1001")
+    assert(r1001.getAlignmentStart === 306)
+    assert(r1001.getCigarString === "42M1I33M")
+    assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getContig === "e_coli:15000-66000")
+
+    val r1002 = collectedSam("r1002")
+    assert(r1002.getAlignmentStart === 3182)
+    assert(r1002.getCigarString === "26M1D34M1D13M")
+    assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
+    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getContig === "e_coli:15000-66000")
   }
 
   // minimap2's tests
@@ -196,8 +267,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
   }
 
   test("should return number of aligned and unaligned fasta reads by minimap2") {
@@ -212,8 +283,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by minimap2") {
@@ -229,8 +300,8 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 2)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 6)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 20)
   }
 
   test("should return number of aligned and unaligned fastq reads by minimap2 - freestyle command") {
@@ -246,8 +317,43 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
+  }
+
+  // minimap2 - quality tests
+  test("should returns correct fastq alignments' details by minimap2") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.referenceGenomePath,
+      tool = Constants.minimap2ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r1000 = collectedSam("r1000")
+    assert(r1000.getAlignmentStart === 484)
+    assert(r1000.getCigarString === "75M")
+    assert(r1000.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
+    assert(r1000.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000.getContig === "e_coli:15000-66000")
+
+    val r1001 = collectedSam("r1001")
+    assert(r1001.getAlignmentStart === 306)
+    assert(r1001.getCigarString === "42M1I33M")
+    assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getContig === "e_coli:15000-66000")
+
+    val r1002 = collectedSam("r1002")
+    assert(r1002.getAlignmentStart === 3182)
+    assert(r1002.getCigarString === "26M1D34M1D13M")
+    assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
+    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getContig === "e_coli:15000-66000")
   }
 
   // bwa's tests
@@ -263,7 +369,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
@@ -279,7 +385,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
@@ -296,7 +402,7 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
@@ -312,8 +418,50 @@ class FQTest extends FunSuite
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+  }
+
+  // bwa - quality tests
+  test("should returns correct fastq alignments' details by bwa") { // todo: ask: should I check all of reads?
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.bwaIndex,
+      tool = Constants.bwaToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r33 = collectedSam("r33")
+    assert(r33.getAlignmentStart === 49904)
+    assert(r33.getCigarString === "5S30M")
+    assert(r33.getReadString === "NNNNNTTTGGTTTGCCGCATGATCTGATGACCACG")
+    assert(r33.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r33.getContig === "e_coli:15000-66000")
+
+    val r481 = collectedSam("r481")
+    assert(r481.getAlignmentStart === 13938)
+    assert(r481.getCigarString === "35M")
+    assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getContig === "e_coli:15000-66000")
+
+    val r1001 = collectedSam("r1001")
+    assert(r1001.getAlignmentStart === 306)
+    assert(r1001.getCigarString === "42M1I33M")
+    assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getContig === "e_coli:15000-66000")
+
+    val r1002 = collectedSam("r1002")
+    assert(r1002.getAlignmentStart === 3182)
+    assert(r1002.getCigarString === "26M1D34M1D13M")
+    assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
+    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getContig === "e_coli:15000-66000")
   }
 
   // exception
