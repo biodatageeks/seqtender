@@ -2,7 +2,6 @@ package org.biodatageeks
 
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants, SeqTenderAlignment}
-import org.biodatageeks.conf.InternalParams
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
@@ -108,8 +107,8 @@ class AlignmentQualityTest extends FunSuite
     val collectedSam = sam.map(record => (
       (// key
         record.getReadName,
-        (record.getFlags & InternalParams.FIRST_SEGMENT_FLAG) == InternalParams.FIRST_SEGMENT_FLAG,
-        (record.getFlags & InternalParams.LAST_SEGMENT_FLAG) == InternalParams.LAST_SEGMENT_FLAG
+        (record.getFlags & Constants.FIRST_SEGMENT_FLAG) == Constants.FIRST_SEGMENT_FLAG,
+        (record.getFlags & Constants.LAST_SEGMENT_FLAG) == Constants.LAST_SEGMENT_FLAG
       ), record)
     ).collectAsMap()
 
@@ -247,8 +246,8 @@ class AlignmentQualityTest extends FunSuite
     val collectedSam = sam.map(record => (
       (// key
         record.getReadName,
-        (record.getFlags & InternalParams.FIRST_SEGMENT_FLAG) == InternalParams.FIRST_SEGMENT_FLAG,
-        (record.getFlags & InternalParams.LAST_SEGMENT_FLAG) == InternalParams.LAST_SEGMENT_FLAG
+        (record.getFlags & Constants.FIRST_SEGMENT_FLAG) == Constants.FIRST_SEGMENT_FLAG,
+        (record.getFlags & Constants.LAST_SEGMENT_FLAG) == Constants.LAST_SEGMENT_FLAG
       ), record)
     ).collectAsMap()
 
@@ -527,8 +526,8 @@ class AlignmentQualityTest extends FunSuite
     val collectedSam = sam.map(record => (
       (// key
         record.getReadName,
-        (record.getFlags & InternalParams.FIRST_SEGMENT_FLAG) == InternalParams.FIRST_SEGMENT_FLAG,
-        (record.getFlags & InternalParams.LAST_SEGMENT_FLAG) == InternalParams.LAST_SEGMENT_FLAG
+        (record.getFlags & Constants.FIRST_SEGMENT_FLAG) == Constants.FIRST_SEGMENT_FLAG,
+        (record.getFlags & Constants.LAST_SEGMENT_FLAG) == Constants.LAST_SEGMENT_FLAG
       ), record)
     ).collectAsMap()
 

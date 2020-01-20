@@ -16,4 +16,7 @@ object Constants {
 
   val faExtensions: List[String] = List("fa", "fasta", ".mfa", ".fna")
   val fqExtensions: List[String] = List("fq", "fastq", "ifq")
+
+  final val FIRST_SEGMENT_FLAG = 64
+  final val LAST_SEGMENT_FLAG = 128
 }
