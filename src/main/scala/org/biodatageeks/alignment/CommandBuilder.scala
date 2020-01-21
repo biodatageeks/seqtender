@@ -22,18 +22,12 @@ object CommandBuilder {
     command.toString()
   }
 
-  private def getImage(tool: String): String = {
-    val toolInLowerCase = tool.toLowerCase()
-
-    if (toolInLowerCase == Constants.bowtieToolName)
-      Constants.defaultBowtieImage
-    else if (toolInLowerCase == Constants.bowtie2ToolName)
-      Constants.defaultBowtie2Image
-    else if (toolInLowerCase == Constants.minimap2ToolName)
-      Constants.defaultMinimap2Image
-    else if (toolInLowerCase == Constants.bwaToolName)
-      Constants.defaultBWAImage
-    else throw new IllegalArgumentException("Unknown tool name")
+  private def getImage(tool: String): String = tool.toLowerCase() match {
+    case Constants.bowtieToolName => Constants.defaultBowtieImage
+    case Constants.bowtie2ToolName => Constants.defaultBowtie2Image
+    case Constants.minimap2ToolName => Constants.defaultMinimap2Image
+    case Constants.bwaToolName => Constants.defaultBWAImage
+    case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
   private def toolBuilder(tool: String,
@@ -41,19 +35,13 @@ object CommandBuilder {
                           readsExtension: ReadsExtension,
                           interleaved: Boolean,
                           readGroupId: String,
-                          readGroup: String): String = {
+                          readGroup: String): String = tool.toLowerCase() match {
 
-    val toolInLowerCase = tool.toLowerCase()
-
-    if (toolInLowerCase == Constants.bowtieToolName)
-      bowtieCommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
-    else if (toolInLowerCase == Constants.bowtie2ToolName)
-      bowtie2CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
-    else if (toolInLowerCase == Constants.minimap2ToolName)
-      minimap2CommandBuilder(indexName, readGroupId, readGroup)
-    else if (toolInLowerCase == Constants.bwaToolName)
-      bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
-    else throw new IllegalArgumentException("Unknown tool name")
+    case Constants.bowtieToolName => bowtieCommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
+    case Constants.bowtie2ToolName => bowtie2CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
+    case Constants.minimap2ToolName => minimap2CommandBuilder(indexName, readGroupId, readGroup)
+    case Constants.bwaToolName => bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
+    case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
   private def bowtieCommandBuilder(indexName: String,

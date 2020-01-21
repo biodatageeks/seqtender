@@ -5,9 +5,10 @@ import org.apache.hadoop.io.Text
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
+import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat}
 import org.biodatageeks.shared.CustomRDDTextFunctions._
 import org.biodatageeks.shared.IllegalFileExtensionException
-import org.seqdoop.hadoop_bam.{FastaInputFormat, FastqInputFormat, ReferenceFragment, SequencedFragment}
+import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
 object SeqTenderAlignment {
@@ -53,19 +54,18 @@ object SeqTenderAlignment {
   }
 
   def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
-    // todo: write custom fasta partitioner
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
-        classOf[FastaInputFormat],
+        classOf[FastaReadInputFormat],
         classOf[Text],
-        classOf[ReferenceFragment],
+        classOf[FastaRead],
         sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, ReferenceFragment]]
+      .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
       .mapPartitionsWithInputSplit { (_, iterator) ⇒
 
-        // convert reads iterator to text one;
+        // map reads iterator to text one;
         // piping method requires text iterator
-        iterator.map(it => convertFastaReadToText(it))
+        iterator.map(it => it._2.toText)
       }
   }
 
@@ -74,8 +74,4 @@ object SeqTenderAlignment {
     new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
   }
 
-  // convert single fasta read to text, which can be read by specified program
-  private def convertFastaReadToText(read: (Text, ReferenceFragment)): Text = {
-    new Text(s">${read._2.getIndexSequence}\n${read._2.getSequence.toString}")
-  }
 }
