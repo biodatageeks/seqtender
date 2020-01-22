@@ -5,6 +5,7 @@ import java.io.File
 import com.holdenkarau.spark.testing.RDDComparisons
 import htsjdk.samtools.{SAMRecord, SamReaderFactory}
 import org.apache.commons.io.FileUtils
+import org.apache.spark.SparkException
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.CustomRDDSAMRecordFunctions._
 import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants, SeqTenderAlignment}
@@ -328,6 +329,33 @@ class AlignmentTest extends FunSuite
     assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
   }
 
+  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid sequence") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFaReadsPath, command).collect()
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastaReadInputFormat.isFastaReadRead()
+    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in sequence in fasta record"))
+  }
+
+
+  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid sequence name") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceNameFaReadsPath, command).collect()
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastaReadInputFormat.isFastaReadRead()
+    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in sequence name in fasta record"))
+  }
+
   // save RDD tests
   test("should save RDD[SAMRecord] to BAM with Hadoop-BAM") {
 
@@ -407,7 +435,6 @@ class AlignmentTest extends FunSuite
     //assert indexes
     assert(sbiIndex.exists())
     assert(baiIndex.exists())
-
 
   }
 }

@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAt
 import org.apache.hadoop.util.LineReader
 
 import scala.util.control.Breaks._
+import scala.util.matching.Regex
 
 // A class to split fasta file to smaller fasta files
 // It's founded on the org.seqdoop.hadoop_bam.FastqInputFormat
@@ -29,6 +30,7 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
     private val currentValue: FastaRead = new FastaRead
 
     private final val MAX_LINE_LENGTH = 20000 // or more?
+    private final val sequencePattern: Regex = "[A-Za-z]+".r
 
 
     val fs: FileSystem = file.getFileSystem(conf)
@@ -41,7 +43,7 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
       setPositionAtFirstRecord(fileIn)
       inputStream = fileIn
     } else { // compressed file
-      if (start != 0) throw new RuntimeException("Start position for compressed file is not 0! (found " + start + ")")
+      if (start != 0) throw new RuntimeException(s"[SPLIT FASTA] Start position for compressed file is not 0! (found ${start})")
       inputStream = codec.createInputStream(fileIn)
       end = Long.MaxValue // read until the end of the file
     }
@@ -79,18 +81,25 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
         isFastaReadRead(key, value)
       } catch {
         case e: EOFException =>
-          throw new RuntimeException(s"Unexpected end of file in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+          throw new RuntimeException(s"[SPLIT FASTA]: Unexpected end of file in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
       }
     }
 
     protected def isFastaReadRead(key: Text, value: FastaRead): Boolean = {
-      // key - sequence name
-      readLineInto(key)
-
       value.clear()
-      // read - name and sequence
+      val buffer: Text = new Text()
+
+      // key - sequence name
+      readLineInto(buffer)
+      if(buffer.toString.charAt(0) == '>') key.set(buffer)
+      else throw new RuntimeException(s"[SPLIT FASTA]: Unexpected character in sequence name in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
       value.setName(key.toString.splitAt(1)._2)
-      readLineInto(value.getSequence)
+
+      // sequence
+      readLineInto(buffer)
+      if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(buffer)
+      else throw new RuntimeException(s"[SPLIT FASTA]: Unexpected character in sequence in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       true
     }

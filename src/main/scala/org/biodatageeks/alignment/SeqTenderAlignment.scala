@@ -54,19 +54,19 @@ object SeqTenderAlignment {
   }
 
   def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
-    sparkSession.sparkContext
-      .newAPIHadoopFile(inputPath,
-        classOf[FastaReadInputFormat],
-        classOf[Text],
-        classOf[FastaRead],
-        sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
-      .mapPartitionsWithInputSplit { (_, iterator) ⇒
+      sparkSession.sparkContext
+        .newAPIHadoopFile(inputPath,
+          classOf[FastaReadInputFormat],
+          classOf[Text],
+          classOf[FastaRead],
+          sparkSession.sparkContext.hadoopConfiguration)
+        .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
+        .mapPartitionsWithInputSplit { (_, iterator) ⇒
 
-        // map reads iterator to text one;
-        // piping method requires text iterator
-        iterator.map(it => it._2.toText)
-      }
+          // map reads iterator to text one;
+          // piping method requires text iterator
+          iterator.map(it => it._2.toText)
+        }
   }
 
   // convert single fastq read to text, which can be read by specified program
