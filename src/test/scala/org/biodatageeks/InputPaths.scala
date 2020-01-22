@@ -17,8 +17,12 @@ object InputPaths {
 
   val faReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fa").getPath
   val invalidSequenceFaReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-sequence.fa").getPath
-  val invalidSequenceNameFaReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-sequence-name.fa").getPath
+  val invalidNameFaReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-name.fa").getPath
   val fqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fq").getPath
+  val invalidNameFqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-name.fq").getPath
+  val invalidSequenceFqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-sequence.fq").getPath
+  val invalidSeparatorFqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-separator.fq").getPath
+  val invalidQualityFqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-quality.fq").getPath
   val ifqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.ifq").getPath
   val invalidReadsPath: String = "invalid.txt"
 

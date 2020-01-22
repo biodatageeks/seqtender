@@ -5,10 +5,9 @@ import org.apache.hadoop.io.Text
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat}
+import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat, FastqRead, FastqReadInputFormat}
 import org.biodatageeks.shared.CustomRDDTextFunctions._
 import org.biodatageeks.shared.IllegalFileExtensionException
-import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
 object SeqTenderAlignment {
@@ -40,38 +39,34 @@ object SeqTenderAlignment {
   def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
-        classOf[FastqInputFormat],
+        classOf[FastqReadInputFormat],
         classOf[Text],
-        classOf[SequencedFragment],
+        classOf[FastqRead],
         sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, SequencedFragment]]
+      .asInstanceOf[NewHadoopRDD[Text, FastqRead]]
       .mapPartitionsWithInputSplit { (_, iterator) =>
 
         // convert reads iterator to text one;
         // piping method requires text iterator
-        iterator.map(it => convertFastqReadToText(it))
+        //        iterator.map(it => convertFastqReadToText(it))
+        iterator.map(it => it._2.toText)
       }
   }
 
   def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
-      sparkSession.sparkContext
-        .newAPIHadoopFile(inputPath,
-          classOf[FastaReadInputFormat],
-          classOf[Text],
-          classOf[FastaRead],
-          sparkSession.sparkContext.hadoopConfiguration)
-        .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
-        .mapPartitionsWithInputSplit { (_, iterator) ⇒
+    sparkSession.sparkContext
+      .newAPIHadoopFile(inputPath,
+        classOf[FastaReadInputFormat],
+        classOf[Text],
+        classOf[FastaRead],
+        sparkSession.sparkContext.hadoopConfiguration)
+      .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
+      .mapPartitionsWithInputSplit { (_, iterator) ⇒
 
-          // map reads iterator to text one;
-          // piping method requires text iterator
-          iterator.map(it => it._2.toText)
-        }
-  }
-
-  // convert single fastq read to text, which can be read by specified program
-  private def convertFastqReadToText(read: (Text, SequencedFragment)): Text = {
-    new Text(s"@${read._1}\n${read._2.getSequence.toString}\n+\n${read._2.getQuality.toString}")
+        // map reads iterator to text one;
+        // piping method requires text iterator
+        iterator.map(it => it._2.toText)
+      }
   }
 
 }

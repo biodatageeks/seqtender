@@ -329,11 +329,13 @@ class AlignmentTest extends FunSuite
     assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
   }
 
+  // fasta
   test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid sequence") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFaReadsPath, command).collect()
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFaReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
     }
 
     // unfortunately thrown exception is SparkException,
@@ -343,17 +345,76 @@ class AlignmentTest extends FunSuite
   }
 
 
-  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid sequence name") {
+  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid name") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceNameFaReadsPath, command).collect()
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameFaReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
     }
 
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastaReadInputFormat.isFastaReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in sequence name in fasta record"))
+    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in name in fasta record"))
+  }
+
+  // fastq
+  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid sequence") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in sequence in fastq record"))
+  }
+
+
+  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid name") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameFqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in name in fastq record"))
+  }
+
+  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid separator") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorFqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("This should be '+' separator."))
+  }
+
+  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid quality") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidQualityFqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in quality in fastq record"))
   }
 
   // save RDD tests

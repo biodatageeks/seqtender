@@ -10,14 +10,14 @@ import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, FileSplit}
 import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.util.LineReader
 
-import scala.util.control.Breaks._
+import scala.util.control.Breaks.{break, breakable}
 import scala.util.matching.Regex
 
-// A class to split fasta file to smaller fasta files
+// A class to split fastq file to smaller fastq files
 // It's founded on the org.seqdoop.hadoop_bam.FastqInputFormat
-class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
+class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
 
-  class FastaReadRecordReader(val conf: Configuration, val split: FileSplit) extends RecordReader[Text, FastaRead] {
+  class FastqReadRecordReader(val conf: Configuration, val split: FileSplit) extends RecordReader[Text, FastqRead] {
     private var start: Long = split.getStart
     private var end: Long = start + split.getLength
     private var pos: Long = Long.MinValue
@@ -27,10 +27,11 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
     private var inputStream: InputStream = null
 
     private val currentKey: Text = new Text
-    private val currentValue: FastaRead = new FastaRead
+    private val currentValue: FastqRead = new FastqRead
 
     private final val MAX_LINE_LENGTH = 20000 // or more?
     private final val sequencePattern: Regex = "[A-Za-z]+".r
+    private final val qualityPattern: Regex = "[!-~]+".r
 
 
     val fs: FileSystem = file.getFileSystem(conf)
@@ -43,7 +44,7 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
       setPositionAtFirstRecord(fileIn)
       inputStream = fileIn
     } else { // compressed file
-      if (start != 0) throw new RuntimeException(s"[SPLIT FASTA] Start position for compressed file is not 0! (found ${start})")
+      if (start != 0) throw new RuntimeException(s"[SPLIT FASTQ] Start position for compressed file is not 0! (found ${start})")
       inputStream = codec.createInputStream(fileIn)
       end = Long.MaxValue // read until the end of the file
     }
@@ -65,8 +66,8 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
           do {
             val buffer: Text = new Text
             bytesRead = reader.readLine(buffer, Math.min(MAX_LINE_LENGTH, end - start).toInt)
-            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '>') break
-            else start += bytesRead // line starts with >.
+            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@') break
+            else start += bytesRead // line starts with @.
           } while (bytesRead > 0)
         }
 
@@ -75,31 +76,41 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
       pos = start
     }
 
-    def next(key: Text, value: FastaRead): Boolean = {
+    def next(key: Text, value: FastqRead): Boolean = {
       if (pos >= end) return false // past end of slice
       try {
-        isFastaReadRead(key, value)
+        isFastqReadRead(key, value)
       } catch {
         case e: EOFException =>
-          throw new RuntimeException(s"[SPLIT FASTA]: Unexpected end of file in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+          throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected end of file in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
       }
     }
 
-    protected def isFastaReadRead(key: Text, value: FastaRead): Boolean = {
+    protected def isFastqReadRead(key: Text, value: FastqRead): Boolean = {
       value.clear()
       val buffer: Text = new Text()
 
       // key - sequence name
       readLineInto(buffer)
-      if(buffer.toString.charAt(0) == '>') key.set(buffer)
-      else throw new RuntimeException(s"[SPLIT FASTA]: Unexpected character in name in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+      if(buffer.charAt(0) == '@') key.set(buffer)
+      else throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected character in name in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       value.setName(key.toString.splitAt(1)._2)
 
       // sequence
       readLineInto(buffer)
-      if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(buffer)
-      else throw new RuntimeException(s"[SPLIT FASTA]: Unexpected character in sequence in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+      if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
+      else throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected character in sequence in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
+      // separator
+      readLineInto(buffer)
+      if(buffer.getLength == 0 || buffer.charAt(0) != '+')
+        throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected character in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}. This should be '+' separator.")
+
+      // quality
+      readLineInto(buffer)
+      if (qualityPattern.pattern.matcher(buffer.toString).matches()) value.setQuality(buffer)
+      else throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected character in quality in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       true
     }
@@ -120,7 +131,7 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
       currentKey
     }
 
-    override def getCurrentValue: FastaRead = {
+    override def getCurrentValue: FastqRead = {
       currentValue
     }
 
@@ -140,8 +151,8 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
     codec == null
   }
 
-  override def createRecordReader(split: InputSplit, context: TaskAttemptContext): RecordReader[Text, FastaRead] = {
+  override def createRecordReader(split: InputSplit, context: TaskAttemptContext): RecordReader[Text, FastqRead] = {
     context.setStatus(split.toString)
-    new FastaReadRecordReader(context.getConfiguration, split.asInstanceOf[FileSplit])
+    new FastqReadRecordReader(context.getConfiguration, split.asInstanceOf[FileSplit])
   }
 }

@@ -12,7 +12,7 @@ import scala.collection.Map
 import scala.io.Source
 import scala.reflect.ClassTag
 
-class FQPipedRDD[T: ClassTag](
+class AlignmentPipedRDD[T: ClassTag](
                                  prev: RDD[T],
                                  command: Seq[String],
                                  envVars: Map[String, String] = Map.empty,
