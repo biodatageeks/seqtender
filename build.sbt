@@ -58,7 +58,7 @@ libraryDependencies += "org.disq-bio" % "disq" % "0.3.4"
 
 fork := true
 fork in Test := true
-parallelExecution in Test := true
+parallelExecution in Test := false
 
 
 javaOptions in Test ++= Seq(
