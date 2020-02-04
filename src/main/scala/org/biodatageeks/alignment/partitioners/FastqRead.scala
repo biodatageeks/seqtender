@@ -92,7 +92,7 @@ class FastqRead extends Writable {
   }
 
   override def write(out: DataOutput): Unit = {
-    WritableUtils.writeString(out, s">${name}")
+    WritableUtils.writeString(out, s"@${name}")
     sequence.write(out)
     WritableUtils.writeString(out, "+")
     quality.write(out)
