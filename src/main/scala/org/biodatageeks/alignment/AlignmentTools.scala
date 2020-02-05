@@ -16,6 +16,8 @@ object AlignmentTools {
       ReadsExtension.FA
     else if (Constants.fqExtensions.contains(extension))
       ReadsExtension.FQ
+    else if (Constants.ifqExtensions.contains(extension))
+      ReadsExtension.IFQ
     else ReadsExtension.OTHER
   }
 
@@ -31,5 +33,5 @@ object AlignmentTools {
 
 object ReadsExtension extends Enumeration {
   type ReadsExtension = Value
-  val FA, FQ, OTHER = Value
+  val FA, FQ, IFQ, OTHER = Value
 }

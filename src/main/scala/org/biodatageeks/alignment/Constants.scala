@@ -15,7 +15,8 @@ object Constants {
   final val defaultBowtieRG = "SM:Pool1"
 
   val faExtensions: List[String] = List("fa", "fasta", ".mfa", ".fna")
-  val fqExtensions: List[String] = List("fq", "fastq", "ifq")
+  val fqExtensions: List[String] = List("fq", "fastq")
+  val ifqExtensions: List[String] = List("ifq")
 
   final val FIRST_SEGMENT_FLAG = 64
   final val LAST_SEGMENT_FLAG = 128

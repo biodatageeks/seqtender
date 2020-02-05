@@ -5,7 +5,7 @@ import org.apache.hadoop.io.Text
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat, FastqRead, FastqReadInputFormat}
+import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat, FastqRead, FastqReadInputFormat, InterleavedFastqRead, InterleavedFastqReadInputFormat}
 import org.biodatageeks.shared.CustomRDDTextFunctions._
 import org.biodatageeks.shared.IllegalFileExtensionException
 
@@ -27,11 +27,13 @@ object SeqTenderAlignment {
          |""".stripMargin)
 
     val readsExtension = AlignmentTools.getReadsExtension(readsPath)
-    val rdds = if (readsExtension.equals(ReadsExtension.FQ)) {
+    val rdds = if (readsExtension.equals(ReadsExtension.FQ) || readsExtension.equals(ReadsExtension.IFQ)) {
       makeReadRddsFromFQ(readsPath)
+    } else if (readsExtension.equals(ReadsExtension.IFQ)) {
+      makeReadRddsFromIFQ(readsPath)
     } else if (readsExtension.equals(ReadsExtension.FA)) {
       makeReadRddsFromFA(readsPath)
-    } else throw IllegalFileExtensionException("Reads file isn't a fasta or fastq file")
+    } else throw IllegalFileExtensionException("Reads file isn't a fasta, fastq or interleaved fastq file")
 
     rdds.pipeRead(command)
   }
@@ -48,7 +50,22 @@ object SeqTenderAlignment {
 
         // convert reads iterator to text one;
         // piping method requires text iterator
-        //        iterator.map(it => convertFastqReadToText(it))
+        iterator.map(it => it._2.toText)
+      }
+  }
+
+  def makeReadRddsFromIFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
+    sparkSession.sparkContext
+      .newAPIHadoopFile(inputPath,
+        classOf[InterleavedFastqReadInputFormat],
+        classOf[Text],
+        classOf[InterleavedFastqRead],
+        sparkSession.sparkContext.hadoopConfiguration)
+      .asInstanceOf[NewHadoopRDD[Text, InterleavedFastqRead]]
+      .mapPartitionsWithInputSplit { (_, iterator) =>
+
+        // convert reads iterator to text one;
+        // piping method requires text iterator
         iterator.map(it => it._2.toText)
       }
   }

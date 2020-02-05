@@ -43,6 +43,15 @@ class AlignmentTest extends FunSuite
     assert(rdds.getNumPartitions === 3)
   }
 
+  // todo: check number of partitions
+  test("should make interleaved fastq rdds on 3 partitions") {
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
+
+    val rdds = SeqTenderAlignment.makeReadRddsFromIFQ(InputPaths.ifqReadsPath)
+
+    assert(rdds.getNumPartitions === 3)
+  }
+
   test("should make fasta rdds on 2 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
     val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
@@ -326,7 +335,7 @@ class AlignmentTest extends FunSuite
       SeqTenderAlignment.pipeReads(InputPaths.invalidReadsPath, command)
     }
 
-    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
+    assert(thrown.getMessage === "Reads file isn't a fasta, fastq or interleaved fastq file")
   }
 
   // fasta

@@ -6,9 +6,9 @@ import org.apache.hadoop.io.{Text, Writable, WritableUtils}
 
 // this class represents single FASTQ read - its name, sequence and quality
 class FastqRead extends Writable {
-  protected var sequence: Text = new Text()
-  protected var quality: Text = new Text()
-  protected var name: String = _
+  var sequence: Text = new Text()
+  var quality: Text = new Text()
+  var name: String = _
 
   def setName(n: String) {
     if (n == null)
