@@ -1,7 +1,6 @@
 package org.biodatageeks.alignment.partitioners
 
 import java.io.{DataInput, DataOutput}
-
 import org.apache.hadoop.io.{Text, Writable}
 
 // this class represents single interleaved FASTQ read - its two reads with name, sequence and quality
@@ -32,9 +31,22 @@ class InterleavedFastqRead extends Writable {
 
   override def toString: String = {
     val stringBuilder = new StringBuilder
-    stringBuilder.append(firstRead.toString)
+    stringBuilder.append(readToString(firstRead, 1))
+    stringBuilder.append(readToString(secondRead, 2))
+
+    stringBuilder.toString()
+  }
+
+  private def readToString(read: FastqRead, number: Int): String = {
+    val stringBuilder = new StringBuilder
+    stringBuilder.append(s"@${read.getName}/${number}")
     stringBuilder.append("\n")
-    stringBuilder.append(secondRead.toString)
+    stringBuilder.append(read.getSequence)
+    stringBuilder.append("\n")
+    stringBuilder.append("+")
+    stringBuilder.append("\n")
+    stringBuilder.append(read.getQuality)
+    if(number == 1) stringBuilder.append("\n")
 
     stringBuilder.toString()
   }
@@ -82,6 +94,6 @@ class InterleavedFastqRead extends Writable {
     read.sequence.write(out)
     WritableUtils.writeString(out, "+")
     read.quality.write(out)
-  }
+  } */
 }
-*/
+

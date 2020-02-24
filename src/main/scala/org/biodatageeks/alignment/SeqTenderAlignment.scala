@@ -27,7 +27,7 @@ object SeqTenderAlignment {
          |""".stripMargin)
 
     val readsExtension = AlignmentTools.getReadsExtension(readsPath)
-    val rdds = if (readsExtension.equals(ReadsExtension.FQ) || readsExtension.equals(ReadsExtension.IFQ)) {
+    val rdds = if (readsExtension.equals(ReadsExtension.FQ)) {
       makeReadRddsFromFQ(readsPath)
     } else if (readsExtension.equals(ReadsExtension.IFQ)) {
       makeReadRddsFromIFQ(readsPath)
@@ -69,7 +69,6 @@ object SeqTenderAlignment {
         iterator.map(it => it._2.toText)
       }
   }
-
   def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,

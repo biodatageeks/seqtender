@@ -75,12 +75,84 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       pos = start
     }
 
+    def next(key: Text, value: InterleavedFastqRead): Boolean = {
+      if (pos >= end) return false // past end of slice
+      try {
+        isInterleavedFastqReadRead(key, value)
+      } catch {
+        case e: EOFException =>
+          throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected end of file in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+      }
+    }
+
+    protected def isInterleavedFastqReadRead(key: Text, value: InterleavedFastqRead): Boolean = {
+      value.clear()
+      isFastqReadRead(value.getFirstRead)
+      isFastqReadRead(value.getSecondRead)
+
+      if (value.getFirstRead.getName == value.getSecondRead.getName) key.set(new Text(value.getFirstRead.getName))
+      else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Names of two sequences aren't equal. File ${file.toString}: ${pos}. First read name: ${value.getFirstRead.getName}")
+
+      true
+    }
+
+    private def isFastqReadRead(value: FastqRead): Boolean = {
+      val key: Text = new Text()
+      val buffer: Text = new Text()
+
+      // key - sequence name
+      readLineInto(buffer)
+      if(buffer.charAt(0) == '@') key.set(buffer)
+      else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in name in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
+      value.setName(key.toString.substring(1, key.toString.indexOf('/')))
+
+      // sequence
+      readLineInto(buffer)
+      if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
+      else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in sequence in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
+      // separator
+      readLineInto(buffer)
+      if(buffer.getLength == 0 || buffer.charAt(0) != '+')
+        throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}. This should be '+' separator.")
+
+      // quality
+      readLineInto(buffer)
+      if (qualityPattern.pattern.matcher(buffer.toString).matches()) value.setQuality(buffer)
+      else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in quality in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
+      true
+    }
+
     private def readLineInto(dest: Text): Unit = {
       val bytesRead = lineReader.readLine(dest, MAX_LINE_LENGTH)
       if (bytesRead <= 0) throw new EOFException
       pos += bytesRead
     }
 
+    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {}
+
+    override def nextKeyValue(): Boolean = {
+      next(currentKey, currentValue)
+    }
+
+    override def getCurrentKey: Text = {
+      currentKey
+    }
+
+    override def getCurrentValue: InterleavedFastqRead = {
+      currentValue
+    }
+
+    override def getProgress: Float = {
+      if (start == end) 1.0f
+      else Math.min(1.0f, (pos - start) / (end - start).toFloat)
+    }
+
+    override def close(): Unit = {
+      inputStream.close()
+    }
   }
 
   override def isSplitable(context: JobContext, path: Path): Boolean = {

@@ -43,13 +43,12 @@ class AlignmentTest extends FunSuite
     assert(rdds.getNumPartitions === 3)
   }
 
-  // todo: check number of partitions
   test("should make interleaved fastq rdds on 3 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
 
     val rdds = SeqTenderAlignment.makeReadRddsFromIFQ(InputPaths.ifqReadsPath)
 
-    assert(rdds.getNumPartitions === 3)
+    assert(rdds.getNumPartitions === 5)
   }
 
   test("should make fasta rdds on 2 partitions") {
