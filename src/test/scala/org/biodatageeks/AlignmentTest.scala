@@ -28,6 +28,7 @@ class AlignmentTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
   }
 
   after {

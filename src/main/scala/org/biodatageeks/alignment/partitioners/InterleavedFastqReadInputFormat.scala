@@ -65,7 +65,7 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
           do {
             val buffer: Text = new Text
             bytesRead = reader.readLine(buffer, Math.min(MAX_LINE_LENGTH, end - start).toInt)
-            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@') break
+            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@' && buffer.toString.splitAt(buffer.toString.lastIndexOf('/'))._2 == "/1") break
             else start += bytesRead // line starts with @.
           } while (bytesRead > 0)
         }
