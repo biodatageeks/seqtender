@@ -40,17 +40,19 @@ class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
     val codecFactory = new CompressionCodecFactory(conf)
     val codec: CompressionCodec = codecFactory.getCodec(file)
 
-    if (codec == null) { // no codec.  Uncompressed file.
-      setPositionAtFirstRecord(fileIn)
-      inputStream = fileIn
-    } else { // compressed file
-      if (start != 0) throw new RuntimeException(s"[SPLIT FASTQ] Start position for compressed file is not 0! (found ${start})")
-      inputStream = codec.createInputStream(fileIn)
-      end = Long.MaxValue // read until the end of the file
+
+    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {
+      if (codec == null) { // no codec.  Uncompressed file.
+        setPositionAtFirstRecord(fileIn)
+        inputStream = fileIn
+      } else { // compressed file
+        if (start != 0) throw new RuntimeException(s"[SPLIT FASTQ] Start position for compressed file is not 0! (found ${start})")
+        inputStream = codec.createInputStream(fileIn)
+        end = Long.MaxValue // read until the end of the file
+      }
+
+      lineReader = new LineReader(inputStream)
     }
-
-    lineReader = new LineReader(inputStream)
-
 
     // Position the input stream at the start of the first record.
     private def setPositionAtFirstRecord(stream: FSDataInputStream): Unit = {
@@ -74,16 +76,6 @@ class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
         stream.seek(start)
       }
       pos = start
-    }
-
-    def next(key: Text, value: FastqRead): Boolean = {
-      if (pos >= end) return false // past end of slice
-      try {
-        isFastqReadRead(key, value)
-      } catch {
-        case e: EOFException =>
-          throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected end of file in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
-      }
     }
 
     protected def isFastqReadRead(key: Text, value: FastqRead): Boolean = {
@@ -121,10 +113,14 @@ class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
       pos += bytesRead
     }
 
-    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {}
-
     override def nextKeyValue(): Boolean = {
-      next(currentKey, currentValue)
+      if (pos >= end) return false // past end of slice
+      try {
+        isFastqReadRead(currentKey, currentValue)
+      } catch {
+        case e: EOFException =>
+          throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected end of file in fastq record at ${file.toString}: ${pos}. Read key: ${currentKey.toString}")
+      }
     }
 
     override def getCurrentKey: Text = {

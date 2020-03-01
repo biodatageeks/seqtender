@@ -40,16 +40,18 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
     val codecFactory = new CompressionCodecFactory(conf)
     val codec: CompressionCodec = codecFactory.getCodec(file)
 
-    if (codec == null) { // no codec.  Uncompressed file.
-      setPositionAtFirstRecord(fileIn)
-      inputStream = fileIn
-    } else { // compressed file
-      if (start != 0) throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ] Start position for compressed file is not 0! (found ${start})")
-      inputStream = codec.createInputStream(fileIn)
-      end = Long.MaxValue // read until the end of the file
-    }
+    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {
+      if (codec == null) { // no codec.  Uncompressed file.
+        setPositionAtFirstRecord(fileIn)
+        inputStream = fileIn
+      } else { // compressed file
+        if (start != 0) throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ] Start position for compressed file is not 0! (found ${start})")
+        inputStream = codec.createInputStream(fileIn)
+        end = Long.MaxValue // read until the end of the file
+      }
 
-    lineReader = new LineReader(inputStream)
+      lineReader = new LineReader(inputStream)
+    }
 
     // Position the input stream at the start of the first record.
     private def setPositionAtFirstRecord(stream: FSDataInputStream): Unit = {
@@ -65,7 +67,8 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
           do {
             val buffer: Text = new Text
             bytesRead = reader.readLine(buffer, Math.min(MAX_LINE_LENGTH, end - start).toInt)
-            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@' && buffer.toString.splitAt(buffer.toString.lastIndexOf('/'))._2 == "/1") break
+            val bufferSequenceString = buffer.toString
+            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@' && bufferSequenceString.splitAt(bufferSequenceString.lastIndexOf('/'))._2 == "/1") break
             else start += bytesRead // line starts with @.
           } while (bytesRead > 0)
         }
@@ -75,13 +78,13 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       pos = start
     }
 
-    def next(key: Text, value: InterleavedFastqRead): Boolean = {
+    override def nextKeyValue(): Boolean = {
       if (pos >= end) return false // past end of slice
       try {
-        isInterleavedFastqReadRead(key, value)
+        isInterleavedFastqReadRead(currentKey, currentValue)
       } catch {
         case e: EOFException =>
-          throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected end of file in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+          throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected end of file in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${currentKey.toString}")
       }
     }
 
@@ -129,12 +132,6 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       val bytesRead = lineReader.readLine(dest, MAX_LINE_LENGTH)
       if (bytesRead <= 0) throw new EOFException
       pos += bytesRead
-    }
-
-    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {}
-
-    override def nextKeyValue(): Boolean = {
-      next(currentKey, currentValue)
     }
 
     override def getCurrentKey: Text = {

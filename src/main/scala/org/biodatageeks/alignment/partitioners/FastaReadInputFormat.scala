@@ -39,17 +39,18 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
     val codecFactory = new CompressionCodecFactory(conf)
     val codec: CompressionCodec = codecFactory.getCodec(file)
 
-    if (codec == null) { // no codec.  Uncompressed file.
-      setPositionAtFirstRecord(fileIn)
-      inputStream = fileIn
-    } else { // compressed file
-      if (start != 0) throw new RuntimeException(s"[SPLIT FASTA] Start position for compressed file is not 0! (found ${start})")
-      inputStream = codec.createInputStream(fileIn)
-      end = Long.MaxValue // read until the end of the file
+    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {
+      if (codec == null) { // no codec.  Uncompressed file.
+        setPositionAtFirstRecord(fileIn)
+        inputStream = fileIn
+      } else { // compressed file
+        if (start != 0) throw new RuntimeException(s"[SPLIT FASTA] Start position for compressed file is not 0! (found ${start})")
+        inputStream = codec.createInputStream(fileIn)
+        end = Long.MaxValue // read until the end of the file
+      }
+
+      lineReader = new LineReader(inputStream)
     }
-
-    lineReader = new LineReader(inputStream)
-
 
     // Position the input stream at the start of the first record.
     private def setPositionAtFirstRecord(stream: FSDataInputStream): Unit = {
@@ -73,16 +74,6 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
         stream.seek(start)
       }
       pos = start
-    }
-
-    def next(key: Text, value: FastaRead): Boolean = {
-      if (pos >= end) return false // past end of slice
-      try {
-        isFastaReadRead(key, value)
-      } catch {
-        case e: EOFException =>
-          throw new RuntimeException(s"[SPLIT FASTA]: Unexpected end of file in fasta record at ${file.toString}: ${pos}. Read key: ${key.toString}")
-      }
     }
 
     protected def isFastaReadRead(key: Text, value: FastaRead): Boolean = {
@@ -110,10 +101,14 @@ class FastaReadInputFormat extends FileInputFormat[Text, FastaRead] {
       pos += bytesRead
     }
 
-    override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {}
-
     override def nextKeyValue(): Boolean = {
-      next(currentKey, currentValue)
+      if (pos >= end) return false // past end of slice
+      try {
+        isFastaReadRead(currentKey, currentValue)
+      } catch {
+        case e: EOFException =>
+          throw new RuntimeException(s"[SPLIT FASTA]: Unexpected end of file in fasta record at ${file.toString}: ${pos}. Read key: ${currentKey.toString}")
+      }
     }
 
     override def getCurrentKey: Text = {

@@ -85,15 +85,6 @@ class InterleavedFastqRead extends Writable {
   override def write(out: DataOutput): Unit = {
     firstRead.write(out)
     secondRead.write(out)
-    //    writeRead(out, firstRead)
-    //    writeRead(out, secondRead)
   }
-
-  /*def writeRead(out: DataOutput, read: FastqRead): Unit = {
-    WritableUtils.writeString(out, s"@${read.name}")
-    read.sequence.write(out)
-    WritableUtils.writeString(out, "+")
-    read.quality.write(out)
-  } */
 }
 
