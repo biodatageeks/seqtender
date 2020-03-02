@@ -90,8 +90,8 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
 
     protected def isInterleavedFastqReadRead(key: Text, value: InterleavedFastqRead): Boolean = {
       value.clear()
-      isFastqReadRead(value.getFirstRead)
-      isFastqReadRead(value.getSecondRead)
+      isFastqReadRead(value.getFirstRead, 1)
+      isFastqReadRead(value.getSecondRead, 2)
 
       if (value.getFirstRead.getName == value.getSecondRead.getName) key.set(new Text(value.getFirstRead.getName))
       else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Names of two sequences aren't equal. File ${file.toString}: ${pos}. First read name: ${value.getFirstRead.getName}")
@@ -99,7 +99,7 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       true
     }
 
-    private def isFastqReadRead(value: FastqRead): Boolean = {
+    private def isFastqReadRead(value: FastqRead, ordinalNumber: Int): Boolean = {
       val key: Text = new Text()
       val buffer: Text = new Text()
 
@@ -107,6 +107,9 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       readLineInto(buffer)
       if(buffer.charAt(0) == '@') key.set(buffer)
       else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in name in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
+
+      if(!key.toString.contains(s"/${ordinalNumber}"))
+        throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Read name in interleaved fastq record isn't correct. It hasn't proper ordinal number. File ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       value.setName(key.toString.substring(1, key.toString.indexOf('/')))
 

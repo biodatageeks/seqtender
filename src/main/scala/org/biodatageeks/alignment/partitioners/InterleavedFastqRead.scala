@@ -32,6 +32,7 @@ class InterleavedFastqRead extends Writable {
   override def toString: String = {
     val stringBuilder = new StringBuilder
     stringBuilder.append(readToString(firstRead, 1))
+    stringBuilder.append("\n")
     stringBuilder.append(readToString(secondRead, 2))
 
     stringBuilder.toString()
@@ -46,7 +47,6 @@ class InterleavedFastqRead extends Writable {
     stringBuilder.append("+")
     stringBuilder.append("\n")
     stringBuilder.append(read.getQuality)
-    if(number == 1) stringBuilder.append("\n")
 
     stringBuilder.toString()
   }

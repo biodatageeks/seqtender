@@ -65,7 +65,6 @@ class AlignmentPartitionersTest extends FunSuite
     assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in sequence in fasta record"))
   }
 
-
   test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid name") {
     val command = "command"
 
@@ -94,7 +93,6 @@ class AlignmentPartitionersTest extends FunSuite
     // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
     assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in sequence in fastq record"))
   }
-
 
   test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid name") {
     val command = "command"
@@ -138,4 +136,88 @@ class AlignmentPartitionersTest extends FunSuite
     assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in quality in fastq record"))
   }
 
+  // ifq
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid sequence") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in sequence in interleaved fastq record"))
+  }
+
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid name") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in name in interleaved fastq record"))
+  }
+
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid separator") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("This should be '+' separator."))
+  }
+
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid quality") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidQualityIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in quality in interleaved fastq record"))
+  }
+
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid first read name") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidFirstReadNameIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Read name in interleaved fastq record isn't correct. It hasn't proper ordinal number."))
+  }
+
+  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with no second read") {
+    val command = "command"
+
+    val thrown = intercept[SparkException] {
+      val collected = SeqTenderAlignment.pipeReads(InputPaths.noSecondReadIfqReadsPath, command).collect
+      collected.count(it => it.getReadName != "")
+    }
+
+    // unfortunately thrown exception is SparkException,
+    // so we have to check if this exception message contains message
+    // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
+    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Read name in interleaved fastq record isn't correct. It hasn't proper ordinal number."))
+  }
 }
