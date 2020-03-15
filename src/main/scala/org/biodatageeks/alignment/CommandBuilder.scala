@@ -27,6 +27,8 @@ object CommandBuilder {
     case Constants.bowtie2ToolName => Constants.defaultBowtie2Image
     case Constants.minimap2ToolName => Constants.defaultMinimap2Image
     case Constants.bwaToolName => Constants.defaultBWAImage
+    case Constants.gem3ToolName => Constants.defaultGem3Image
+    case Constants.magicBlastToolName => Constants.defaultMagicBlastImage
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -41,6 +43,7 @@ object CommandBuilder {
     case Constants.bowtie2ToolName => bowtie2CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
     case Constants.minimap2ToolName => minimap2CommandBuilder(indexName, readGroupId, readGroup)
     case Constants.bwaToolName => bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
+    case Constants.gem3ToolName => gem3CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -95,6 +98,22 @@ object CommandBuilder {
     if (interleaved) command.append("-p ")
 
     command.append(s"/data/$indexName ")
+    command.append("- ").toString()
+  }
+
+  private def gem3CommandBuilder(indexName: String,
+                                    readsExtension: ReadsExtension,
+                                    interleaved: Boolean,
+                                    readGroupId: String,
+                                    readGroup: String): String = {
+
+    val command = new StringBuilder(s"${Constants.gem3ToolName} -I ")
+    command.append(s"/data/$indexName ")
+
+    command.append(s"""-r "@RG\\tID:${getReadGroupId(readGroupId)}\\t${getReadGroup(readGroup)}" """)
+
+    if (interleaved) command.append("-p ")
+
     command.append("- ").toString()
   }
 

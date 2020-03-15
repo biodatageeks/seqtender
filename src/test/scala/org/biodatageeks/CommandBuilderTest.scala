@@ -250,6 +250,69 @@ class CommandBuilderTest extends FunSuite {
     assert(command === correctCommand.toString())
   }
 
+  // gem3's tests
+  test("should make correct gem3 command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct gem3 command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct gem3 command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append("-p ")
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
   // exception
   test("should throw IllegalArgumentException when try build command with unknown tool name") {
     val thrown = intercept[IllegalArgumentException] {
