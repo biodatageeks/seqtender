@@ -313,6 +313,65 @@ class CommandBuilderTest extends FunSuite {
     assert(command === correctCommand.toString)
   }
 
+  // magic blast's tests
+  test("should make correct magic blast command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-infmt fastq ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct magic blast command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct magic blast command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-infmt fastq ")
+    correctCommand.append("-paired ")
+
+    assert(command === correctCommand.toString)
+  }
+
   // exception
   test("should throw IllegalArgumentException when try build command with unknown tool name") {
     val thrown = intercept[IllegalArgumentException] {

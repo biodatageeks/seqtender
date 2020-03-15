@@ -16,7 +16,7 @@ object CommandBuilder {
     command.append(s"-v ${indexSplitPath._1}:/data ")
 
     val imageToCommand = if (image != null) image else getImage(tool)
-    command.append(s"${imageToCommand} " )
+    command.append(s"${imageToCommand} ")
     command.append(s"${toolBuilder(tool, indexSplitPath._2, readsExtension, interleaved, readGroupId, readGroup)}")
 
     command.toString()
@@ -43,7 +43,8 @@ object CommandBuilder {
     case Constants.bowtie2ToolName => bowtie2CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
     case Constants.minimap2ToolName => minimap2CommandBuilder(indexName, readGroupId, readGroup)
     case Constants.bwaToolName => bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
-    case Constants.gem3ToolName => gem3CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
+    case Constants.gem3ToolName => gem3CommandBuilder(indexName, interleaved, readGroupId, readGroup)
+    case Constants.magicBlastToolName => magicBlastCommandBuilder(indexName, readsExtension, interleaved)
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -102,10 +103,9 @@ object CommandBuilder {
   }
 
   private def gem3CommandBuilder(indexName: String,
-                                    readsExtension: ReadsExtension,
-                                    interleaved: Boolean,
-                                    readGroupId: String,
-                                    readGroup: String): String = {
+                                 interleaved: Boolean,
+                                 readGroupId: String,
+                                 readGroup: String): String = {
 
     val command = new StringBuilder(s"${Constants.gem3ToolName} -I ")
     command.append(s"/data/$indexName ")
@@ -115,6 +115,19 @@ object CommandBuilder {
     if (interleaved) command.append("-p ")
 
     command.append("- ").toString()
+  }
+
+  private def magicBlastCommandBuilder(indexName: String,
+                                       readsExtension: ReadsExtension,
+                                       interleaved: Boolean): String = {
+
+    val command = new StringBuilder(s"${Constants.magicBlastToolName} -db ")
+    command.append(s"/data/$indexName ")
+
+    if (readsExtension == ReadsExtension.FQ || readsExtension == ReadsExtension.IFQ) command.append("-infmt fastq ")
+    if (interleaved) command.append("-paired ")
+
+    command.toString()
   }
 
   private def getReadGroupId(readGroupId: String): String = {

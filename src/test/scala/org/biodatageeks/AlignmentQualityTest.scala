@@ -583,7 +583,6 @@ class AlignmentQualityTest extends FunSuite
     assert(r1002Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>9967968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
   }
 
-
   // gem3
   test("should returns correct fastq alignments' details by gem3") {
     val command = CommandBuilder.buildCommand(
@@ -721,6 +720,145 @@ class AlignmentQualityTest extends FunSuite
     assert(r1002Last.getCigarString === "20M1D54M")
     assert(r1002Last.getReadString === "ATAAACCGAAATATCTCTACATCTGAAATCTGATCGTTATGAAACACTTAATCTGATCGGTAAAAAAACAGATA")
     assert(r1002Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>9967968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+  }
+
+  // magic blast
+  test("should returns correct fastq alignments' details by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r481 = collectedSam("r481")
+    assert(r481.getContig === "e_coli:15000-66000")
+    assert(r481.getAlignmentStart === 13938)
+    assert(r481.getCigarString === "35M")
+    assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
+    assert(r481.getBaseQualityString === "*")
+
+    val r1001 = collectedSam("r1001")
+    assert(r1001.getContig === "e_coli:15000-66000")
+    assert(r1001.getAlignmentStart === 306)
+    assert(r1001.getCigarString === "42M1I33M")
+    assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001.getBaseQualityString === "*")
+
+    val r1002 = collectedSam("r1002")
+    assert(r1002.getContig === "e_coli:15000-66000")
+    assert(r1002.getAlignmentStart === 3182)
+    assert(r1002.getCigarString === "30M1D32M1D11M")
+    assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
+    assert(r1002.getBaseQualityString === "*")
+  }
+
+  test("should returns correct fasta alignments' details by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
+    val collectedSam = sam.map(record => (record.getReadName, record)).collectAsMap()
+
+    val r481 = collectedSam("r481")
+    assert(r481.getContig === "e_coli:15000-66000")
+    assert(r481.getAlignmentStart === 13938)
+    assert(r481.getCigarString === "35M")
+    assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
+    assert(r481.getBaseQualityString === "*")
+
+    val r1001 = collectedSam("r1001")
+    assert(r1001.getContig === "e_coli:15000-66000")
+    assert(r1001.getAlignmentStart === 306)
+    assert(r1001.getCigarString === "50M1I25M")
+    assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGACGACCTGATCTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001.getBaseQualityString === "*")
+
+    val r1002 = collectedSam("r1002")
+    assert(r1002.getContig === "e_coli:15000-66000")
+    assert(r1002.getAlignmentStart === 3182)
+    assert(r1002.getCigarString === "41M1D33M")
+    assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAAGCATTGAAACCGAAAAGCCATTAATTTTCGGGATTGATATGCC")
+    assert(r1002.getBaseQualityString === "*")
+  }
+
+  test("should returns correct ifastq alignments' details by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.map(record => (
+      ( // key
+        record.getReadName,
+        (record.getFlags & Constants.FIRST_SEGMENT_FLAG) == Constants.FIRST_SEGMENT_FLAG,
+        (record.getFlags & Constants.LAST_SEGMENT_FLAG) == Constants.LAST_SEGMENT_FLAG
+      ), record)
+    ).collectAsMap()
+
+    val r14First = collectedSam(("r14", true, false))
+    assert(r14First.getFlags === 99)
+    assert(r14First.getContig === "e_coli:15000-66000")
+    assert(r14First.getAlignmentStart === 24900)
+    assert(r14First.getCigarString === "35M")
+    assert(r14First.getReadString === "GTAATTTGAGTAATGCCCACCAGTTCCATCACGAT")
+    assert(r14First.getBaseQualityString === "*")
+
+    val r14Last = collectedSam(("r14", false, true))
+    assert(r14Last.getFlags === 147)
+    assert(r14Last.getContig === "e_coli:15000-66000")
+    assert(r14Last.getAlignmentStart === 25105)
+    assert(r14Last.getCigarString === "32M")
+    assert(r14Last.getReadString === "CACGCACTTTATGCAGTGCTGCCAGCGCCGCC")
+    assert(r14Last.getBaseQualityString === "*")
+
+
+    val r1001First = collectedSam(("r1001", true, false))
+    assert(r1001First.getFlags === 65)
+    assert(r1001First.getContig === "e_coli:15000-66000")
+    assert(r1001First.getAlignmentStart === 306)
+    assert(r1001First.getCigarString === "37M1I38M")
+    assert(r1001First.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTATTTGACGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
+    assert(r1001First.getBaseQualityString === "*")
+
+    val r1001Last = collectedSam(("r1001", false, true))
+    assert(r1001Last.getFlags === 129)
+    assert(r1001Last.getContig === "e_coli:15000-66000")
+    assert(r1001Last.getAlignmentStart === 450)
+    assert(r1001Last.getCigarString === "75M")
+    assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
+    assert(r1001Last.getBaseQualityString === "*")
+
+
+    val r1002First = collectedSam(("r1002", true, false))
+    assert(r1002First.getFlags === 65)
+    assert(r1002First.getContig === "e_coli:15000-66000")
+    assert(r1002First.getAlignmentStart === 3182)
+    assert(r1002First.getCigarString === "75M")
+    assert(r1002First.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGGATTGATATGCC")
+    assert(r1002First.getBaseQualityString === "*")
+
+    val r1002Last = collectedSam(("r1002", false, true))
+    assert(r1002Last.getFlags === 129)
+    assert(r1002Last.getContig === "e_coli:15000-66000")
+    assert(r1002Last.getAlignmentStart === 3328)
+    assert(r1002Last.getCigarString === "21M1D53M")
+    assert(r1002Last.getReadString === "ATAAACCGAAATATCTCTACATCTGAAATCTGATCGTTATGAAACACTTAATCTGATCGGTAAAAAAACAGATA")
+    assert(r1002Last.getBaseQualityString === "*")
   }
 
 }
