@@ -21,6 +21,9 @@ object InputPaths {
   val magicBlastIndex: String = changeIndexPath("magicBlast_index")
   val magicBlastIndexDirectory: String = magicBlastIndex.splitAt(magicBlastIndex.lastIndexOf("/") + 1)._1
 
+  val snapIndex: String = changeIndexPath("snap_index")
+  val snapIndexDirectory: String = snapIndex.splitAt(snapIndex.lastIndexOf("/") + 1)._1
+
   // reads
   val faReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_13.fa").getPath
   val invalidSequenceFaReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-sequence.fa").getPath

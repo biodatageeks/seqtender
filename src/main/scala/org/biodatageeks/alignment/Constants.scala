@@ -7,6 +7,7 @@ object Constants {
   val bwaToolName: String = "bwa"
   val gem3ToolName: String = "gem-mapper"
   val magicBlastToolName: String = "magicblast"
+  val snapToolName: String = "snap-aligner"
 
   val defaultBowtieImage = "quay.io/biocontainers/bowtie:1.2.3--py37hc9558a2_0"
   val defaultBowtie2Image = "quay.io/biocontainers/bowtie2:2.4.1--py38he513fc3_0"
@@ -14,6 +15,7 @@ object Constants {
   val defaultBWAImage = "quay.io/biocontainers/bwa:0.7.17--hed695b0_7"
   val defaultGem3Image = "quay.io/biocontainers/gem3-mapper:3.6.1--h98de208_7"
   val defaultMagicBlastImage = "quay.io/biocontainers/magicblast:1.5.0--h2d02072_0"
+  val defaultSnapImage = "heuermh/snap-aligner-dev"
 
   final val defaultRGId = "test_id"
   final val defaultRG = "SM:Pool1"

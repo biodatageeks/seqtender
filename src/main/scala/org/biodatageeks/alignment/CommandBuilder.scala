@@ -29,6 +29,7 @@ object CommandBuilder {
     case Constants.bwaToolName => Constants.defaultBWAImage
     case Constants.gem3ToolName => Constants.defaultGem3Image
     case Constants.magicBlastToolName => Constants.defaultMagicBlastImage
+    case Constants.snapToolName => Constants.defaultSnapImage
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -45,6 +46,7 @@ object CommandBuilder {
     case Constants.bwaToolName => bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
     case Constants.gem3ToolName => gem3CommandBuilder(indexName, interleaved, readGroupId, readGroup)
     case Constants.magicBlastToolName => magicBlastCommandBuilder(indexName, readsExtension, interleaved)
+    case Constants.snapToolName => snapCommandBuilder(indexName, readsExtension, interleaved)
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -128,6 +130,23 @@ object CommandBuilder {
     if (interleaved) command.append("-paired ")
 
     command.toString()
+  }
+
+  private def snapCommandBuilder(indexName: String,
+                                 readsExtension: ReadsExtension,
+                                 interleaved: Boolean): String = {
+
+    if (readsExtension == ReadsExtension.FA) throw new IllegalArgumentException("Snap aligner doesn't support fasta files")
+
+    val command = new StringBuilder(s"${Constants.snapToolName} ")
+
+    if (interleaved) command.append("paired ") else command.append("single ")
+
+    command.append(s"/data/$indexName ")
+
+    if (interleaved) command.append("-pairedInterleavedFastq - ") else command.append("-fastq - ")
+
+    command.append("-o -sam - ").toString()
   }
 
   private def getReadGroupId(readGroupId: String): String = {

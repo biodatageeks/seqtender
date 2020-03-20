@@ -436,6 +436,43 @@ class AlignmentTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
+
+
+  // snap's tests
+  test("should return number of aligned and unaligned fastq reads by snap") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
+  }
+
+  test("should return number of aligned and unaligned interleaved fastq reads by snap") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 6)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 20)
+  }
+
+
   // exception
   test("should thrown IllegalFileExtensionException when try align reads with invalid extension") {
     val command = "command"

@@ -372,6 +372,63 @@ class CommandBuilderTest extends FunSuite {
     assert(command === correctCommand.toString)
   }
 
+
+  // snap's tests
+  test("should make correct snap command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.snapIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultSnapImage} ")
+    correctCommand.append("snap-aligner single ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-fastq - ")
+    correctCommand.append("-o -sam - ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should throw IllegalArgumentException when try build snap command with FASTA reads") {
+    val thrown = intercept[IllegalArgumentException] {
+      val command = CommandBuilder.buildCommand(
+        readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+        indexPath = InputPaths.snapIndex,
+        tool = Constants.snapToolName,
+        readGroup = Constants.defaultBowtieRG,
+        readGroupId = Constants.defaultBowtieRGId
+      )
+    }
+
+    assert(thrown.getMessage === "Snap aligner doesn't support fasta files")
+  }
+
+  test("should make correct snap command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      interleaved = true,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.snapIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultSnapImage} ")
+    correctCommand.append("snap-aligner paired ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-pairedInterleavedFastq - ")
+    correctCommand.append("-o -sam - ")
+
+    assert(command === correctCommand.toString)
+  }
+
   // exception
   test("should throw IllegalArgumentException when try build command with unknown tool name") {
     val thrown = intercept[IllegalArgumentException] {
