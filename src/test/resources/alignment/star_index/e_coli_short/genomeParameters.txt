@@ -1,0 +1,16 @@
+### STAR   --runMode genomeGenerate   --runThreadN 1   --genomeDir /data/star_index/new/   --genomeFastaFiles /data/bwa_index/e_coli_short.fa      --genomeSAindexNbases 8
+### GstrandBit 32
+versionGenome	2.7.1a
+genomeFastaFiles	/data/bwa_index/e_coli_short.fa 
+genomeSAindexNbases	8
+genomeChrBinNbits	18
+genomeSAsparseD	1
+sjdbOverhang	0
+sjdbFileChrStartEnd	- 
+sjdbGTFfile	-
+sjdbGTFchrPrefix	-
+sjdbGTFfeatureExon	exon
+sjdbGTFtagExonParentTranscript	transcript_id
+sjdbGTFtagExonParentGene	gene_id
+sjdbInsertSave	Basic
+genomeFileSizes	262144 420762

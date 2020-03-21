@@ -30,6 +30,7 @@ object CommandBuilder {
     case Constants.gem3ToolName => Constants.defaultGem3Image
     case Constants.magicBlastToolName => Constants.defaultMagicBlastImage
     case Constants.snapToolName => Constants.defaultSnapImage
+    case Constants.starToolName => Constants.defaultStarImage
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -47,6 +48,7 @@ object CommandBuilder {
     case Constants.gem3ToolName => gem3CommandBuilder(indexName, interleaved, readGroupId, readGroup)
     case Constants.magicBlastToolName => magicBlastCommandBuilder(indexName, readsExtension, interleaved)
     case Constants.snapToolName => snapCommandBuilder(indexName, readsExtension, interleaved)
+    case Constants.starToolName => starCommandBuilder(indexName, readsExtension, readGroupId, readGroup)
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -147,6 +149,21 @@ object CommandBuilder {
     if (interleaved) command.append("-pairedInterleavedFastq - ") else command.append("-fastq - ")
 
     command.append("-o -sam - ").toString()
+  }
+
+  private def starCommandBuilder(indexName: String,
+                                 readsExtension: ReadsExtension,
+                                 readGroupId: String,
+                                 readGroup: String): String = {
+
+    val command = new StringBuilder(s"${Constants.starToolName.toUpperCase()} ")
+    command.append("--runMode alignReads ")
+    command.append("--readFilesIn /dev/stdin ")
+    command.append("--readFilesType Fastx ")
+    command.append("--outStd SAM ")
+    command.append("--outSAMunmapped Within ")
+    command.append(s"--outSAMattrRGline ID:${getReadGroupId(readGroupId)} ${getReadGroup(readGroup)} ")
+    command.append(s"--genomeDir /data/$indexName ").toString()
   }
 
   private def getReadGroupId(readGroupId: String): String = {

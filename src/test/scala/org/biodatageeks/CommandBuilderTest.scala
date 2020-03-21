@@ -372,7 +372,6 @@ class CommandBuilderTest extends FunSuite {
     assert(command === correctCommand.toString)
   }
 
-
   // snap's tests
   test("should make correct snap command to align fq reads") {
     val command = CommandBuilder.buildCommand(
@@ -425,6 +424,55 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"/data/e_coli_short ")
     correctCommand.append("-pairedInterleavedFastq - ")
     correctCommand.append("-o -sam - ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  // star's tests
+  test("should make correct star command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.starIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultStarImage} ")
+    correctCommand.append("STAR ")
+    correctCommand.append("--runMode alignReads ")
+    correctCommand.append("--readFilesIn /dev/stdin ")
+    correctCommand.append("--readFilesType Fastx ")
+    correctCommand.append("--outStd SAM ")
+    correctCommand.append("--outSAMunmapped Within ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultBowtieRGId} ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--genomeDir /data/e_coli_short ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct star command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultBowtieRG,
+      readGroupId = Constants.defaultBowtieRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.starIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultStarImage} ")
+    correctCommand.append("STAR ")
+    correctCommand.append("--runMode alignReads ")
+    correctCommand.append("--readFilesIn /dev/stdin ")
+    correctCommand.append("--readFilesType Fastx ")
+    correctCommand.append("--outStd SAM ")
+    correctCommand.append("--outSAMunmapped Within ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultBowtieRGId} ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--genomeDir /data/e_coli_short ")
 
     assert(command === correctCommand.toString)
   }
