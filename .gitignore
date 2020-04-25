@@ -17,3 +17,5 @@ tasks
 tasks/*
 
 __pycache__/*
+
+*.ipynb_checkpoints
