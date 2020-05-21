@@ -10,7 +10,7 @@ import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.CustomRDDSAMRecordFunctions._
 import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants, SeqTenderAlignment}
 import org.biodatageeks.conf.InternalParams
-import org.biodatageeks.shared.IllegalFileExtensionException
+import org.biodatageeks.utils.IllegalFileExtensionException
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 

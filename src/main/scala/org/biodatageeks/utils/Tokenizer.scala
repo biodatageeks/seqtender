@@ -1,8 +1,8 @@
-package org.biodatageeks.shared
+package org.biodatageeks.utils
 
 import scala.collection.mutable.ArrayBuffer
 
-object Tools {
+object Tokenizer {
   def tokenize(command: String): Seq[String] = {
     val buf = new ArrayBuffer[String]
     buf += "/bin/sh"

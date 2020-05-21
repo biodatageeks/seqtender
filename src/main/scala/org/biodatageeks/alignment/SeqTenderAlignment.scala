@@ -6,8 +6,8 @@ import org.apache.log4j.Logger
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat, FastqRead, FastqReadInputFormat, InterleavedFastqRead, InterleavedFastqReadInputFormat}
-import org.biodatageeks.shared.CustomRDDTextFunctions._
-import org.biodatageeks.shared.IllegalFileExtensionException
+import org.biodatageeks.utils.CustomRDDTextFunctions._
+import org.biodatageeks.utils.IllegalFileExtensionException
 
 
 object SeqTenderAlignment {
@@ -69,6 +69,7 @@ object SeqTenderAlignment {
         iterator.map(it => it._2.toText)
       }
   }
+
   def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
