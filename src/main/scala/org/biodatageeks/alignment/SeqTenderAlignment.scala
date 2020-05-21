@@ -6,8 +6,8 @@ import org.apache.hadoop.mapred.TextInputFormat
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.shared.CustomRDDTextFunctions._
-import org.biodatageeks.shared.IllegalFileExtensionException
+import org.biodatageeks.utils.CustomRDDTextFunctions._
+import org.biodatageeks.utils.IllegalFileExtensionException
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
