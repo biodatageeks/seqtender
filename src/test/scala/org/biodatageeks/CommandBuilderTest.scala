@@ -1,14 +1,14 @@
 package org.biodatageeks
 
-import org.biodatageeks.alignment.{CommandBuilder, Constants}
+import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants}
 import org.scalatest.FunSuite
 
 class CommandBuilderTest extends FunSuite {
 
   // bowtie's tests
   test("should make correct bowtie command to align fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -23,12 +23,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bowtie command to align interleaved fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
@@ -43,12 +43,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} --interleaved ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bowtie command to align fa reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -63,13 +63,13 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} -f ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   // bowtie2's tests
   test("should make correct bowtie2 command to align fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -83,12 +83,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bowtie2 command to align interleaved fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
@@ -103,12 +103,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} --interleaved ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bowtie2 command to align fa reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -123,13 +123,13 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} -f ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   // minimap2's tests
   test("should make correct minimap2 command to align fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -144,12 +144,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct minimap2 command to align interleaved fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
@@ -165,12 +165,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct minimap2 command to align fa reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -185,13 +185,13 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   // bwa's tests
   test("should make correct bwa command to align fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.fqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -206,12 +206,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bwa command to align interleaved fq reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.ifqReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
@@ -227,12 +227,12 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString)
+    assert(command === correctCommand.toString)
   }
 
   test("should make correct bwa command to align fa reads") {
-    val commandBuilder = new CommandBuilder(
-      readsPath = InputPaths.faReadsPath,
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       readGroup = Constants.defaultBowtieRG,
@@ -247,7 +247,21 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
-    assert(commandBuilder.getCommand === correctCommand.toString())
+    assert(command === correctCommand.toString())
   }
 
+  // exception
+  test("should throw IllegalArgumentException when try build command with unknown tool name") {
+    val thrown = intercept[IllegalArgumentException] {
+      CommandBuilder.buildCommand(
+        readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+        indexPath = InputPaths.bowtieIndex,
+        tool = "unknownToolName",
+        readGroup = Constants.defaultBowtieRG,
+        readGroupId = Constants.defaultBowtieRGId
+      )
+    }
+
+    assert(thrown.getMessage === "Unknown tool name")
+  }
 }

@@ -8,11 +8,9 @@ import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.vcf.{VCFCodec, VCFHeader}
 import org.apache.spark.util.Utils
 import org.apache.spark.{Partition, SparkEnv, TaskContext}
-import org.seqdoop.hadoop_bam.VariantContextWithHeader
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
-import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 
@@ -199,16 +197,5 @@ class VCFPipedRDD[T: ClassTag](
         }
       }
     }
-  }
-}
-
-object VCFPipedRDD {
-  // Wrap command (or piped commands) into a shell script
-  def tokenize(command: String): Seq[String] = {
-    val buf = new ArrayBuffer[String]
-    buf += "/bin/sh"
-    buf += "-c"
-    buf += command
-    buf
   }
 }

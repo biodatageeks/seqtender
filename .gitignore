@@ -13,9 +13,9 @@ project/project/target/*
 
 bdg-seqtender.iml
 data/*
+tasks
 tasks/*
 
 __pycache__/*
 
 *.ipynb_checkpoints
-

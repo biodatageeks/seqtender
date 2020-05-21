@@ -6,8 +6,8 @@ import org.apache.hadoop.mapred.TextInputFormat
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{HadoopRDD, NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.CustomRDDTextFunctions._
-import org.biodatageeks.conf.InternalParams
+import org.biodatageeks.utils.CustomRDDTextFunctions._
+import org.biodatageeks.utils.IllegalFileExtensionException
 import org.seqdoop.hadoop_bam.{FastqInputFormat, SequencedFragment}
 
 
@@ -15,24 +15,26 @@ object SeqTenderAlignment {
 
   val logger: Logger = Logger.getLogger(getClass.getName)
 
-  def pipeReads(readsDescription: CommandBuilder)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
+  def pipeReads(readsPath: String, command: String)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
 
     logger.info(
       s"""
          |#########################
-         |Runnig alignment process with command:
-         |${readsDescription.getCommand}
+         |Running alignment process with command:
+         |$command
          |with path:
-         |${readsDescription.getReadsPath}
+         |$readsPath
          |########################
          |""".stripMargin)
-    val rdds = if(readsDescription.getReadsExtension.equals(ReadsExtension.FQ)) {
-      makeReadRddsFromFQ(readsDescription.getReadsPath)
-    } else /*if (readsDescription.getReadsExtension.equals(ReadsExtension.FA))*/ {
-      makeReadRddsFromFA(readsDescription.getReadsPath)
-    } // todo: throw exception when extension isn't fa or fq
 
-    rdds.pipeRead(readsDescription.getCommand)
+    val readsExtension = AlignmentTools.getReadsExtension(readsPath)
+    val rdds = if(readsExtension.equals(ReadsExtension.FQ)) {
+      makeReadRddsFromFQ(readsPath)
+    } else if (readsExtension.equals(ReadsExtension.FA)) {
+      makeReadRddsFromFA(readsPath)
+    } else throw IllegalFileExtensionException("Reads file isn't a fasta or fastq file")
+
+    rdds.pipeRead(command)
   }
 
   def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {

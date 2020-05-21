@@ -1,4 +1,4 @@
-package org.biodatageeks
+package org.biodatageeks.utils
 
 import org.apache.hadoop.io.Text
 import org.apache.spark.rdd.{FQPipedRDD, RDD, VCFPipedRDD}
@@ -10,7 +10,7 @@ class CustomRDDTextFunctions(rdd: RDD[Text]) {
   def pipeVCF(command: String, env: Map[String, String] = Map.empty) =
     new VCFPipedRDD(
       rdd,
-      VCFPipedRDD.tokenize(command),
+      Tokenizer.tokenize(command),
       env,
       null,
       null,
@@ -21,7 +21,7 @@ class CustomRDDTextFunctions(rdd: RDD[Text]) {
   def pipeRead(command: String, env: Map[String, String] = Map.empty) =
     new FQPipedRDD(
       rdd,
-      FQPipedRDD.tokenize(command),
+      Tokenizer.tokenize(command),
       env,
       null,
       null,
@@ -30,7 +30,6 @@ class CustomRDDTextFunctions(rdd: RDD[Text]) {
       bufferSize = 8192)
 
 }
-
 
 object CustomRDDTextFunctions {
   implicit def addCustomFunctions(rdd: RDD[Text]) = new CustomRDDTextFunctions(rdd)

@@ -9,7 +9,6 @@ import org.apache.spark.{Partition, SparkEnv, TaskContext}
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
-import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import scala.reflect.ClassTag
 
@@ -188,16 +187,5 @@ class FQPipedRDD[T: ClassTag](
         }
       }
     }
-  }
-}
-
-object FQPipedRDD {
-  // Wrap command (or piped commands) into a shell script
-  def tokenize(command: String): Seq[String] = {
-    val buf = new ArrayBuffer[String]
-    buf += "/bin/sh"
-    buf += "-c"
-    buf += command
-    buf
   }
 }

@@ -8,8 +8,9 @@ import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
 import org.scalatest.{BeforeAndAfter, FunSuite, PrivateMethodTester}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
-import org.biodatageeks.CustomVariantContextFunctions._
+import org.biodatageeks.annotation.CustomVariantContextFunctions._
 import htsjdk.variant.vcf.VCFFileReader
+import org.biodatageeks.annotation.SeqTenderVCF
 
 import scala.collection.mutable.ArrayBuffer
 
