@@ -5,6 +5,7 @@ import java.io.{DataInput, DataOutput}
 import org.apache.hadoop.io.{Text, Writable, WritableUtils}
 
 // this class represents single FASTQ read - its name, sequence and quality
+@Deprecated
 class FastqRead extends Writable {
   var sequence: Text = new Text()
   var quality: Text = new Text()

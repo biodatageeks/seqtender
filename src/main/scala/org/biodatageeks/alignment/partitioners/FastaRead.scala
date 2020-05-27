@@ -5,6 +5,7 @@ import java.io.{DataInput, DataOutput}
 import org.apache.hadoop.io.{Text, Writable, WritableUtils}
 
 // this class represents single FASTA read - its name and sequence
+@Deprecated
 class FastaRead extends Writable {
   protected var sequence: Text = new Text()
   protected var name: String = _

@@ -4,6 +4,7 @@ import java.io.{DataInput, DataOutput}
 import org.apache.hadoop.io.{Text, Writable}
 
 // this class represents single interleaved FASTQ read - its two reads with name, sequence and quality
+@Deprecated
 class InterleavedFastqRead extends Writable {
   protected var firstRead: FastqRead = new FastqRead()
   protected var secondRead: FastqRead = new FastqRead()
@@ -31,14 +32,14 @@ class InterleavedFastqRead extends Writable {
 
   override def toString: String = {
     val stringBuilder = new StringBuilder
-    stringBuilder.append(readToString(firstRead, 1))
+    stringBuilder.append(readToString(firstRead))
     stringBuilder.append("\n")
-    stringBuilder.append(readToString(secondRead, 2))
+    stringBuilder.append(readToString(secondRead))
 
     stringBuilder.toString()
   }
 
-  private def readToString(read: FastqRead, number: Int): String = {
+  private def readToString(read: FastqRead): String = {
     val stringBuilder = new StringBuilder
     stringBuilder.append(s"${read.getName}")
     stringBuilder.append("\n")

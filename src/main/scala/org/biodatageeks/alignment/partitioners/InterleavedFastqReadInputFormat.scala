@@ -15,6 +15,7 @@ import scala.util.matching.Regex
 
 // A class to split interleaved fastq file to smaller interleaved fastq files
 // It's founded on the org.seqdoop.hadoop_bam.FastqInputFormat
+@Deprecated
 class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedFastqRead] {
 
   class InterleavedFastqReadRecordReader(val conf: Configuration, val split: FileSplit) extends RecordReader[Text, InterleavedFastqRead] {

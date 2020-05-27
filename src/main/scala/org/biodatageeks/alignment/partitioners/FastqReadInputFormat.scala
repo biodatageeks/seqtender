@@ -15,6 +15,7 @@ import scala.util.matching.Regex
 
 // A class to split fastq file to smaller fastq files
 // It's founded on the org.seqdoop.hadoop_bam.FastqInputFormat
+@Deprecated
 class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
 
   class FastqReadRecordReader(val conf: Configuration, val split: FileSplit) extends RecordReader[Text, FastqRead] {

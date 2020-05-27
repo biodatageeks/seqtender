@@ -15,7 +15,6 @@ object SeqTenderAlignment {
   val logger: Logger = Logger.getLogger(getClass.getName)
 
   def pipeReads(readsPath: String, command: String)(implicit sparkSession: SparkSession): RDD[SAMRecord] = {
-
     logger.info(
       s"""
          |#########################
