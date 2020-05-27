@@ -40,7 +40,7 @@ class InterleavedFastqRead extends Writable {
 
   private def readToString(read: FastqRead, number: Int): String = {
     val stringBuilder = new StringBuilder
-    stringBuilder.append(s"@${read.getName}/${number}")
+    stringBuilder.append(s"${read.getName}")
     stringBuilder.append("\n")
     stringBuilder.append(read.getSequence)
     stringBuilder.append("\n")

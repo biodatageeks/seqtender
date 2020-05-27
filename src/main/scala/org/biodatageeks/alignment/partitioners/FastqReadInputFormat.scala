@@ -87,7 +87,7 @@ class FastqReadInputFormat extends FileInputFormat[Text, FastqRead] {
       if(buffer.charAt(0) == '@') key.set(buffer)
       else throw new RuntimeException(s"[SPLIT FASTQ]: Unexpected character in name in fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
-      value.setName(key.toString.splitAt(1)._2)
+      value.setName(key.toString)
 
       // sequence
       readLineInto(buffer)

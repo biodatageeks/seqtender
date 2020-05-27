@@ -6,8 +6,8 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FSDataInputStream, FileSystem, Path}
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.io.compress.{CompressionCodec, CompressionCodecFactory}
-import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, FileSplit}
+import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.util.LineReader
 
 import scala.util.control.Breaks.{break, breakable}
@@ -28,10 +28,10 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
 
     private val currentKey: Text = new Text
     private val currentValue: InterleavedFastqRead = new InterleavedFastqRead
-
     private final val MAX_LINE_LENGTH = 20000 // or more?
-    private final val sequencePattern: Regex = "[A-Za-z]+".r
-    private final val qualityPattern: Regex = "[!-~]+".r
+    private final val firstReadRegex: Regex = ".+([/ +_]1| 1:[YN]:[02468]+:[0-9ACTNG]+)$".r
+    private final val sequenceRegex: Regex = "[A-Za-z]+".r
+    private final val qualityRegex: Regex = "[!-~]+".r
 
 
     val fs: FileSystem = file.getFileSystem(conf)
@@ -68,7 +68,7 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
             val buffer: Text = new Text
             bytesRead = reader.readLine(buffer, Math.min(MAX_LINE_LENGTH, end - start).toInt)
             val bufferSequenceString = buffer.toString
-            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@' && bufferSequenceString.splitAt(bufferSequenceString.lastIndexOf('/'))._2 == "/1") break
+            if (bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == '@' && firstReadRegex.pattern.matcher(buffer.toString).matches()) break
             else start += bytesRead // line starts with @.
           } while (bytesRead > 0)
         }
@@ -90,16 +90,14 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
 
     protected def isInterleavedFastqReadRead(key: Text, value: InterleavedFastqRead): Boolean = {
       value.clear()
-      isFastqReadRead(value.getFirstRead, 1)
-      isFastqReadRead(value.getSecondRead, 2)
-
-      if (value.getFirstRead.getName == value.getSecondRead.getName) key.set(new Text(value.getFirstRead.getName))
-      else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Names of two sequences aren't equal. File ${file.toString}: ${pos}. First read name: ${value.getFirstRead.getName}")
+      isFastqReadRead(value.getFirstRead)
+      isFastqReadRead(value.getSecondRead)
 
       true
     }
 
-    private def isFastqReadRead(value: FastqRead, ordinalNumber: Int): Boolean = {
+    private def isFastqReadRead(value: FastqRead): Boolean = {
+      value.clear()
       val key: Text = new Text()
       val buffer: Text = new Text()
 
@@ -108,14 +106,11 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
       if(buffer.charAt(0) == '@') key.set(buffer)
       else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in name in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
-      if(!key.toString.contains(s"/${ordinalNumber}"))
-        throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Read name in interleaved fastq record isn't correct. It hasn't proper ordinal number. File ${file.toString}: ${pos}. Read key: ${key.toString}")
-
-      value.setName(key.toString.substring(1, key.toString.indexOf('/')))
+      value.setName(key.toString)
 
       // sequence
       readLineInto(buffer)
-      if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
+      if (sequenceRegex.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
       else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in sequence in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       // separator
@@ -125,7 +120,7 @@ class InterleavedFastqReadInputFormat extends FileInputFormat[Text, InterleavedF
 
       // quality
       readLineInto(buffer)
-      if (qualityPattern.pattern.matcher(buffer.toString).matches()) value.setQuality(buffer)
+      if (qualityRegex.pattern.matcher(buffer.toString).matches()) value.setQuality(buffer)
       else throw new RuntimeException(s"[SPLIT INTERLEAVED FASTQ]: Unexpected character in quality in interleaved fastq record at ${file.toString}: ${pos}. Read key: ${key.toString}")
 
       true

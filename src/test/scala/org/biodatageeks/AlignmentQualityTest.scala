@@ -165,7 +165,7 @@ class AlignmentQualityTest extends FunSuite
   }
 
   // bowtie2
-  test("should returns correct fastq alignments' details by bowtie2") { // todo: ask: should I check all of reads?
+  test("should returns correct fastq alignments' details by bowtie2") {
     val command = CommandBuilder.buildCommand(
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,

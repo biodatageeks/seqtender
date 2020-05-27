@@ -42,7 +42,7 @@ class FastqRead extends Writable {
   // recreates fastq read (four lines) with object's fields
   override def toString: String = {
     val stringBuilder = new StringBuilder
-    stringBuilder.append(s"@${name}")
+    stringBuilder.append(s"${name}")
     stringBuilder.append("\n")
     stringBuilder.append(sequence)
     stringBuilder.append("\n")
@@ -92,7 +92,7 @@ class FastqRead extends Writable {
   }
 
   override def write(out: DataOutput): Unit = {
-    WritableUtils.writeString(out, s"@${name}")
+    WritableUtils.writeString(out, s"${name}")
     sequence.write(out)
     WritableUtils.writeString(out, "+")
     quality.write(out)
