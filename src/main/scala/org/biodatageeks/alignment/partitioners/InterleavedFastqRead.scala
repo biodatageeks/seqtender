@@ -2,11 +2,11 @@ package org.biodatageeks.alignment.partitioners
 
 import java.io.{DataInput, DataOutput}
 
-import org.apache.hadoop.io.{Text, Writable}
+import org.apache.hadoop.io.Text
 
 import scala.beans.BeanProperty
 
-class InterleavedFastqRead extends Writable {
+class InterleavedFastqRead extends WritableText {
   @BeanProperty var firstRead: FastqRead = new FastqRead()
   @BeanProperty var secondRead: FastqRead = new FastqRead()
 
@@ -30,9 +30,9 @@ class InterleavedFastqRead extends Writable {
   override def hashCode(): Int = {
     var result = firstRead.hashCode()
 
-    result = 37 * result + secondRead.getName.hashCode()
-    result = 37 * result + secondRead.getSequence.hashCode()
-    result = 37 * result + secondRead.getQuality.hashCode()
+    result = HASH_CONST * result + secondRead.getName.hashCode()
+    result = HASH_CONST * result + secondRead.getSequence.hashCode()
+    result = HASH_CONST * result + secondRead.getQuality.hashCode()
 
     result
   }

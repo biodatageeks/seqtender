@@ -31,8 +31,6 @@ object InputPaths {
   val invalidSequenceIfqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-sequence.ifq").getPath
   val invalidSeparatorIfqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-separator.ifq").getPath
   val invalidQualityIfqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-quality.ifq").getPath
-  val invalidFirstReadNameIfqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_invalid-first-read-name.ifq").getPath
-  val noSecondReadIfqReadsPath: String = getClass.getClassLoader.getResource(s"${readsDirectory}/e_coli_no-second-read.ifq").getPath
 
   val invalidReadsPath: String = "invalid.txt"
 

@@ -30,7 +30,7 @@ class AlignmentPartitionersTest extends FunSuite
   test("should make fastq rdds on 3 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(InputPaths.fqReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromFQ(InputPaths.fqReadsPath)
 
     assert(rdds.getNumPartitions === 3)
   }
@@ -38,14 +38,14 @@ class AlignmentPartitionersTest extends FunSuite
   test("should make interleaved fastq rdds on 5 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromIFQ(InputPaths.ifqReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromIFQ(InputPaths.ifqReadsPath)
 
     assert(rdds.getNumPartitions === 5)
   }
 
   test("should make fasta rdds on 2 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromFA(InputPaths.faReadsPath)
 
     assert(rdds.getNumPartitions === 2)
   }

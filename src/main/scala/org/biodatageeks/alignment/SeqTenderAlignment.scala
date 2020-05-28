@@ -5,7 +5,7 @@ import org.apache.hadoop.io.Text
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.{NewHadoopRDD, RDD}
 import org.apache.spark.sql.SparkSession
-import org.biodatageeks.alignment.partitioners.{FastaRead, FastaReadInputFormat, FastqRead, FastqReadInputFormat, InterleavedFastqRead, InterleavedFastqReadInputFormat}
+import org.biodatageeks.alignment.partitioners._
 import org.biodatageeks.utils.CustomRDDTextFunctions._
 import org.biodatageeks.utils.IllegalFileExtensionException
 
@@ -25,64 +25,51 @@ object SeqTenderAlignment {
          |########################
          |""".stripMargin)
 
-    val readsExtension = AlignmentTools.getReadsExtension(readsPath)
-    val rdds = if (readsExtension.equals(ReadsExtension.FQ)) {
-      makeReadRddsFromFQ(readsPath)
-    } else if (readsExtension.equals(ReadsExtension.IFQ)) {
-      makeReadRddsFromIFQ(readsPath)
-    } else if (readsExtension.equals(ReadsExtension.FA)) {
-      makeReadRddsFromFA(readsPath)
-    } else throw IllegalFileExtensionException("Reads file isn't a fasta, fastq or interleaved fastq file")
-
-    rdds.pipeRead(command)
+    makeReadRDD(readsPath).pipeRead(command)
   }
 
-  def makeReadRddsFromFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
+  def makeReadRDD(readsPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
+    val rdds: NewHadoopRDD[Text, WritableText] = AlignmentTools.getReadsExtension(readsPath) match {
+      case ReadsExtension.FA => makeHadoopRDDFromFA(readsPath)
+      case ReadsExtension.FQ => makeHadoopRDDFromFQ(readsPath)
+      case ReadsExtension.IFQ => makeHadoopRDDFromIFQ(readsPath)
+      case _ => throw IllegalFileExtensionException("Reads file isn't a fasta, fastq or interleaved fastq file")
+    }
+    rdds.mapPartitionsWithInputSplit { (_, iterator) =>
+      // convert reads iterator to text one;
+      // piping method requires text iterator
+      iterator.map(it => it._2.toText)
+    }
+  }
+
+  def makeHadoopRDDFromFQ(inputPath: String)(implicit sparkSession: SparkSession): NewHadoopRDD[Text, WritableText] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[FastqReadInputFormat],
         classOf[Text],
         classOf[FastqRead],
         sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, FastqRead]]
-      .mapPartitionsWithInputSplit { (_, iterator) =>
-
-        // convert reads iterator to text one;
-        // piping method requires text iterator
-        iterator.map(it => it._2.toText)
-      }
+      .asInstanceOf[NewHadoopRDD[Text, WritableText]]
   }
 
-  def makeReadRddsFromIFQ(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
+  def makeHadoopRDDFromIFQ(inputPath: String)(implicit sparkSession: SparkSession): NewHadoopRDD[Text, WritableText] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[InterleavedFastqReadInputFormat],
         classOf[Text],
         classOf[InterleavedFastqRead],
         sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, InterleavedFastqRead]]
-      .mapPartitionsWithInputSplit { (_, iterator) =>
-
-        // convert reads iterator to text one;
-        // piping method requires text iterator
-        iterator.map(it => it._2.toText)
-      }
+      .asInstanceOf[NewHadoopRDD[Text, WritableText]]
   }
 
-  def makeReadRddsFromFA(inputPath: String)(implicit sparkSession: SparkSession): RDD[Text] = {
+  def makeHadoopRDDFromFA(inputPath: String)(implicit sparkSession: SparkSession): NewHadoopRDD[Text, WritableText] = {
     sparkSession.sparkContext
       .newAPIHadoopFile(inputPath,
         classOf[FastaReadInputFormat],
         classOf[Text],
         classOf[FastaRead],
         sparkSession.sparkContext.hadoopConfiguration)
-      .asInstanceOf[NewHadoopRDD[Text, FastaRead]]
-      .mapPartitionsWithInputSplit { (_, iterator) ⇒
-
-        // map reads iterator to text one;
-        // piping method requires text iterator
-        iterator.map(it => it._2.toText)
-      }
+      .asInstanceOf[NewHadoopRDD[Text, WritableText]]
   }
 
 }

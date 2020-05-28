@@ -10,28 +10,19 @@ import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat, FileSplit}
 import org.apache.hadoop.mapreduce.{InputSplit, JobContext, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.util.LineReader
 
-import scala.util.matching.Regex
-
 abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
 
   abstract class ReadRecordReader[X](val conf: Configuration, val split: FileSplit) extends RecordReader[Text, X] {
-    protected val EXCEPTION_INFO_PREFIX = ""
-    protected val EXCEPTION_FORMAT_INFO = ""
     private var start: Long = split.getStart
     private var end: Long = start + split.getLength
     protected var pos: Long = Long.MinValue
 
     protected val file: Path = split.getPath
-    private var lineReader: LineReader = null
+    protected var lineReader: LineReader = null
     private var inputStream: InputStream = null
 
     private val currentKey: Text = new Text
-    protected var currentValue: T = _
-
-    private final val MAX_LINE_LENGTH = 20000 // or more?
-    protected final val SEPARATOR_CHAR = '+'
-    protected final val sequencePattern: Regex = "[A-Za-z]+".r
-    protected final val qualityPattern: Regex = "[!-~]+".r
+    protected var currentValue: X = _
 
     val fs: FileSystem = file.getFileSystem(conf)
     val fileIn: FSDataInputStream = fs.open(file)
@@ -44,7 +35,7 @@ abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
         setPositionAtFirstRecord(fileIn)
         inputStream = fileIn
       } else { // compressed file
-        if (start != 0) throw new RuntimeException(s"[${EXCEPTION_INFO_PREFIX}]: Start position for compressed file is not 0! (found ${start})")
+        if (start != 0) throw new RuntimeException(s"[READER]: Start position for compressed file is not 0! (found ${start})")
         inputStream = codec.createInputStream(fileIn)
         end = Long.MaxValue // read until the end of the file
       }
@@ -69,29 +60,30 @@ abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
       var bytesRead = 0
       do {
         val buffer: Text = new Text
-        bytesRead = reader.readLine(buffer, Math.min(MAX_LINE_LENGTH, end - start).toInt)
+        bytesRead = reader.readLine(buffer, Math.min(ReadReader.MAX_LINE_LENGTH, end - start).toInt)
         if (isFirstRecordNameLine(bytesRead, buffer)) return
-        else start += bytesRead // line starts with proper character.
+        else start += bytesRead
       } while (bytesRead > 0)
     }
 
     protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text): Boolean
 
-    protected def isCorrectRead(key: Text, value: T): Boolean
+    protected def setValidRead(key: Text, value: X): Unit
 
     protected def readLineInto(destination: Text): Unit = {
-      val bytesRead = lineReader.readLine(destination, MAX_LINE_LENGTH)
+      val bytesRead = lineReader.readLine(destination, ReadReader.MAX_LINE_LENGTH)
       if (bytesRead <= 0) throw new EOFException
       pos += bytesRead
     }
 
     override def nextKeyValue(): Boolean = {
-      if (pos >= end) return false // past end of slice
+      if (pos >= end) return false
       try {
-        isCorrectRead(currentKey, currentValue)
+        setValidRead(currentKey, currentValue)
+        true
       } catch {
         case e: EOFException =>
-          throw new RuntimeException(s"[${EXCEPTION_INFO_PREFIX}]: Unexpected end of file in ${EXCEPTION_FORMAT_INFO} record at ${file.toString}: ${pos}. Read key: ${currentKey.toString}")
+          throw new RuntimeException(s"[READER]: Unexpected end of file ${file.toString} at ${pos}. Read key: ${currentKey.toString}")
       }
     }
 

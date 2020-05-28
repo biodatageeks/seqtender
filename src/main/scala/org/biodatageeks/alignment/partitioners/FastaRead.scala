@@ -2,12 +2,11 @@ package org.biodatageeks.alignment.partitioners
 
 import java.io.{DataInput, DataOutput}
 
-import org.apache.hadoop.io.{Text, Writable}
+import org.apache.hadoop.io.Text
 
 import scala.beans.BeanProperty
 
-class FastaRead extends Writable {
-  protected val HASH_CONST = 37
+class FastaRead extends WritableText {
 
   @BeanProperty var sequence: Text = new Text()
   @BeanProperty var name: Text = new Text()
