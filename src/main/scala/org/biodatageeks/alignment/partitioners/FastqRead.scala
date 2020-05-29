@@ -2,77 +2,31 @@ package org.biodatageeks.alignment.partitioners
 
 import java.io.{DataInput, DataOutput}
 
-import org.apache.hadoop.io.{Text, Writable, WritableUtils}
+import org.apache.hadoop.io.Text
 
-// this class represents single FASTQ read - its name, sequence and quality
-class FastqRead extends Writable {
-  var sequence: Text = new Text()
-  var quality: Text = new Text()
-  var name: String = _
+import scala.beans.BeanProperty
 
-  def setName(n: String) {
-    if (n == null)
-      throw new IllegalArgumentException("Name cannot be null")
-
-    name = n
-  }
-
-  def setSequence(seq: Text) {
-    if (seq == null)
-      throw new IllegalArgumentException("Sequence cannot be null")
-
-    sequence = seq
-  }
-
-  def setQuality(qual: Text) {
-    if (qual == null)
-      throw new IllegalArgumentException("Quality cannot be null")
-
-    quality = qual
-  }
-
-  def getName: String = { name }
-  def getSequence: Text = { sequence }
-  def getQuality: Text = { quality }
-
-  def toText: Text = {
-    new Text(toString)
-  }
+class FastqRead extends FastaRead {
+  @BeanProperty var quality: Text = new Text()
 
   // recreates fastq read (four lines) with object's fields
   override def toString: String = {
-    val stringBuilder = new StringBuilder
-    stringBuilder.append(s"${name}")
-    stringBuilder.append("\n")
-    stringBuilder.append(sequence)
-    stringBuilder.append("\n")
-    stringBuilder.append("+")
-    stringBuilder.append("\n")
-    stringBuilder.append(quality)
-
-    stringBuilder.toString()
+    s"${super.toString}\n+\n${quality}"
   }
 
   override def equals(other: Any): Boolean = {
-    if (other != null && other.isInstanceOf[FastqRead]) {
-      val otherFastqRead = other.asInstanceOf[FastqRead]
+    if (!super.equals(other) || !other.isInstanceOf[FastqRead]) return false
 
-      if (name == null && otherFastqRead.name != null || name != null && !(name == otherFastqRead.name))
-        return false
+    val otherFastqRead = other.asInstanceOf[FastqRead]
+    if (quality != otherFastqRead.quality)
+      return false
 
-      // sequence and quality can't be null
-      if (sequence != otherFastqRead.sequence || quality != otherFastqRead.quality)
-        return false
-
-      return true
-    }
-    false
+    true
   }
 
   override def hashCode(): Int = {
-    var result = sequence.hashCode();
-    result = 37 * result + quality.hashCode()
-    result = 37 * result + (if (name.nonEmpty && name != null) name.hashCode() else 0)
+    var result = super.hashCode()
+    result = HASH_CONST * result + quality.hashCode()
 
     result
   }
@@ -80,21 +34,17 @@ class FastqRead extends Writable {
   override def readFields(in: DataInput): Unit = {
     clear()
 
-    name = WritableUtils.readString(in)
-    sequence.readFields(in)
+    super.readFields(in)
     quality.readFields(in)
   }
 
-  def clear(): Unit = {
-    sequence.clear()
+  override def clear(): Unit = {
+    super.clear()
     quality.clear()
-    name = null
   }
 
   override def write(out: DataOutput): Unit = {
-    WritableUtils.writeString(out, s"${name}")
-    sequence.write(out)
-    WritableUtils.writeString(out, "+")
+    super.write(out)
     quality.write(out)
   }
 }

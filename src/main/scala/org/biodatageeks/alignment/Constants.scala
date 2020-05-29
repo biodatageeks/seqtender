@@ -6,13 +6,13 @@ object Constants {
   val minimap2ToolName: String = "minimap2"
   val bwaToolName: String = "bwa"
 
-  val defaultBowtieImage = "quay.io/biocontainers/bowtie:1.2.2--py27h2d50403_1"
-  val defaultBowtie2Image = "quay.io/biocontainers/bowtie2:2.3.4.3--py27h2d50403_0"
-  val defaultMinimap2Image = "quay.io/biocontainers/minimap2:2.16--h84994c4_1"
-  val defaultBWAImage = "quay.io/biocontainers/bwa:0.7.17--ha92aebf_3"
+  val defaultBowtieImage = "quay.io/biocontainers/bowtie:1.2.3--py37hc9558a2_0"
+  val defaultBowtie2Image = "quay.io/biocontainers/bowtie2:2.4.1--py38he513fc3_0"
+  val defaultMinimap2Image = "quay.io/biocontainers/minimap2:2.17--h8b12597_1"
+  val defaultBWAImage = "quay.io/biocontainers/bwa:0.7.17--hed695b0_7"
 
-  final val defaultBowtieRGId = "test_id"
-  final val defaultBowtieRG = "SM:Pool1"
+  final val defaultRGId = "test_id"
+  final val defaultRG = "SM:Pool1"
 
   val faExtensions: List[String] = List("fa", "fasta", ".mfa", ".fna")
   val fqExtensions: List[String] = List("fq", "fastq")

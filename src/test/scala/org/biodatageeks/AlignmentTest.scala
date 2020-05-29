@@ -5,7 +5,6 @@ import java.io.File
 import com.holdenkarau.spark.testing.RDDComparisons
 import htsjdk.samtools.{SAMRecord, SamReaderFactory}
 import org.apache.commons.io.FileUtils
-import org.apache.spark.SparkException
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.alignment.CustomRDDSAMRecordFunctions._
 import org.biodatageeks.alignment.{AlignmentTools, CommandBuilder, Constants, SeqTenderAlignment}
@@ -41,8 +40,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -57,8 +56,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -74,8 +73,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -93,7 +92,7 @@ class AlignmentTest extends FunSuite
     freestyleCommand.append("--threads 2 ") // --threads - number of threads
     freestyleCommand.append("-S ")
     freestyleCommand.append("/data/e_coli_short ")
-    freestyleCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append(s"--sam-RG ID:${Constants.defaultRGId} --sam-RG ${Constants.defaultRG} ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
@@ -109,8 +108,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -125,8 +124,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -142,8 +141,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -160,7 +159,7 @@ class AlignmentTest extends FunSuite
     freestyleCommand.append("bowtie2 -t ") // -t - print time required for the process
     freestyleCommand.append("--threads 2 ") // --threads - number of threads
     freestyleCommand.append("-x ") // --threads - number of threads
-    freestyleCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultRGId} --rg ${Constants.defaultRG} ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
@@ -176,8 +175,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -192,8 +191,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -209,8 +208,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -226,7 +225,7 @@ class AlignmentTest extends FunSuite
     freestyleCommand.append(s"${Constants.defaultMinimap2Image} ")
     freestyleCommand.append("minimap2 -a -x map-ont --seed 42 ") // --seed - for randomizing equally best hits
     freestyleCommand.append("-t 2 ") // -t - number of threads
-    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     freestyleCommand.append("/data/e_coli_short.fa ")
     freestyleCommand.append("- ")
 
@@ -243,8 +242,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -259,8 +258,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -276,8 +275,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -292,7 +291,7 @@ class AlignmentTest extends FunSuite
     freestyleCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     freestyleCommand.append(s"${Constants.defaultBWAImage} ")
     freestyleCommand.append("bwa mem -t 2 ") // -t - number of threads
-    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     freestyleCommand.append("/data/e_coli_short.fa ")
     freestyleCommand.append("- ")
 
@@ -329,8 +328,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -371,8 +370,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)

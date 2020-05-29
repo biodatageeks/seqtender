@@ -101,12 +101,12 @@ object CommandBuilder {
   private def getReadGroupId(readGroupId: String): String = {
     if (readGroupId != null && !readGroupId.isEmpty)
       readGroupId
-    else Constants.defaultBowtieRGId
+    else Constants.defaultRGId
   }
 
   private def getReadGroup(readGroup: String): String = {
     if (readGroup != null && !readGroup.isEmpty)
       readGroup
-    else Constants.defaultBowtieRG
+    else Constants.defaultRG
   }
 }

@@ -30,7 +30,7 @@ class AlignmentPartitionersTest extends FunSuite
   test("should make fastq rdds on 3 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(InputPaths.fqReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromFQ(InputPaths.fqReadsPath)
 
     assert(rdds.getNumPartitions === 3)
   }
@@ -38,20 +38,20 @@ class AlignmentPartitionersTest extends FunSuite
   test("should make interleaved fastq rdds on 5 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
 
-    val rdds = SeqTenderAlignment.makeReadRddsFromIFQ(InputPaths.ifqReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromIFQ(InputPaths.ifqReadsPath)
 
     assert(rdds.getNumPartitions === 5)
   }
 
   test("should make fasta rdds on 2 partitions") {
     sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
+    val rdds = SeqTenderAlignment.makeHadoopRDDFromFA(InputPaths.faReadsPath)
 
     assert(rdds.getNumPartitions === 2)
   }
 
   // fasta
-  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid sequence") {
+  test("should thrown SparkException contains READER exception message when try align fasta reads with invalid sequence") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -62,10 +62,10 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastaReadInputFormat.isFastaReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in sequence in fasta record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's sequence"))
   }
 
-  test("should thrown SparkException contains SPLIT FASTA exception message when try align reads with invalid name") {
+  test("should thrown SparkException contains READER exception message when try align fasta reads with invalid name") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -76,11 +76,11 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastaReadInputFormat.isFastaReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTA]: Unexpected character in name in fasta record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's name"))
   }
 
   // fastq
-  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid sequence") {
+  test("should thrown SparkException contains READER exception message when try align fastq reads with invalid sequence") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -91,10 +91,10 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in sequence in fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's sequence"))
   }
 
-  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid name") {
+  test("should thrown SparkException contains READER exception message when try align fastq reads with invalid name") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -105,10 +105,10 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in name in fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's name"))
   }
 
-  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid separator") {
+  test("should thrown SparkException contains READER exception message when try align fastq reads with invalid separator") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -122,7 +122,7 @@ class AlignmentPartitionersTest extends FunSuite
     assert(thrown.getMessage.contains("This should be '+' separator."))
   }
 
-  test("should thrown SparkException contains SPLIT FASTQ exception message when try align reads with invalid quality") {
+  test("should thrown SparkException contains READER exception message when try align fastq reads with invalid quality") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -133,11 +133,11 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from FastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT FASTQ]: Unexpected character in quality in fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's quality"))
   }
 
   // ifq
-  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid sequence") {
+  test("should thrown SparkException contains READER exception message when try align interleaved fastq reads with invalid sequence") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -148,10 +148,10 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in sequence in interleaved fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's sequence"))
   }
 
-  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid name") {
+  test("should thrown SparkException contains READER exception message when try align interleaved fastq reads with invalid name") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -162,10 +162,10 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in name in interleaved fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's name"))
   }
 
-  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid separator") {
+  test("should thrown SparkException contains READER exception message when try align interleaved fastq reads with invalid separator") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -179,7 +179,7 @@ class AlignmentPartitionersTest extends FunSuite
     assert(thrown.getMessage.contains("This should be '+' separator."))
   }
 
-  test("should thrown SparkException contains SPLIT INTERLEAVED FASTQ exception message when try align reads with invalid quality") {
+  test("should thrown SparkException contains READER exception message when try align interleaved fastq reads with invalid quality") {
     val command = "command"
 
     val thrown = intercept[SparkException] {
@@ -190,6 +190,6 @@ class AlignmentPartitionersTest extends FunSuite
     // unfortunately thrown exception is SparkException,
     // so we have to check if this exception message contains message
     // thrown by RuntimeException from InterleavedFastqReadInputFormat.isFastqReadRead()
-    assert(thrown.getMessage.contains("[SPLIT INTERLEAVED FASTQ]: Unexpected character in quality in interleaved fastq record"))
+    assert(thrown.getMessage.contains("[READER]: Unexpected character in read's quality"))
   }
 }
