@@ -19,48 +19,36 @@ object ReadReader {
     value.clear()
     val buffer: Text = new Text()
     var readBytes = 0
+    val namePrefix = if (value.isInstanceOf[FastqRead]) FASTQ_NAME_PREFIX_CHAR else FASTA_NAME_PREFIX_CHAR
 
     // key - sequence name
     readBytes += readLineInto(lineReader, buffer)
-    if (buffer.toString.charAt(0) == FASTA_NAME_PREFIX_CHAR) key.set(new Text(buffer))
-    else throw new RuntimeException(s"[READER]: Unexpected character in read's name in file $fileName. Read key: ${key.toString}")
+    if (buffer.toString.charAt(0) == namePrefix) key.set(new Text(buffer))
+    else throw ReaderException(s"Unexpected character in read's name in file $fileName. Read key: ${key.toString}")
 
     value.setName(key)
 
     // sequence
     readBytes += readLineInto(lineReader, buffer)
     if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
-    else throw new RuntimeException(s"[READER]: Unexpected character in read's sequence in in file $fileName. Read key: ${key.toString}")
+    else throw ReaderException(s"Unexpected character in read's sequence in in file $fileName. Read key: ${key.toString}")
 
     readBytes
   }
 
   def setFastqReadAndReturnReadBytes(lineReader: LineReader, key: Text, value: FastqRead, fileName: String): Int = {
-    value.clear()
     val buffer: Text = new Text()
-    var readBytes = 0
-
-    // key - sequence name
-    readBytes += readLineInto(lineReader, buffer)
-    if (buffer.toString.charAt(0) == FASTQ_NAME_PREFIX_CHAR) key.set(new Text(buffer))
-    else throw new RuntimeException(s"[READER]: Unexpected character in read's name in file $fileName. Read key: ${key.toString}")
-
-    value.setName(key)
-
-    // sequence
-    readBytes += readLineInto(lineReader, buffer)
-    if (sequencePattern.pattern.matcher(buffer.toString).matches()) value.setSequence(new Text(buffer))
-    else throw new RuntimeException(s"[READER]: Unexpected character in read's sequence in file $fileName. Read key: ${key.toString}")
+    var readBytes = setFastaReadAndReturnReadBytes(lineReader, key, value, fileName)
 
     // separator
     readBytes += readLineInto(lineReader, buffer)
     if(buffer.getLength == 0 || buffer.charAt(0) != SEPARATOR_CHAR)
-      throw new RuntimeException(s"[READER]: Unexpected character in file $fileName. Read key: ${key.toString}. This should be '$SEPARATOR_CHAR' separator.")
+      throw ReaderException(s"Unexpected character in file $fileName. Read key: ${key.toString}. This should be '$SEPARATOR_CHAR' separator.")
 
     // quality
     readBytes += readLineInto(lineReader, buffer)
     if (qualityPattern.pattern.matcher(buffer.toString).matches()) value.setQuality(new Text(buffer))
-    else throw new RuntimeException(s"[READER]: Unexpected character in read's quality file $fileName. Read key: ${key.toString}")
+    else throw ReaderException(s"Unexpected character in read's quality file $fileName. Read key: ${key.toString}")
 
     readBytes
   }

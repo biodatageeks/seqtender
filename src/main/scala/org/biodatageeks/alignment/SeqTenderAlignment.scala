@@ -35,11 +35,17 @@ object SeqTenderAlignment {
       case ReadsExtension.IFQ => makeHadoopRDDFromIFQ(readsPath)
       case _ => throw IllegalFileExtensionException("Reads file isn't a fasta, fastq or interleaved fastq file")
     }
-    rdds.mapPartitionsWithInputSplit { (_, iterator) =>
+    val partitionedRdd = rdds.mapPartitionsWithInputSplit { (_, iterator) =>
       // convert reads iterator to text one;
       // piping method requires text iterator
       iterator.map(it => it._2.toText)
     }
+
+    val nonEmptyPartitionsCounter = sparkSession.sparkContext.longAccumulator("nonEmptyPart")
+    partitionedRdd.foreachPartition(partition =>
+      if (partition.nonEmpty) nonEmptyPartitionsCounter.add(1))
+
+    partitionedRdd.coalesce(nonEmptyPartitionsCounter.value.toInt)
   }
 
   def makeHadoopRDDFromFQ(inputPath: String)(implicit sparkSession: SparkSession): NewHadoopRDD[Text, WritableText] = {

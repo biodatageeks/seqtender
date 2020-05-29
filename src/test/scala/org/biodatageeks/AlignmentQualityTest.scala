@@ -17,7 +17,7 @@ class AlignmentQualityTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 600)
   }
 
   after {
@@ -30,8 +30,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -64,8 +64,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -100,8 +100,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -170,8 +170,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -204,8 +204,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -239,8 +239,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -309,8 +309,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -343,8 +343,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -378,8 +378,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -436,8 +436,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -477,8 +477,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -519,8 +519,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)

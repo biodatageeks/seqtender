@@ -2,7 +2,7 @@ import scala.util.Properties
 
 name := """bdg-seqtender"""
 
-version := "0.2-SNAPSHOT"
+version := "0.3-SNAPSHOT"
 
 organization := "org.biodatageeks"
 

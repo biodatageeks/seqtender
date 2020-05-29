@@ -18,7 +18,8 @@ class InterleavedFastqReadInputFormat extends ReadInputFormat[InterleavedFastqRe
     override protected def setValidRead(key: Text, value: InterleavedFastqRead): Unit = {
       value.clear()
       pos += ReadReader.setFastqReadAndReturnReadBytes(lineReader, key, value.getFirstRead, file.toString)
-      pos += ReadReader.setFastqReadAndReturnReadBytes(lineReader, key, value.getSecondRead, file.toString)
+      val secondReadKey = new Text()
+      pos += ReadReader.setFastqReadAndReturnReadBytes(lineReader, secondReadKey, value.getSecondRead, file.toString)
     }
 
     override protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text): Boolean = {

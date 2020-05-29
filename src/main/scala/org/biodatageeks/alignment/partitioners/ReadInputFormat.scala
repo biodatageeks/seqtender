@@ -35,7 +35,7 @@ abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
         setPositionAtFirstRecord(fileIn)
         inputStream = fileIn
       } else { // compressed file
-        if (start != 0) throw new RuntimeException(s"[READER]: Start position for compressed file is not 0! (found ${start})")
+        if (start != 0) throw ReaderException(s"Start position for compressed file is not 0! (found ${start})")
         inputStream = codec.createInputStream(fileIn)
         end = Long.MaxValue // read until the end of the file
       }
@@ -83,7 +83,7 @@ abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
         true
       } catch {
         case e: EOFException =>
-          throw new RuntimeException(s"[READER]: Unexpected end of file ${file.toString} at ${pos}. Read key: ${currentKey.toString}")
+          throw ReaderException(s"Unexpected end of file ${file.toString} at $pos. Read key: ${currentKey.toString}")
       }
     }
 

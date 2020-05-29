@@ -11,8 +11,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -20,7 +20,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S ")
     correctCommand.append("/data/e_coli_short ")
-    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultRGId} --sam-RG ${Constants.defaultRG} ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -32,15 +32,15 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S /data/e_coli_short ")
-    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} --interleaved ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultRGId} --sam-RG ${Constants.defaultRG} --interleaved ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -51,8 +51,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -60,7 +60,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtieImage} ")
     correctCommand.append("bowtie -S ")
     correctCommand.append("/data/e_coli_short ")
-    correctCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} -f ")
+    correctCommand.append(s"--sam-RG ID:${Constants.defaultRGId} --sam-RG ${Constants.defaultRG} -f ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -72,15 +72,15 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBowtie2Image} ")
     correctCommand.append("bowtie2 -x ")
-    correctCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultRGId} --rg ${Constants.defaultRG} ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -92,15 +92,15 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bowtie2IndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBowtie2Image} ")
     correctCommand.append("bowtie2 -x /data/e_coli_short ")
-    correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} --interleaved ")
+    correctCommand.append(s"--rg-id ${Constants.defaultRGId} --rg ${Constants.defaultRG} --interleaved ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -111,8 +111,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -120,7 +120,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultBowtie2Image} ")
     correctCommand.append("bowtie2 -x ")
     correctCommand.append("/data/e_coli_short ")
-    correctCommand.append(s"--rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} -f ")
+    correctCommand.append(s"--rg-id ${Constants.defaultRGId} --rg ${Constants.defaultRG} -f ")
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -132,15 +132,15 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -153,15 +153,15 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -173,15 +173,15 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultMinimap2Image} ")
     correctCommand.append("minimap2 -a -x map-ont ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -194,15 +194,15 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
     correctCommand.append("bwa mem ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -215,15 +215,15 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
     correctCommand.append("bwa mem ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" -p """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" -p """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -235,15 +235,15 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
     correctCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     correctCommand.append(s"${Constants.defaultBWAImage} ")
     correctCommand.append("bwa mem ")
-    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("/data/e_coli_short.fa ")
     correctCommand.append("- ")
 
@@ -257,8 +257,8 @@ class CommandBuilderTest extends FunSuite {
         readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
         indexPath = InputPaths.bowtieIndex,
         tool = "unknownToolName",
-        readGroup = Constants.defaultBowtieRG,
-        readGroupId = Constants.defaultBowtieRGId
+        readGroup = Constants.defaultRG,
+        readGroupId = Constants.defaultRGId
       )
     }
 
