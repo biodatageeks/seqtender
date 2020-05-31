@@ -11,6 +11,11 @@ import scala.collection.Map
 import scala.io.Source
 import scala.reflect.ClassTag
 
+class ProcessDetails(val process: Process,
+                     val workInTaskDirectory: Boolean,
+                     val taskDirectory: String,
+                     val childThreadException: AtomicReference[Throwable])
+
 abstract class PipedRDDBDG[X: ClassTag, T: ClassTag](prev: RDD[T],
                                                      command: Seq[String],
                                                      envVars: Map[String, String] = Map.empty,
@@ -33,6 +38,21 @@ abstract class PipedRDDBDG[X: ClassTag, T: ClassTag](prev: RDD[T],
     def accept(dir: File, name: String): Boolean = {
       !name.equals(filterName)
     }
+  }
+
+  protected def runProcess(split: Partition, context: TaskContext): ProcessDetails = {
+    val taskDirectory = "tasks" + File.separator + java.util.UUID.randomUUID.toString
+
+    val processBuilderAndTaskDirectory = setUpProcessAndTaskDirectory(split, taskDirectory)
+    val workInTaskDirectory = processBuilderAndTaskDirectory._2
+    val process = processBuilderAndTaskDirectory._1.start()
+
+    val childThreadException = new AtomicReference[Throwable](null)
+
+    startStdErrReaderThread(process, childThreadException)
+    startWriterThread(split, process, context, childThreadException)
+
+    new ProcessDetails(process, workInTaskDirectory, taskDirectory, childThreadException)
   }
 
   protected def setUpProcessAndTaskDirectory(split: Partition, taskDirectory: String): (ProcessBuilder, Boolean) = {
@@ -128,31 +148,25 @@ abstract class PipedRDDBDG[X: ClassTag, T: ClassTag](prev: RDD[T],
     }.start()
   }
 
-  protected def cleanup(workInTaskDirectory: Boolean, taskDirectory: String): Unit = {
+  protected def cleanupTaskDirectory(processDetails: ProcessDetails): Unit = {
     // cleanup task working directory if used
-    if (workInTaskDirectory) {
+    if (processDetails.workInTaskDirectory) {
       scala.util.control.Exception.ignoring(classOf[IOException]) {
-        Utils.deleteRecursively(new File(taskDirectory))
+        Utils.deleteRecursively(new File(processDetails.taskDirectory))
       }
-      logDebug(s"Removed task working directory $taskDirectory")
+      logDebug(s"Removed task working directory ${processDetails.taskDirectory}")
     }
   }
 
-  protected def propagateChildException(process: Process, childThreadException: AtomicReference[Throwable],
-                                        workInTaskDirectory: Boolean, taskDirectory: String): Unit = {
-    val t = childThreadException.get()
+  protected def propagateChildException(processDetails: ProcessDetails): Unit = {
+    val t = processDetails.childThreadException.get()
     if (t != null) {
       val commandRan = command.mkString(" ")
       logError(s"Caught exception while running pipe() operator. Command ran: $commandRan. " +
         s"Exception: ${t.getMessage}")
-      process.destroy()
-      cleanup(workInTaskDirectory, taskDirectory)
+      processDetails.process.destroy()
+      cleanupTaskDirectory(processDetails)
       throw t
     }
   }
 }
-
-class ProcessDetails(processBuilder: ProcessBuilder,
-                     workInTaskDirectory: Boolean,
-                     taskDirectory: String,
-                     childThreadException: AtomicReference[Throwable])

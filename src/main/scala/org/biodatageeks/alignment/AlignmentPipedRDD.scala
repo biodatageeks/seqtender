@@ -1,8 +1,5 @@
 package org.apache.spark.rdd
 
-import java.io._
-import java.util.concurrent.atomic.AtomicReference
-
 import htsjdk.samtools.{SAMRecord, SamInputResource, SamReaderFactory, ValidationStringency}
 import org.apache.spark.{Partition, TaskContext}
 
@@ -18,23 +15,13 @@ class AlignmentPipedRDD[T: ClassTag](prev: RDD[T],
                                      separateWorkingDir: Boolean,
                                      bufferSize: Int,
                                      encoding: String)
-  extends PipedRDDBDG[SAMRecord, T](prev = prev, command = command, envVars = envVars, printPipeContext = printPipeContext, printRDDElement = printRDDElement,
-    separateWorkingDir = separateWorkingDir, bufferSize = bufferSize, encoding = encoding) {
+  extends PipedRDDBDG[SAMRecord, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
 
   override def compute(split: Partition, context: TaskContext): Iterator[SAMRecord] = {
-    val taskDirectory = "tasks" + File.separator + java.util.UUID.randomUUID.toString
-
-    val processBuilderAndTaskDirectory = setUpProcessAndTaskDirectory(split, taskDirectory)
-    val workInTaskDirectory = processBuilderAndTaskDirectory._2
-    val process = processBuilderAndTaskDirectory._1.start()
-
-    val childThreadException = new AtomicReference[Throwable](null)
-
-    startStdErrReaderThread(process, childThreadException)
-    startWriterThread(split, process, context, childThreadException)
+    val processDetails = runProcess(split, context)
 
     // Return an iterator that read lines from the process's stdout
-    val inputStream = process.getInputStream
+    val inputStream = processDetails.process.getInputStream
     val samInputResource = SamInputResource.of(inputStream)
 
     val factory = SamReaderFactory.makeDefault()
@@ -56,15 +43,15 @@ class AlignmentPipedRDD[T: ClassTag](prev: RDD[T],
         val result = if (samIterator.hasNext) {
           true
         } else {
-          val exitStatus = process.waitFor()
-          cleanup(workInTaskDirectory, taskDirectory)
+          val exitStatus = processDetails.process.waitFor()
+          cleanupTaskDirectory(processDetails)
           if (exitStatus != 0) {
             throw new IllegalStateException(s"Subprocess exited with status $exitStatus. " +
               s"Command ran: " + command.mkString(" "))
           }
           false
         }
-        propagateChildException(process, childThreadException, workInTaskDirectory, taskDirectory)
+        propagateChildException(processDetails)
         result
       }
     }

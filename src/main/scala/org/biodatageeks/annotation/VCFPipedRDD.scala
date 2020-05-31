@@ -1,8 +1,5 @@
 package org.apache.spark.rdd
 
-import java.io._
-import java.util.concurrent.atomic.AtomicReference
-
 import htsjdk.tribble.readers.{AsciiLineReader, AsciiLineReaderIterator}
 import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.vcf.{VCFCodec, VCFHeader}
@@ -28,19 +25,10 @@ class VCFPipedRDD[T: ClassTag](prev: RDD[T],
   extends PipedRDDBDG[VariantContextWithHeaderBDG, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
 
   override def compute(split: Partition, context: TaskContext): Iterator[VariantContextWithHeaderBDG] = {
-    val taskDirectory = "tasks" + File.separator + java.util.UUID.randomUUID.toString
-
-    val processBuilderAndIsTaskDirectoryValue = setUpProcessAndTaskDirectory(split, taskDirectory)
-    val process = processBuilderAndIsTaskDirectoryValue._1.start()
-    val workInTaskDirectory = processBuilderAndIsTaskDirectoryValue._2
-
-    val childThreadException = new AtomicReference[Throwable](null)
-
-    startStdErrReaderThread(process, childThreadException)
-    startWriterThread(split, process, context, childThreadException)
+    val processDetails = runProcess(split, context)
 
     // Return an iterator that read lines from the process's stdout
-    val inputStream = process.getInputStream
+    val inputStream = processDetails.process.getInputStream
     val lri = new AsciiLineReaderIterator(new AsciiLineReader(inputStream))
     val codec = new VCFCodec()
 
@@ -60,15 +48,15 @@ class VCFPipedRDD[T: ClassTag](prev: RDD[T],
         val result = if (lri.hasNext) {
           true
         } else {
-          val exitStatus = process.waitFor()
-          cleanup(workInTaskDirectory, taskDirectory)
+          val exitStatus = processDetails.process.waitFor()
+          cleanupTaskDirectory(processDetails)
           if (exitStatus != 0) {
             throw new IllegalStateException(s"Subprocess exited with status $exitStatus. " +
               s"Command ran: " + command.mkString(" "))
           }
           false
         }
-        propagateChildException(process, childThreadException, workInTaskDirectory, taskDirectory)
+        propagateChildException(processDetails)
         result
       }
     }
