@@ -17,7 +17,7 @@ class AlignmentQualityTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 600)
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 475)
   }
 
   after {
@@ -42,21 +42,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r481.getAlignmentStart === 13938)
     assert(r481.getCigarString === "35M")
     assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
-    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r779 = collectedSam("r779")
     assert(r779.getContig === "e_coli:15000-66000")
     assert(r779.getAlignmentStart === 31224)
     assert(r779.getCigarString === "35M")
     assert(r779.getReadString === "CGAAAAGCTGGGGATGGCAAAACGCGTTAAACCGA")
-    assert(r779.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r779.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r1000 = collectedSam("r1000")
     assert(r1000.getContig === "e_coli:15000-66000")
     assert(r1000.getAlignmentStart === 484)
     assert(r1000.getCigarString === "75M")
     assert(r1000.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
-    assert(r1000.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by bowtie") {
@@ -119,7 +119,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14First.getAlignmentStart === 24900)
     assert(r14First.getCigarString === "35M")
     assert(r14First.getReadString === "GTAATTTGAGTAATGCCCACCAGTTCCATCACGAT")
-    assert(r14First.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r14First.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r14Last = collectedSam(("r14", false, true))
     assert(r14Last.getFlags === 147)
@@ -127,7 +127,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14Last.getAlignmentStart === 25105)
     assert(r14Last.getCigarString === "32M")
     assert(r14Last.getReadString === "CACGCACTTTATGCAGTGCTGCCAGCGCCGCC")
-    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCD@")
 
 
     val r294First = collectedSam(("r294", true, false))
@@ -153,7 +153,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r326First.getAlignmentStart === 50520)
     assert(r326First.getCigarString === "35M")
     assert(r326First.getReadString === "GGCTTATCTTCGGCGAAACGGCGGTCAATTTCGTC")
-    assert(r326First.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r326First.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r326Last = collectedSam(("r326", false, true))
     assert(r326Last.getFlags === 147)
@@ -161,7 +161,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r326Last.getAlignmentStart === 50693)
     assert(r326Last.getCigarString === "32M")
     assert(r326Last.getReadString === "CTGAGCAAAAAAGACGTCGTTTTTAAAGCCGT")
-    assert(r326Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r326Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCD@")
   }
 
   // bowtie2
@@ -182,21 +182,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r481.getAlignmentStart === 13938)
     assert(r481.getCigarString === "35M")
     assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
-    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "26M1D34M1D13M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by bowtie2") {
@@ -258,7 +258,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14First.getAlignmentStart === 24900)
     assert(r14First.getCigarString === "35M")
     assert(r14First.getReadString === "GTAATTTGAGTAATGCCCACCAGTTCCATCACGAT")
-    assert(r14First.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r14First.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r14Last = collectedSam(("r14", false, true))
     assert(r14Last.getFlags === 147)
@@ -266,7 +266,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14Last.getAlignmentStart === 25105)
     assert(r14Last.getCigarString === "32M")
     assert(r14Last.getReadString === "CACGCACTTTATGCAGTGCTGCCAGCGCCGCC")
-    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCD@")
 
 
     val r1001First = collectedSam(("r1001", true, false))
@@ -283,7 +283,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1001Last.getAlignmentStart === 450)
     assert(r1001Last.getCigarString === "75M")
     assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
-    assert(r1001Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001Last.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
 
     val r1002First = collectedSam(("r1002", true, false))
@@ -321,21 +321,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r1000.getAlignmentStart === 484)
     assert(r1000.getCigarString === "75M")
     assert(r1000.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
-    assert(r1000.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "26M1D34M1D13M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by minimap2") {
@@ -390,7 +390,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1000First.getAlignmentStart === 484)
     assert(r1000First.getCigarString === "75M")
     assert(r1000First.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
-    assert(r1000First.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000First.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
     val r1000Last = collectedSam("r1000/2")
     assert(r1000Last.getContig === "e_coli:15000-66000")
@@ -412,7 +412,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1001Last.getAlignmentStart === 450)
     assert(r1001Last.getCigarString === "75M")
     assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
-    assert(r1001Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001Last.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
 
     val r1002First = collectedSam("r1002/1")
@@ -448,28 +448,28 @@ class AlignmentQualityTest extends FunSuite
     assert(r33.getAlignmentStart === 49904)
     assert(r33.getCigarString === "5S30M")
     assert(r33.getReadString === "NNNNNTTTGGTTTGCCGCATGATCTGATGACCACG")
-    assert(r33.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r33.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r481 = collectedSam("r481")
     assert(r481.getContig === "e_coli:15000-66000")
     assert(r481.getAlignmentStart === 13938)
     assert(r481.getCigarString === "35M")
     assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
-    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "26M1D34M1D13M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by bwa") {
@@ -538,7 +538,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14First.getAlignmentStart === 24900)
     assert(r14First.getCigarString === "35M")
     assert(r14First.getReadString === "GTAATTTGAGTAATGCCCACCAGTTCCATCACGAT")
-    assert(r14First.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r14First.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r14Last = collectedSam(("r14", false, true))
     assert(r14Last.getFlags === 145)
@@ -546,7 +546,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14Last.getAlignmentStart === 25105)
     assert(r14Last.getCigarString === "32M")
     assert(r14Last.getReadString === "CACGCACTTTATGCAGTGCTGCCAGCGCCGCC")
-    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCD@")
 
 
     val r1001First = collectedSam(("r1001", true, false))
@@ -563,7 +563,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1001Last.getAlignmentStart === 450)
     assert(r1001Last.getCigarString === "75M")
     assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
-    assert(r1001Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001Last.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
 
     val r1002First = collectedSam(("r1002", true, false))

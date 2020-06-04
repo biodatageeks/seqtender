@@ -13,8 +13,8 @@ import org.apache.hadoop.util.LineReader
 abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
 
   abstract class ReadRecordReader[X](val conf: Configuration, val split: FileSplit) extends RecordReader[Text, X] {
-    private var start: Long = split.getStart
-    private var end: Long = start + split.getLength
+    protected var start: Long = split.getStart
+    protected var end: Long = start + split.getLength
     protected var pos: Long = Long.MinValue
 
     protected val file: Path = split.getPath
@@ -56,25 +56,29 @@ abstract class ReadInputFormat[T] extends FileInputFormat[Text, T] {
     private def findFirstRecord(stream: FSDataInputStream): Unit = {
       // LineReader is temporarily used to read lines until position of the first record will be found.
       // Then reading a file will be moved to that position.
-      val reader = new LineReader(stream)
+      var reader = new LineReader(stream)
       var bytesRead = 0
       do {
         val buffer: Text = new Text
         bytesRead = reader.readLine(buffer, Math.min(ReadReader.MAX_LINE_LENGTH, end - start).toInt)
-        if (isFirstRecordNameLine(bytesRead, buffer)) return
+
+        if (isFirstRecordNameLine(bytesRead, buffer, reader, stream)) {
+          if (!isFirstRecordValid(reader, stream)) {
+            start += bytesRead
+            stream.seek(start)
+            reader = new LineReader(stream)
+          }
+          return
+        }
         else start += bytesRead
       } while (bytesRead > 0)
     }
 
-    protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text): Boolean
+    protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text, reader: LineReader, stream: FSDataInputStream): Boolean
+
+    protected def isFirstRecordValid(reader: LineReader, stream: FSDataInputStream): Boolean
 
     protected def setValidRead(key: Text, value: X): Unit
-
-    protected def readLineInto(destination: Text): Unit = {
-      val bytesRead = lineReader.readLine(destination, ReadReader.MAX_LINE_LENGTH)
-      if (bytesRead <= 0) throw new EOFException
-      pos += bytesRead
-    }
 
     override def nextKeyValue(): Boolean = {
       if (pos >= end) return false

@@ -11,7 +11,7 @@ object ReadReader {
   final val MAX_LINE_LENGTH = 20000
   final val FASTA_NAME_PREFIX_CHAR = '>'
   final val FASTQ_NAME_PREFIX_CHAR = '@'
-  private final val SEPARATOR_CHAR = '+'
+  final val SEPARATOR_CHAR = '+'
   private final val sequencePattern: Regex = "[A-Za-z]+".r
   private final val qualityPattern: Regex = "[!-~]+".r
 
@@ -36,13 +36,21 @@ object ReadReader {
     readBytes
   }
 
+  def isFastqRecordValid(reader: LineReader, remainingFileSize: Long): Boolean = {
+    val bufferTmp: Text = new Text()
+    var bytesTmpCount = reader.readLine(bufferTmp, Math.min(ReadReader.MAX_LINE_LENGTH, remainingFileSize).toInt) // sequence
+    bytesTmpCount = reader.readLine(bufferTmp, Math.min(ReadReader.MAX_LINE_LENGTH, remainingFileSize).toInt) // separator
+
+    bytesTmpCount > 0 && bufferTmp.getLength > 0 && bufferTmp.charAt(0) == ReadReader.SEPARATOR_CHAR
+  }
+
   def setFastqReadAndReturnReadBytes(lineReader: LineReader, key: Text, value: FastqRead, fileName: String): Int = {
     val buffer: Text = new Text()
     var readBytes = setFastaReadAndReturnReadBytes(lineReader, key, value, fileName)
 
     // separator
     readBytes += readLineInto(lineReader, buffer)
-    if(buffer.getLength == 0 || buffer.charAt(0) != SEPARATOR_CHAR)
+    if (buffer.getLength == 0 || buffer.charAt(0) != SEPARATOR_CHAR)
       throw ReaderException(s"Unexpected character in file $fileName. Read key: ${key.toString}. This should be '$SEPARATOR_CHAR' separator.")
 
     // quality

@@ -1,9 +1,11 @@
 package org.biodatageeks.alignment.partitioners
 
 import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.FSDataInputStream
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
 import org.apache.hadoop.mapreduce.{InputSplit, RecordReader, TaskAttemptContext}
+import org.apache.hadoop.util.LineReader
 
 import scala.util.matching.Regex
 
@@ -22,9 +24,13 @@ class InterleavedFastqReadInputFormat extends ReadInputFormat[InterleavedFastqRe
       pos += ReadReader.setFastqReadAndReturnReadBytes(lineReader, secondReadKey, value.getSecondRead, file.toString)
     }
 
-    override protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text): Boolean = {
+    override protected def isFirstRecordNameLine(bytesRead: Int, buffer: Text, reader: LineReader, stream: FSDataInputStream): Boolean = {
       bytesRead > 0 && buffer.getLength > 0 && buffer.charAt(0) == ReadReader.FASTQ_NAME_PREFIX_CHAR &&
         firstReadRegex.pattern.matcher(buffer.toString).matches()
+    }
+
+    override def isFirstRecordValid(reader: LineReader, stream: FSDataInputStream): Boolean = {
+      ReadReader.isFastqRecordValid(reader, end - start)
     }
 
     override def getCurrentValue: InterleavedFastqRead = {
