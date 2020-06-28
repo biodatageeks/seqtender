@@ -1,14 +1,14 @@
 package org.biodatageeks.utils
 
 import org.apache.hadoop.io.Text
-import org.apache.spark.rdd.{AlignmentPipedRDD, RDD, VCFPipedRDD}
+import org.apache.spark.rdd.{AlignmentsPipedRDD, RDD, VariantsPipedRDD}
 
 import scala.collection.Map
 
 class CustomRDDTextFunctions(rdd: RDD[Text]) {
 
   def pipeVCF(command: String, env: Map[String, String] = Map.empty) =
-    new VCFPipedRDD(
+    new VariantsPipedRDD(
       rdd,
       Tokenizer.tokenize(command),
       env,
@@ -19,7 +19,7 @@ class CustomRDDTextFunctions(rdd: RDD[Text]) {
       bufferSize = 8192)
 
   def pipeRead(command: String, env: Map[String, String] = Map.empty) =
-    new AlignmentPipedRDD(
+    new AlignmentsPipedRDD(
       rdd,
       Tokenizer.tokenize(command),
       env,

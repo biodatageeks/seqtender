@@ -11,14 +11,10 @@ class FastaRead extends WritableText {
   @BeanProperty var sequence: Text = new Text()
   @BeanProperty var name: Text = new Text()
 
-  def toText: Text = {
-    new Text(toString)
-  }
+  def toText: Text = { new Text(toString) }
 
   // recreates fasta read (dual line) with object's fields
-  override def toString: String = {
-    s"${name}\n${sequence}"
-  }
+  override def toString: String = { s"${name}\n${sequence}" }
 
   override def equals(other: Any): Boolean = {
     if (other == null || !other.isInstanceOf[FastaRead]) return false

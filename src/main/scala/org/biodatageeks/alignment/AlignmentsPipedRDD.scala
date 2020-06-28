@@ -7,14 +7,14 @@ import scala.collection.JavaConverters._
 import scala.collection.Map
 import scala.reflect.ClassTag
 
-class AlignmentPipedRDD[T: ClassTag](prev: RDD[T],
-                                     command: Seq[String],
-                                     envVars: Map[String, String] = Map.empty,
-                                     printPipeContext: (String => Unit) => Unit,
-                                     printRDDElement: (T, String => Unit) => Unit,
-                                     separateWorkingDir: Boolean,
-                                     bufferSize: Int,
-                                     encoding: String)
+class AlignmentsPipedRDD[T: ClassTag](prev: RDD[T],
+                                      command: Seq[String],
+                                      envVars: Map[String, String] = Map.empty,
+                                      printPipeContext: (String => Unit) => Unit,
+                                      printRDDElement: (T, String => Unit) => Unit,
+                                      separateWorkingDir: Boolean,
+                                      bufferSize: Int,
+                                      encoding: String)
   extends PipedRDDBDG[SAMRecord, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
 
   override def compute(split: Partition, context: TaskContext): Iterator[SAMRecord] = {

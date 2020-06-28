@@ -10,13 +10,9 @@ class InterleavedFastqRead extends WritableText {
   @BeanProperty var firstRead: FastqRead = new FastqRead()
   @BeanProperty var secondRead: FastqRead = new FastqRead()
 
-  def toText: Text = {
-    new Text(toString)
-  }
+  def toText: Text = { new Text(toString) }
 
-  override def toString: String = {
-    s"${firstRead.toString}\n${secondRead.toString}"
-  }
+  override def toString: String = { s"${firstRead.toString}\n${secondRead.toString}" }
 
   override def equals(other: Any): Boolean = {
     if (other == null || !other.isInstanceOf[InterleavedFastqRead]) return false

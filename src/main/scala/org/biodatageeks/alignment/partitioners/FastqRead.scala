@@ -10,9 +10,7 @@ class FastqRead extends FastaRead {
   @BeanProperty var quality: Text = new Text()
 
   // recreates fastq read (four lines) with object's fields
-  override def toString: String = {
-    s"${super.toString}\n+\n${quality}"
-  }
+  override def toString: String = { s"${super.toString}\n+\n${quality}" }
 
   override def equals(other: Any): Boolean = {
     if (!super.equals(other) || !other.isInstanceOf[FastqRead]) return false

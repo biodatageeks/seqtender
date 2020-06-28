@@ -14,5 +14,6 @@ CREATE TABLE al_perf (
 	exec_mem integer,
 	partitions_num integer,
 	row_count bigint,
-	split_size bigint
+	split_size bigint,
+	file_size bigint
 	);

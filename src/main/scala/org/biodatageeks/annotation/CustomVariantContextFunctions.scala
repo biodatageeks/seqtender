@@ -1,12 +1,12 @@
 package org.biodatageeks.annotation
 
 import org.apache.log4j.Logger
-import org.apache.spark.rdd.{RDD, VariantContextWithHeaderBDG}
+import org.apache.spark.rdd.{RDD, VariantContextWithHeader}
 import org.apache.spark.sql.SparkSession
 import org.disq_bio.disq.{HtsjdkVariantsRdd, HtsjdkVariantsRddStorage, VariantsFormatWriteOption}
 
 
-class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeaderBDG]) {
+class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeader]) {
 
   val logger = Logger.getLogger(getClass.getName)
   def saveAsVCFFile(path:String)(implicit sparkSession: SparkSession) = saveDISQAsVCFFile(path)
@@ -28,5 +28,5 @@ class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeaderBDG]) {
 }
 
 object CustomVariantContextFunctions {
-  implicit def addCustomFunctions(rdd : RDD[VariantContextWithHeaderBDG]) = new CustomVariantContextFunctions(rdd)
+  implicit def addCustomFunctions(rdd : RDD[VariantContextWithHeader]) = new CustomVariantContextFunctions(rdd)
 }
