@@ -16,7 +16,7 @@ class ProcessDetails(val process: Process,
                      val taskDirectory: String,
                      val childThreadException: AtomicReference[Throwable])
 
-abstract class PipedRDDBDG[X: ClassTag, T: ClassTag](prev: RDD[T],
+abstract class BioPipedRDD[X: ClassTag, T: ClassTag](prev: RDD[T],
                                                      command: Seq[String],
                                                      envVars: Map[String, String] = Map.empty,
                                                      printPipeContext: (String => Unit) => Unit,

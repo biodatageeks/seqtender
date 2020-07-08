@@ -15,7 +15,7 @@ class AlignmentsPipedRDD[T: ClassTag](prev: RDD[T],
                                       separateWorkingDir: Boolean,
                                       bufferSize: Int,
                                       encoding: String)
-  extends PipedRDDBDG[SAMRecord, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
+  extends BioPipedRDD[SAMRecord, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
 
   override def compute(split: Partition, context: TaskContext): Iterator[SAMRecord] = {
     val processDetails = runProcess(split, context)

@@ -31,6 +31,7 @@ def alignWithSeqtender(readsPath:String, indexPath:String, toolName:String): (St
     readGroup = Constants.defaultRG,
     readGroupId = Constants.defaultRGId
     )
+    val time1 = System.currentTimeMillis()
     val rowCount = SeqTenderAlignment.pipeReads(readsPath, alignCmd)(spark).count().toLong
     val time2 = System.currentTimeMillis()
     val timeTaken = time2-time1
@@ -67,15 +68,20 @@ def alignWithCannoli(readsPath:String, indexPath:String, toolName:String): (Stri
       }
     }
   } else if (format.equals(ReadsExtension.FQ)) {
-      val args = new SingleEndBowtie2Args()
-      args.indexPath = indexPath
-      args.useDocker = true
-      val reads = sc.loadUnpairedFastq(readsPath)
-      val time1 = System.currentTimeMillis()
-      val rowCount = reads.alignWithBowtie2(args).rdd.count()
-      val time2 = System.currentTimeMillis()
-      val timeTaken = time2-time1
-      (format.toString,rowCount,timeTaken)
+    toolName match {
+      case Constants.bwaToolName => throw new RuntimeException(s"$toolName for ${ReadsExtension.FQ} not supported in $piper")
+      case Constants.bowtie2ToolName => {
+        val args = new SingleEndBowtie2Args()
+        args.indexPath = indexPath
+        args.useDocker = true
+        val reads = sc.loadUnpairedFastq(readsPath)
+        val time1 = System.currentTimeMillis()
+        val rowCount = reads.alignWithBowtie2(args).rdd.count()
+        val time2 = System.currentTimeMillis()
+        val timeTaken = time2-time1
+        (format.toString,rowCount,timeTaken)
+      }
+    }
   } else
     throw new RuntimeException("unknown format");
 }

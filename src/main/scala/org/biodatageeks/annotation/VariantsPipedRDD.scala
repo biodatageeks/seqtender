@@ -22,7 +22,7 @@ class VariantsPipedRDD[T: ClassTag](prev: RDD[T],
                                     separateWorkingDir: Boolean,
                                     bufferSize: Int,
                                     encoding: String)
-  extends PipedRDDBDG[VariantContextWithHeader, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
+  extends BioPipedRDD[VariantContextWithHeader, T](prev, command, envVars, printPipeContext, printRDDElement, separateWorkingDir, bufferSize, encoding) {
 
   override def compute(split: Partition, context: TaskContext): Iterator[VariantContextWithHeader] = {
     val processDetails = runProcess(split, context)
