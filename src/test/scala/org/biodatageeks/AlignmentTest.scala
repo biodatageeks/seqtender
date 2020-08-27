@@ -14,7 +14,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec}
 
 
-class FQTest extends FunSuite
+class AlignmentTest extends FunSuite
   with BeforeAndAfter
   with RDDComparisons {
 
@@ -27,25 +27,11 @@ class FQTest extends FunSuite
     sparkSession.sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
+    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 475)
   }
 
   after {
     sparkSession.sparkContext.hadoopConfiguration.clear()
-  }
-
-  // split files tests
-  test("should make fastq rdds on 3 partitions") {
-    sparkSession.sparkContext.hadoopConfiguration.setInt("mapred.max.split.size", 500)
-
-    val rdds = SeqTenderAlignment.makeReadRddsFromFQ(InputPaths.fqReadsPath)
-
-    assert(rdds.getNumPartitions === 3)
-  }
-
-  test("should make fasta rdds on 2 partitions") {
-    val rdds = SeqTenderAlignment.makeReadRddsFromFA(InputPaths.faReadsPath)
-
-    assert(rdds.getNumPartitions === 2)
   }
 
   //bowtie's tests
@@ -54,15 +40,15 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   test("should return number of aligned and unaligned fasta reads by bowtie") {
@@ -70,15 +56,15 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by bowtie") {
@@ -87,33 +73,33 @@ class FQTest extends FunSuite
       indexPath = InputPaths.bowtieIndex,
       tool = Constants.bowtieToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 8)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 14)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 12)
   }
 
   test("should return number of aligned and unaligned fastq reads by bowtie - freestyle command") {
     val freestyleCommand = new StringBuilder("docker run --rm -i ")
     freestyleCommand.append(s"-v ${InputPaths.bowtieIndexDirectory}:/data ")
     freestyleCommand.append(s"${Constants.defaultBowtieImage} ")
-    freestyleCommand.append("bowtie -t ")// -t - print time required for the process
+    freestyleCommand.append("bowtie -t ") // -t - print time required for the process
     freestyleCommand.append("--threads 2 ") // --threads - number of threads
     freestyleCommand.append("-S ")
     freestyleCommand.append("/data/e_coli_short ")
-    freestyleCommand.append(s"--sam-RG ID:${Constants.defaultBowtieRGId} --sam-RG ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append(s"--sam-RG ID:${Constants.defaultRGId} --sam-RG ${Constants.defaultRG} ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 7)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
   // bowtie2's tests
@@ -122,14 +108,14 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
@@ -138,14 +124,14 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
@@ -155,14 +141,14 @@ class FQTest extends FunSuite
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
@@ -173,13 +159,13 @@ class FQTest extends FunSuite
     freestyleCommand.append("bowtie2 -t ") // -t - print time required for the process
     freestyleCommand.append("--threads 2 ") // --threads - number of threads
     freestyleCommand.append("-x ") // --threads - number of threads
-    freestyleCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultBowtieRGId} --rg ${Constants.defaultBowtieRG} ")
+    freestyleCommand.append(s"/data/e_coli_short --rg-id ${Constants.defaultRGId} --rg ${Constants.defaultRG} ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 11)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
   }
 
@@ -189,15 +175,15 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
   }
 
   test("should return number of aligned and unaligned fasta reads by minimap2") {
@@ -205,15 +191,15 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
   }
 
   test("should return number of aligned and unaligned interleaved fastq reads by minimap2") {
@@ -222,15 +208,15 @@ class FQTest extends FunSuite
       indexPath = InputPaths.referenceGenomePath,
       tool = Constants.minimap2ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 2)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 26)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 6)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 20)
   }
 
   test("should return number of aligned and unaligned fastq reads by minimap2 - freestyle command") {
@@ -239,15 +225,15 @@ class FQTest extends FunSuite
     freestyleCommand.append(s"${Constants.defaultMinimap2Image} ")
     freestyleCommand.append("minimap2 -a -x map-ont --seed 42 ") // --seed - for randomizing equally best hits
     freestyleCommand.append("-t 2 ") // -t - number of threads
-    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     freestyleCommand.append("/data/e_coli_short.fa ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 1)
-    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 13)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
   }
 
   // bwa's tests
@@ -256,14 +242,14 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
@@ -272,14 +258,14 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
@@ -289,14 +275,14 @@ class FQTest extends FunSuite
       indexPath = InputPaths.bwaIndex,
       tool = Constants.bwaToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 22)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
   }
 
@@ -305,14 +291,14 @@ class FQTest extends FunSuite
     freestyleCommand.append(s"-v ${InputPaths.bwaIndexDirectory}:/data ")
     freestyleCommand.append(s"${Constants.defaultBWAImage} ")
     freestyleCommand.append("bwa mem -t 2 ") // -t - number of threads
-    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append(s"""-R "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     freestyleCommand.append("/data/e_coli_short.fa ")
     freestyleCommand.append("- ")
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
     val collectedSam = sam.collect
 
-    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 9)
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
@@ -324,7 +310,7 @@ class FQTest extends FunSuite
       SeqTenderAlignment.pipeReads(InputPaths.invalidReadsPath, command)
     }
 
-    assert(thrown.getMessage === "Reads file isn't a fasta or fastq file")
+    assert(thrown.getMessage === "Reads file isn't a fasta, fastq or interleaved fastq file")
   }
 
   // save RDD tests
@@ -342,8 +328,8 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -384,8 +370,8 @@ class FQTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
       indexPath = InputPaths.bowtie2Index,
       tool = Constants.bowtie2ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -406,7 +392,6 @@ class FQTest extends FunSuite
     //assert indexes
     assert(sbiIndex.exists())
     assert(baiIndex.exists())
-
 
   }
 }

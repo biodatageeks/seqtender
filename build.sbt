@@ -2,7 +2,7 @@ import scala.util.Properties
 
 name := """bdg-seqtender"""
 
-version := "0.2-SNAPSHOT"
+version := "0.3-SNAPSHOT"
 
 organization := "org.biodatageeks"
 
@@ -57,8 +57,8 @@ libraryDependencies += "org.disq-bio" % "disq" % "0.3.4"
 
 
 fork := true
-fork in Test := true
-parallelExecution in Test := true
+fork in Test := false
+parallelExecution in Test := false
 
 
 javaOptions in Test ++= Seq(

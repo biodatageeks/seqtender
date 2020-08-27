@@ -7,7 +7,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
-import org.apache.spark.rdd.{HadoopRDD, RDD, VariantContextWithHeaderBDG}
+import org.apache.spark.rdd.{HadoopRDD, RDD, VariantContextWithHeader}
 import org.apache.spark.sql.SparkSession
 import org.biodatageeks.utils.CustomRDDTextFunctions._
 import org.seqdoop.hadoop_bam.util.{BGZFCodec, BGZFEnhancedGzipCodec, VCFHeaderReader, WrapSeekable}
@@ -18,7 +18,7 @@ case class VariantContextWithHeaderRDD(headers:mutable.HashMap[String, VCFHeader
 
 object SeqTenderVCF {
 
-  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContextWithHeaderBDG] = {
+  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContextWithHeader] = {
     spark
       .sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,

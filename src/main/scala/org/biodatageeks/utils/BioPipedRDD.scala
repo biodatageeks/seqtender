@@ -3,27 +3,31 @@ package org.apache.spark.rdd
 import java.io._
 import java.util.concurrent.atomic.AtomicReference
 
-import htsjdk.samtools.{SAMRecord, SamInputResource, SamReaderFactory, ValidationStringency}
 import org.apache.spark.util.Utils
-import org.apache.spark.{Partition, SparkEnv, TaskContext}
+import org.apache.spark.{Partition, TaskContext}
 
 import scala.collection.JavaConverters._
 import scala.collection.Map
 import scala.io.Source
 import scala.reflect.ClassTag
 
-class FQPipedRDD[T: ClassTag](
-                                 prev: RDD[T],
-                                 command: Seq[String],
-                                 envVars: Map[String, String] = Map.empty,
-                                 printPipeContext: (String => Unit) => Unit,
-                                 printRDDElement: (T, String => Unit) => Unit,
-                                 separateWorkingDir: Boolean,
-                                 bufferSize: Int,
-                                 encoding: String)
-  extends RDD[SAMRecord](prev) {
+class ProcessDetails(val process: Process,
+                     val workInTaskDirectory: Boolean,
+                     val taskDirectory: String,
+                     val childThreadException: AtomicReference[Throwable])
 
-  override def getPartitions: Array[Partition] = firstParent[T].partitions
+abstract class BioPipedRDD[X: ClassTag, T: ClassTag](prev: RDD[T],
+                                                     command: Seq[String],
+                                                     envVars: Map[String, String] = Map.empty,
+                                                     printPipeContext: (String => Unit) => Unit,
+                                                     printRDDElement: (T, String => Unit) => Unit,
+                                                     separateWorkingDir: Boolean,
+                                                     bufferSize: Int,
+                                                     encoding: String) extends RDD[X](prev) {
+
+  override protected def getPartitions: Array[Partition] = firstParent[T].partitions
+
+  override def compute(split: Partition, context: TaskContext): Iterator[X]
 
   /**
     * A FilenameFilter that accepts anything that isn't equal to the name passed in.
@@ -36,7 +40,23 @@ class FQPipedRDD[T: ClassTag](
     }
   }
 
-  override def compute(split: Partition, context: TaskContext): Iterator[SAMRecord] = {
+  protected def runProcess(split: Partition, context: TaskContext): ProcessDetails = {
+    val taskDirectory = "tasks" + File.separator + java.util.UUID.randomUUID.toString
+
+    val processBuilderAndTaskDirectory = setUpProcessAndTaskDirectory(split, taskDirectory)
+    val workInTaskDirectory = processBuilderAndTaskDirectory._2
+    val process = processBuilderAndTaskDirectory._1.start()
+
+    val childThreadException = new AtomicReference[Throwable](null)
+
+    startStdErrReaderThread(process, childThreadException)
+    startWriterThread(split, process, context, childThreadException)
+
+    new ProcessDetails(process, workInTaskDirectory, taskDirectory, childThreadException)
+  }
+
+  protected def setUpProcessAndTaskDirectory(split: Partition, taskDirectory: String): (ProcessBuilder, Boolean) = {
+    var workInTaskDirectory = false
     val processBuilder = new ProcessBuilder(command.asJava)
     // Add the environmental variables to the process.
     val currentEnvVars = processBuilder.environment()
@@ -52,8 +72,6 @@ class FQPipedRDD[T: ClassTag](
     // When spark.worker.separated.working.directory option is turned on, each
     // task will be run in separate directory. This should be resolve file
     // access conflict issue
-    val taskDirectory = "tasks" + File.separator + java.util.UUID.randomUUID.toString
-    var workInTaskDirectory = false
     logDebug("taskDirectory = " + taskDirectory)
     if (separateWorkingDir) {
       val currentDir = new File(".")
@@ -79,20 +97,17 @@ class FQPipedRDD[T: ClassTag](
           " (" + taskDirectory + ")", e)
       }
     }
+    (processBuilder, workInTaskDirectory)
+  }
 
-    val process = processBuilder.start()
-    val env = SparkEnv.get
-    val childThreadException = new AtomicReference[Throwable](null)
-
+  protected def startStdErrReaderThread(process: Process, childThreadException: AtomicReference[Throwable]): Unit = {
     // Start a thread to print the process's stderr to ours
     new Thread(s"stderr reader for $command") {
       override def run(): Unit = {
         val err = process.getErrorStream
         try {
           for (line <- Source.fromInputStream(err)(encoding).getLines) {
-            // scalastyle:off println
-            System.err.println(line)
-            // scalastyle:on println
+            logError(line)
           }
         } catch {
           case t: Throwable => childThreadException.set(t)
@@ -101,7 +116,9 @@ class FQPipedRDD[T: ClassTag](
         }
       }
     }.start()
+  }
 
+  protected def startWriterThread(split: Partition, process: Process, context: TaskContext, childThreadException: AtomicReference[Throwable]): Unit = {
     // Start a thread to feed the process input from our parent's iterator
     new Thread(s"stdin writer for $command") {
       override def run(): Unit = {
@@ -129,63 +146,27 @@ class FQPipedRDD[T: ClassTag](
         }
       }
     }.start()
+  }
 
-    // Return an iterator that read lines from the process's stdout
-    val inputStream = process.getInputStream
-    val samInputResource = SamInputResource.of(inputStream)
-
-    val factory = SamReaderFactory.makeDefault()
-      .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS, SamReaderFactory.Option.VALIDATE_CRC_CHECKSUMS)
-      .validationStringency(ValidationStringency.SILENT);
-
-    val samReader = factory.open(samInputResource)
-    val samIterator = samReader.iterator().asScala
-
-    new Iterator[SAMRecord] {
-      def next(): SAMRecord = {
-        if (!hasNext()) {
-          throw new NoSuchElementException()
-        }
-        samIterator.next()
+  protected def cleanupTaskDirectory(processDetails: ProcessDetails): Unit = {
+    // cleanup task working directory if used
+    if (processDetails.workInTaskDirectory) {
+      scala.util.control.Exception.ignoring(classOf[IOException]) {
+        Utils.deleteRecursively(new File(processDetails.taskDirectory))
       }
+      logDebug(s"Removed task working directory ${processDetails.taskDirectory}")
+    }
+  }
 
-      def hasNext(): Boolean = {
-        val result = if (samIterator.hasNext) {
-          true
-        } else {
-          val exitStatus = process.waitFor()
-          cleanup()
-          if (exitStatus != 0) {
-            throw new IllegalStateException(s"Subprocess exited with status $exitStatus. " +
-              s"Command ran: " + command.mkString(" "))
-          }
-          false
-        }
-        propagateChildException()
-        result
-      }
-
-      private def cleanup(): Unit = {
-        // cleanup task working directory if used
-        if (workInTaskDirectory) {
-          scala.util.control.Exception.ignoring(classOf[IOException]) {
-            Utils.deleteRecursively(new File(taskDirectory))
-          }
-          logDebug(s"Removed task working directory $taskDirectory")
-        }
-      }
-
-      private def propagateChildException(): Unit = {
-        val t = childThreadException.get()
-        if (t != null) {
-          val commandRan = command.mkString(" ")
-          logError(s"Caught exception while running pipe() operator. Command ran: $commandRan. " +
-            s"Exception: ${t.getMessage}")
-          process.destroy()
-          cleanup()
-          throw t
-        }
-      }
+  protected def propagateChildException(processDetails: ProcessDetails): Unit = {
+    val t = processDetails.childThreadException.get()
+    if (t != null) {
+      val commandRan = command.mkString(" ")
+      logError(s"Caught exception while running pipe() operator. Command ran: $commandRan. " +
+        s"Exception: ${t.getMessage}")
+      processDetails.process.destroy()
+      cleanupTaskDirectory(processDetails)
+      throw t
     }
   }
 }
