@@ -256,8 +256,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -265,7 +265,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultGem3Image} ")
     correctCommand.append("gem-mapper -I ")
     correctCommand.append(s"/data/e_coli_short.gem ")
-    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -276,8 +276,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -285,7 +285,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultGem3Image} ")
     correctCommand.append("gem-mapper -I ")
     correctCommand.append(s"/data/e_coli_short.gem ")
-    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("- ")
 
     assert(command === correctCommand.toString)
@@ -297,8 +297,8 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -306,7 +306,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append(s"${Constants.defaultGem3Image} ")
     correctCommand.append("gem-mapper -I ")
     correctCommand.append(s"/data/e_coli_short.gem ")
-    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     correctCommand.append("-p ")
     correctCommand.append("- ")
 
@@ -319,8 +319,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -338,8 +338,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -357,8 +357,8 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -378,8 +378,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -399,8 +399,8 @@ class CommandBuilderTest extends FunSuite {
         readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
         indexPath = InputPaths.snapIndex,
         tool = Constants.snapToolName,
-        readGroup = Constants.defaultBowtieRG,
-        readGroupId = Constants.defaultBowtieRGId
+        readGroup = Constants.defaultRG,
+        readGroupId = Constants.defaultRGId
       )
     }
 
@@ -413,8 +413,8 @@ class CommandBuilderTest extends FunSuite {
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -434,8 +434,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -447,7 +447,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("--readFilesType Fastx ")
     correctCommand.append("--outStd SAM ")
     correctCommand.append("--outSAMunmapped Within ")
-    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultBowtieRGId} ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultRGId} ${Constants.defaultRG} ")
     correctCommand.append(s"--genomeDir /data/e_coli_short ")
 
     assert(command === correctCommand.toString)
@@ -458,8 +458,8 @@ class CommandBuilderTest extends FunSuite {
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val correctCommand = new StringBuilder("docker run --rm -i ")
@@ -471,7 +471,7 @@ class CommandBuilderTest extends FunSuite {
     correctCommand.append("--readFilesType Fastx ")
     correctCommand.append("--outStd SAM ")
     correctCommand.append("--outSAMunmapped Within ")
-    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultBowtieRGId} ${Constants.defaultBowtieRG} ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultRGId} ${Constants.defaultRG} ")
     correctCommand.append(s"--genomeDir /data/e_coli_short ")
 
     assert(command === correctCommand.toString)

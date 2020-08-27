@@ -589,8 +589,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -601,21 +601,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r481.getAlignmentStart === 13938)
     assert(r481.getCigarString === "35M")
     assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
-    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "26M1D34M1D13M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by gem3") {
@@ -623,8 +623,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -658,8 +658,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -677,7 +677,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14First.getAlignmentStart === 24900)
     assert(r14First.getCigarString === "35M")
     assert(r14First.getReadString === "GTAATTTGAGTAATGCCCACCAGTTCCATCACGAT")
-    assert(r14First.getBaseQualityString === "EDCCCBAAAA@@@@?>===<;;9:99987776554")
+    assert(r14First.getBaseQualityString === "@DCCCBAAAA@@@@?>===<;;9:99987776554")
 
     val r14Last = collectedSam(("r14", false, true))
     assert(r14Last.getFlags === 147)
@@ -685,7 +685,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r14Last.getAlignmentStart === 25105)
     assert(r14Last.getCigarString === "32M")
     assert(r14Last.getReadString === "CACGCACTTTATGCAGTGCTGCCAGCGCCGCC")
-    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r14Last.getBaseQualityString === "67778999:9;;<===>?@@@@AAAABCCCD@")
 
 
     val r1001First = collectedSam(("r1001", true, false))
@@ -702,7 +702,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1001Last.getAlignmentStart === 450)
     assert(r1001Last.getCigarString === "75M")
     assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
-    assert(r1001Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001Last.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
 
     val r1002First = collectedSam(("r1002", true, false))
@@ -728,8 +728,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -762,8 +762,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -797,8 +797,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -867,8 +867,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -879,21 +879,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r1000.getAlignmentStart === 484)
     assert(r1000.getCigarString === "75M")
     assert(r1000.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
-    assert(r1000.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "30M1D32M1D11M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct ifastq alignments' details by snap") {
@@ -902,8 +902,8 @@ class AlignmentQualityTest extends FunSuite
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -920,7 +920,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1000First.getAlignmentStart === 484)
     assert(r1000First.getCigarString === "75M")
     assert(r1000First.getReadString === "GCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTGAACCTCACAGAGGTCTTTTCTCGTTACCAGCGCC")
-    assert(r1000First.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1000First.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
     val r1000Last = collectedSam(("r1000", false, true))
     assert(r1000Last.getContig === "e_coli:15000-66000")
@@ -943,7 +943,7 @@ class AlignmentQualityTest extends FunSuite
     assert(r1001Last.getAlignmentStart === 450)
     assert(r1001Last.getCigarString === "75M")
     assert(r1001Last.getReadString === "CACTCCCCGCCGTTGCTCTTACTCGGATTCGTAAGCCGTGAAAACAGCAACCTCCGTCTGGCCAGTTCGGATGTG")
-    assert(r1001Last.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001Last.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECBB@@@@?>===<;;9:99987776554")
 
 
     val r1002First = collectedSam(("r1002", true, false))
@@ -969,8 +969,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -981,21 +981,21 @@ class AlignmentQualityTest extends FunSuite
     assert(r481.getAlignmentStart === 13938)
     assert(r481.getCigarString === "35M")
     assert(r481.getReadString === "TTCGGTAGAGAAAACGACCCGCAACGCCCTGCAAC")
-    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCDE")
+    assert(r481.getBaseQualityString === "45567778999:9;;<===>?@@@@AAAABCCCD@")
 
     val r1001 = collectedSam("r1001")
     assert(r1001.getContig === "e_coli:15000-66000")
     assert(r1001.getAlignmentStart === 306)
     assert(r1001.getCigarString === "42M1I33M")
     assert(r1001.getReadString === "GCGTTCAAAGAGCTTCTTTGATGGCGTGAAGAAGTTTTTTGATCGACCTGACTCGCTAACCTCCCCAAAAGCCTGC")
-    assert(r1001.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
+    assert(r1001.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!9887759853EECBB@@@@?>===<;;9:99987776554")
 
     val r1002 = collectedSam("r1002")
     assert(r1002.getContig === "e_coli:15000-66000")
     assert(r1002.getAlignmentStart === 3182)
     assert(r1002.getCigarString === "26M1D34M1D13M")
     assert(r1002.getReadString === "TGAATCGCTGGTTCCTGTTCTTGAGCAAAAGCATTGAAACGCGAAAAGCCATTAATTTTCGGATTGATATGCC")
-    assert(r1002.getBaseQualityString === "EDCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
+    assert(r1002.getBaseQualityString === "@DCCCBAAAAAAA@@@?>99697968CDEBABBA!!988775853EECB@@@@?>===<;9:99987776554")
   }
 
   test("should returns correct fasta alignments' details by star") {
@@ -1003,8 +1003,8 @@ class AlignmentQualityTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)

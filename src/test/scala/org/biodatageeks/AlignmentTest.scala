@@ -309,8 +309,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -325,8 +325,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -342,8 +342,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.gem3Index,
       tool = Constants.gem3ToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -359,7 +359,7 @@ class AlignmentTest extends FunSuite
     freestyleCommand.append(s"${Constants.defaultGem3Image} ")
     freestyleCommand.append("gem-mapper -I ")
     freestyleCommand.append(s"/data/e_coli_short.gem ")
-    freestyleCommand.append(s"""-r "@RG\\tID:${Constants.defaultBowtieRGId}\\t${Constants.defaultBowtieRG}" """)
+    freestyleCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
     freestyleCommand.append("--threads 2 ") // --threads - number of threads
     freestyleCommand.append("- ")
 
@@ -376,8 +376,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -392,8 +392,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
@@ -409,8 +409,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.magicBlastIndex,
       tool = Constants.magicBlastToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -442,8 +442,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -459,8 +459,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.snapIndex,
       tool = Constants.snapToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -476,8 +476,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
@@ -493,8 +493,8 @@ class AlignmentTest extends FunSuite
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
       interleaved = true,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
@@ -509,8 +509,8 @@ class AlignmentTest extends FunSuite
       readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
       indexPath = InputPaths.starIndex,
       tool = Constants.starToolName,
-      readGroup = Constants.defaultBowtieRG,
-      readGroupId = Constants.defaultBowtieRGId
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
     )
 
     val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
