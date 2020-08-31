@@ -56,7 +56,7 @@ libraryDependencies += "org.disq-bio" % "disq" % "0.3.4"
 
 
 
-fork := true
+fork := false
 fork in Test := false
 parallelExecution in Test := false
 

@@ -16,7 +16,7 @@ object CommandBuilder {
     command.append(s"-v ${indexSplitPath._1}:/data ")
 
     val imageToCommand = if (image != null) image else getImage(tool)
-    command.append(s"${imageToCommand} " )
+    command.append(s"${imageToCommand} ")
     command.append(s"${toolBuilder(tool, indexSplitPath._2, readsExtension, interleaved, readGroupId, readGroup)}")
 
     command.toString()
@@ -27,6 +27,10 @@ object CommandBuilder {
     case Constants.bowtie2ToolName => Constants.defaultBowtie2Image
     case Constants.minimap2ToolName => Constants.defaultMinimap2Image
     case Constants.bwaToolName => Constants.defaultBWAImage
+    case Constants.gem3ToolName => Constants.defaultGem3Image
+    case Constants.magicBlastToolName => Constants.defaultMagicBlastImage
+    case Constants.snapToolName => Constants.defaultSnapImage
+    case Constants.starToolName => Constants.defaultStarImage
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -41,6 +45,10 @@ object CommandBuilder {
     case Constants.bowtie2ToolName => bowtie2CommandBuilder(indexName, readsExtension, interleaved, readGroupId, readGroup)
     case Constants.minimap2ToolName => minimap2CommandBuilder(indexName, readGroupId, readGroup)
     case Constants.bwaToolName => bwaCommandBuilder(indexName, interleaved, readGroupId, readGroup)
+    case Constants.gem3ToolName => gem3CommandBuilder(indexName, interleaved, readGroupId, readGroup)
+    case Constants.magicBlastToolName => magicBlastCommandBuilder(indexName, readsExtension, interleaved)
+    case Constants.snapToolName => snapCommandBuilder(indexName, readsExtension, interleaved)
+    case Constants.starToolName => starCommandBuilder(indexName, readsExtension, readGroupId, readGroup)
     case _ => throw new IllegalArgumentException("Unknown tool name")
   }
 
@@ -96,6 +104,66 @@ object CommandBuilder {
 
     command.append(s"/data/$indexName ")
     command.append("- ").toString()
+  }
+
+  private def gem3CommandBuilder(indexName: String,
+                                 interleaved: Boolean,
+                                 readGroupId: String,
+                                 readGroup: String): String = {
+
+    val command = new StringBuilder(s"${Constants.gem3ToolName} -I ")
+    command.append(s"/data/$indexName ")
+
+    command.append(s"""-r "@RG\\tID:${getReadGroupId(readGroupId)}\\t${getReadGroup(readGroup)}" """)
+
+    if (interleaved) command.append("-p ")
+
+    command.append("- ").toString()
+  }
+
+  private def magicBlastCommandBuilder(indexName: String,
+                                       readsExtension: ReadsExtension,
+                                       interleaved: Boolean): String = {
+
+    val command = new StringBuilder(s"${Constants.magicBlastToolName} -db ")
+    command.append(s"/data/$indexName ")
+
+    if (readsExtension == ReadsExtension.FQ || readsExtension == ReadsExtension.IFQ) command.append("-infmt fastq ")
+    if (interleaved) command.append("-paired ")
+
+    command.toString()
+  }
+
+  private def snapCommandBuilder(indexName: String,
+                                 readsExtension: ReadsExtension,
+                                 interleaved: Boolean): String = {
+
+    if (readsExtension == ReadsExtension.FA) throw new IllegalArgumentException("Snap aligner doesn't support fasta files")
+
+    val command = new StringBuilder(s"${Constants.snapToolName} ")
+
+    if (interleaved) command.append("paired ") else command.append("single ")
+
+    command.append(s"/data/$indexName ")
+
+    if (interleaved) command.append("-pairedInterleavedFastq - ") else command.append("-fastq - ")
+
+    command.append("-o -sam - ").toString()
+  }
+
+  private def starCommandBuilder(indexName: String,
+                                 readsExtension: ReadsExtension,
+                                 readGroupId: String,
+                                 readGroup: String): String = {
+
+    val command = new StringBuilder(s"${Constants.starToolName.toUpperCase()} ")
+    command.append("--runMode alignReads ")
+    command.append("--readFilesIn /dev/stdin ")
+    command.append("--readFilesType Fastx ")
+    command.append("--outStd SAM ")
+    command.append("--outSAMunmapped Within ")
+    command.append(s"--outSAMattrRGline ID:${getReadGroupId(readGroupId)} ${getReadGroup(readGroup)} ")
+    command.append(s"--genomeDir /data/$indexName ").toString()
   }
 
   private def getReadGroupId(readGroupId: String): String = {

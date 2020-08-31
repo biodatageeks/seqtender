@@ -250,6 +250,233 @@ class CommandBuilderTest extends FunSuite {
     assert(command === correctCommand.toString())
   }
 
+  // gem3's tests
+  test("should make correct gem3 command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct gem3 command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct gem3 command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultGem3Image} ")
+    correctCommand.append("gem-mapper -I ")
+    correctCommand.append(s"/data/e_coli_short.gem ")
+    correctCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
+    correctCommand.append("-p ")
+    correctCommand.append("- ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  // magic blast's tests
+  test("should make correct magic blast command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-infmt fastq ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct magic blast command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct magic blast command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    correctCommand.append("magicblast -db ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-infmt fastq ")
+    correctCommand.append("-paired ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  // snap's tests
+  test("should make correct snap command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.snapIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultSnapImage} ")
+    correctCommand.append("snap-aligner single ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-fastq - ")
+    correctCommand.append("-o -sam - ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should throw IllegalArgumentException when try build snap command with FASTA reads") {
+    val thrown = intercept[IllegalArgumentException] {
+      val command = CommandBuilder.buildCommand(
+        readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+        indexPath = InputPaths.snapIndex,
+        tool = Constants.snapToolName,
+        readGroup = Constants.defaultRG,
+        readGroupId = Constants.defaultRGId
+      )
+    }
+
+    assert(thrown.getMessage === "Snap aligner doesn't support fasta files")
+  }
+
+  test("should make correct snap command to align ifq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.snapIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultSnapImage} ")
+    correctCommand.append("snap-aligner paired ")
+    correctCommand.append(s"/data/e_coli_short ")
+    correctCommand.append("-pairedInterleavedFastq - ")
+    correctCommand.append("-o -sam - ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  // star's tests
+  test("should make correct star command to align fq reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.starIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultStarImage} ")
+    correctCommand.append("STAR ")
+    correctCommand.append("--runMode alignReads ")
+    correctCommand.append("--readFilesIn /dev/stdin ")
+    correctCommand.append("--readFilesType Fastx ")
+    correctCommand.append("--outStd SAM ")
+    correctCommand.append("--outSAMunmapped Within ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultRGId} ${Constants.defaultRG} ")
+    correctCommand.append(s"--genomeDir /data/e_coli_short ")
+
+    assert(command === correctCommand.toString)
+  }
+
+  test("should make correct star command to align fa reads") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val correctCommand = new StringBuilder("docker run --rm -i ")
+    correctCommand.append(s"-v ${InputPaths.starIndexDirectory}:/data ")
+    correctCommand.append(s"${Constants.defaultStarImage} ")
+    correctCommand.append("STAR ")
+    correctCommand.append("--runMode alignReads ")
+    correctCommand.append("--readFilesIn /dev/stdin ")
+    correctCommand.append("--readFilesType Fastx ")
+    correctCommand.append("--outStd SAM ")
+    correctCommand.append("--outSAMunmapped Within ")
+    correctCommand.append(s"--outSAMattrRGline ID:${Constants.defaultRGId} ${Constants.defaultRG} ")
+    correctCommand.append(s"--genomeDir /data/e_coli_short ")
+
+    assert(command === correctCommand.toString)
+  }
+
   // exception
   test("should throw IllegalArgumentException when try build command with unknown tool name") {
     val thrown = intercept[IllegalArgumentException] {

@@ -302,6 +302,224 @@ class AlignmentTest extends FunSuite
     assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 4)
   }
 
+
+  // gem3's tests
+  test("should return number of aligned and unaligned fastq reads by gem3") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  test("should return number of aligned and unaligned fasta reads by gem3") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  test("should return number of aligned and unaligned interleaved fastq reads by gem3") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.gem3Index,
+      tool = Constants.gem3ToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should return number of aligned and unaligned fastq reads by gem3 - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.gem3IndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultGem3Image} ")
+    freestyleCommand.append("gem-mapper -I ")
+    freestyleCommand.append(s"/data/e_coli_short.gem ")
+    freestyleCommand.append(s"""-r "@RG\\tID:${Constants.defaultRGId}\\t${Constants.defaultRG}" """)
+    freestyleCommand.append("--threads 2 ") // --threads - number of threads
+    freestyleCommand.append("- ")
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  // magic blast's tests
+  test("should return number of aligned and unaligned fastq reads by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  test("should return number of aligned and unaligned fasta reads by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  test("should return number of aligned and unaligned interleaved fastq reads by magic blast") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.magicBlastIndex,
+      tool = Constants.magicBlastToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should return number of aligned and unaligned fastq reads by magic blast - freestyle command") {
+    val freestyleCommand = new StringBuilder("docker run --rm -i ")
+    freestyleCommand.append(s"-v ${InputPaths.magicBlastIndexDirectory}:/data ")
+    freestyleCommand.append(s"${Constants.defaultMagicBlastImage} ")
+    freestyleCommand.append("magicblast -db ")
+    freestyleCommand.append(s"/data/e_coli_short ")
+    freestyleCommand.append("-infmt fastq ")
+    freestyleCommand.append("-num_threads 2 ") // -num_threads - number of threads
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, freestyleCommand.toString)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  // snap's tests
+  test("should return number of aligned and unaligned fastq reads by snap") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 3)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 10)
+  }
+
+  test("should return number of aligned and unaligned interleaved fastq reads by snap") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.snapIndex,
+      tool = Constants.snapToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 6)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 20)
+  }
+
+  // star's tests
+  test("should return number of aligned and unaligned fastq reads by star") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.fqReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.fqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
+  test("should return number of aligned and unaligned interleaved fastq reads by star") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.ifqReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      interleaved = true,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.ifqReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 20)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 6)
+  }
+
+  test("should return number of aligned and unaligned fasta reads by star") {
+    val command = CommandBuilder.buildCommand(
+      readsExtension = AlignmentTools.getReadsExtension(InputPaths.faReadsPath),
+      indexPath = InputPaths.starIndex,
+      tool = Constants.starToolName,
+      readGroup = Constants.defaultRG,
+      readGroupId = Constants.defaultRGId
+    )
+
+    val sam = SeqTenderAlignment.pipeReads(InputPaths.faReadsPath, command)
+    val collectedSam = sam.collect
+
+    assert(collectedSam.count(it => it.getAlignmentStart !== SAMRecord.NO_ALIGNMENT_START) === 10)
+    assert(collectedSam.count(it => it.getAlignmentStart === SAMRecord.NO_ALIGNMENT_START) === 3)
+  }
+
   // exception
   test("should thrown IllegalFileExtensionException when try align reads with invalid extension") {
     val command = "command"

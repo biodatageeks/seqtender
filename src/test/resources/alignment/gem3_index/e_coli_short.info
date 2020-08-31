@@ -1,0 +1,188 @@
+[GEM]>Locator
+  => Intervals.Size 0 MB (2 intervals x 80B per interval)
+  => Tags.Locator.Size 0 B (1 locators x 24B per locator)
+  => Tags.Buffer.Size 19 B
+  => Locator.intervals
+       [0] chromosome	Idx=[0,51001)	RL.Idx=[0,0)	Text=e_coli:15000-66000:+:[0,51001)
+       [1] chromosome	Idx=[51002,102003)	RL.Idx=[0,0)	Text=e_coli:15000-66000:-:[0,51001)
+[GEM]>SA.Builder.Stats
+  => Text.Length 102005
+  => Total.Kmers 16777216
+    => Kmers.distribution
+        [0,10) => 16776983 (99.999%)
+        [10,100) => 233 (0.001%)
+  => Block.File.Size 0 MB
+    => Block.Max 0 MB (0.021%)
+    => Block.Prefered 0 MB for 128 writers (0.781%)
+    => Block.Size 0 MB
+  => Num.Groups 129 
+    => Group[0000]	Range=[       0,     794)	794 kmers
+    => Group[0001]	Range=[     794,    1585)	791 kmers
+    => Group[0002]	Range=[    1585,    2379)	794 kmers
+    => Group[0003]	Range=[    2379,    3175)	796 kmers
+    => Group[0004]	Range=[    3175,    3970)	795 kmers
+    => Group[0005]	Range=[    3970,    4766)	796 kmers
+    => Group[0006]	Range=[    4766,    5561)	795 kmers
+    => Group[0007]	Range=[    5561,    6354)	793 kmers
+    => Group[0008]	Range=[    6354,    7148)	794 kmers
+    => Group[0009]	Range=[    7148,    7944)	796 kmers
+    => Group[0010]	Range=[    7944,    8737)	793 kmers
+    => Group[0011]	Range=[    8737,    9533)	796 kmers
+    => Group[0012]	Range=[    9533,   10329)	796 kmers
+    => Group[0013]	Range=[   10329,   11125)	796 kmers
+    => Group[0014]	Range=[   11125,   11919)	794 kmers
+    => Group[0015]	Range=[   11919,   12714)	795 kmers
+    => Group[0016]	Range=[   12714,   13510)	796 kmers
+    => Group[0017]	Range=[   13510,   14305)	795 kmers
+    => Group[0018]	Range=[   14305,   15100)	795 kmers
+    => Group[0019]	Range=[   15100,   15895)	795 kmers
+    => Group[0020]	Range=[   15895,   16690)	795 kmers
+    => Group[0021]	Range=[   16690,   17485)	795 kmers
+    => Group[0022]	Range=[   17485,   18279)	794 kmers
+    => Group[0023]	Range=[   18279,   19073)	794 kmers
+    => Group[0024]	Range=[   19073,   19868)	795 kmers
+    => Group[0025]	Range=[   19868,   20664)	796 kmers
+    => Group[0026]	Range=[   20664,   21459)	795 kmers
+    => Group[0027]	Range=[   21459,   22249)	790 kmers
+    => Group[0028]	Range=[   22249,   23044)	795 kmers
+    => Group[0029]	Range=[   23044,   23840)	796 kmers
+    => Group[0030]	Range=[   23840,   24636)	796 kmers
+    => Group[0031]	Range=[   24636,   25430)	794 kmers
+    => Group[0032]	Range=[   25430,   26224)	794 kmers
+    => Group[0033]	Range=[   26224,   27020)	796 kmers
+    => Group[0034]	Range=[   27020,   27816)	796 kmers
+    => Group[0035]	Range=[   27816,   28612)	796 kmers
+    => Group[0036]	Range=[   28612,   29408)	796 kmers
+    => Group[0037]	Range=[   29408,   30204)	796 kmers
+    => Group[0038]	Range=[   30204,   30999)	795 kmers
+    => Group[0039]	Range=[   30999,   31794)	795 kmers
+    => Group[0040]	Range=[   31794,   32590)	796 kmers
+    => Group[0041]	Range=[   32590,   33384)	794 kmers
+    => Group[0042]	Range=[   33384,   34180)	796 kmers
+    => Group[0043]	Range=[   34180,   34976)	796 kmers
+    => Group[0044]	Range=[   34976,   35767)	791 kmers
+    => Group[0045]	Range=[   35767,   36562)	795 kmers
+    => Group[0046]	Range=[   36562,   37357)	795 kmers
+    => Group[0047]	Range=[   37357,   38151)	794 kmers
+    => Group[0048]	Range=[   38151,   38946)	795 kmers
+    => Group[0049]	Range=[   38946,   39740)	794 kmers
+    => Group[0050]	Range=[   39740,   40536)	796 kmers
+    => Group[0051]	Range=[   40536,   41329)	793 kmers
+    => Group[0052]	Range=[   41329,   42125)	796 kmers
+    => Group[0053]	Range=[   42125,   42917)	792 kmers
+    => Group[0054]	Range=[   42917,   43713)	796 kmers
+    => Group[0055]	Range=[   43713,   44508)	795 kmers
+    => Group[0056]	Range=[   44508,   45304)	796 kmers
+    => Group[0057]	Range=[   45304,   46100)	796 kmers
+    => Group[0058]	Range=[   46100,   46895)	795 kmers
+    => Group[0059]	Range=[   46895,   47690)	795 kmers
+    => Group[0060]	Range=[   47690,   48486)	796 kmers
+    => Group[0061]	Range=[   48486,   49281)	795 kmers
+    => Group[0062]	Range=[   49281,   50077)	796 kmers
+    => Group[0063]	Range=[   50077,   50870)	793 kmers
+    => Group[0064]	Range=[   50870,   51666)	796 kmers
+    => Group[0065]	Range=[   51666,   52461)	795 kmers
+    => Group[0066]	Range=[   52461,   53257)	796 kmers
+    => Group[0067]	Range=[   53257,   54053)	796 kmers
+    => Group[0068]	Range=[   54053,   54849)	796 kmers
+    => Group[0069]	Range=[   54849,   55644)	795 kmers
+    => Group[0070]	Range=[   55644,   56439)	795 kmers
+    => Group[0071]	Range=[   56439,   57231)	792 kmers
+    => Group[0072]	Range=[   57231,   58024)	793 kmers
+    => Group[0073]	Range=[   58024,   58817)	793 kmers
+    => Group[0074]	Range=[   58817,   59608)	791 kmers
+    => Group[0075]	Range=[   59608,   60404)	796 kmers
+    => Group[0076]	Range=[   60404,   61200)	796 kmers
+    => Group[0077]	Range=[   61200,   61993)	793 kmers
+    => Group[0078]	Range=[   61993,   62789)	796 kmers
+    => Group[0079]	Range=[   62789,   63585)	796 kmers
+    => Group[0080]	Range=[   63585,   64381)	796 kmers
+    => Group[0081]	Range=[   64381,   65177)	796 kmers
+    => Group[0082]	Range=[   65177,   65973)	796 kmers
+    => Group[0083]	Range=[   65973,   66769)	796 kmers
+    => Group[0084]	Range=[   66769,   67565)	796 kmers
+    => Group[0085]	Range=[   67565,   68356)	791 kmers
+    => Group[0086]	Range=[   68356,   69152)	796 kmers
+    => Group[0087]	Range=[   69152,   69948)	796 kmers
+    => Group[0088]	Range=[   69948,   70744)	796 kmers
+    => Group[0089]	Range=[   70744,   71539)	795 kmers
+    => Group[0090]	Range=[   71539,   72335)	796 kmers
+    => Group[0091]	Range=[   72335,   73131)	796 kmers
+    => Group[0092]	Range=[   73131,   73927)	796 kmers
+    => Group[0093]	Range=[   73927,   74722)	795 kmers
+    => Group[0094]	Range=[   74722,   75518)	796 kmers
+    => Group[0095]	Range=[   75518,   76313)	795 kmers
+    => Group[0096]	Range=[   76313,   77109)	796 kmers
+    => Group[0097]	Range=[   77109,   77902)	793 kmers
+    => Group[0098]	Range=[   77902,   78698)	796 kmers
+    => Group[0099]	Range=[   78698,   79494)	796 kmers
+    => Group[0100]	Range=[   79494,   80290)	796 kmers
+    => Group[0101]	Range=[   80290,   81086)	796 kmers
+    => Group[0102]	Range=[   81086,   81882)	796 kmers
+    => Group[0103]	Range=[   81882,   82678)	796 kmers
+    => Group[0104]	Range=[   82678,   83473)	795 kmers
+    => Group[0105]	Range=[   83473,   84267)	794 kmers
+    => Group[0106]	Range=[   84267,   85058)	791 kmers
+    => Group[0107]	Range=[   85058,   85852)	794 kmers
+    => Group[0108]	Range=[   85852,   86646)	794 kmers
+    => Group[0109]	Range=[   86646,   87442)	796 kmers
+    => Group[0110]	Range=[   87442,   88238)	796 kmers
+    => Group[0111]	Range=[   88238,   89031)	793 kmers
+    => Group[0112]	Range=[   89031,   89827)	796 kmers
+    => Group[0113]	Range=[   89827,   90620)	793 kmers
+    => Group[0114]	Range=[   90620,   91416)	796 kmers
+    => Group[0115]	Range=[   91416,   92211)	795 kmers
+    => Group[0116]	Range=[   92211,   93004)	793 kmers
+    => Group[0117]	Range=[   93004,   93798)	794 kmers
+    => Group[0118]	Range=[   93798,   94592)	794 kmers
+    => Group[0119]	Range=[   94592,   95388)	796 kmers
+    => Group[0120]	Range=[   95388,   96181)	793 kmers
+    => Group[0121]	Range=[   96181,   96977)	796 kmers
+    => Group[0122]	Range=[   96977,   97773)	796 kmers
+    => Group[0123]	Range=[   97773,   98568)	795 kmers
+    => Group[0124]	Range=[   98568,   99363)	795 kmers
+    => Group[0125]	Range=[   99363,  100156)	793 kmers
+    => Group[0126]	Range=[  100156,  100950)	794 kmers
+    => Group[0127]	Range=[  100950,  101742)	792 kmers
+    => Group[0128]	Range=[  101742,  102005)	263 kmers
+  => Load.Balance (NumKmers / NumBlocks / NumSubBuckets)
+    => Thread[0] 	 26224(25.709%) 	 33(25.581%)
+    => Thread[1] 	 26237(25.721%) 	 33(25.581%)
+    => Thread[2] 	 25441(24.941%) 	 32(24.806%)
+    => Thread[3] 	 24103(23.629%) 	 31(24.031%)
+[GEM]>DNA-text
+  => Architecture Plain.encoded
+  => Text.Length 102005
+  => Text.Size 0 MB
+[GEM]>Sampled-SA
+  => Architecture sSA.pck
+    => ArrayImpl  Packed-Array 
+    => Sampling.Hybrid (SA-Space & Text-Space)
+      => SA.Sampling.Rate 2^18446744073709551614 (4611686018427387904)
+      => Text.Sampling.Rate 2^2 (4)
+  => Size 0 MB
+[GEM]>BWT
+  => Architecture	GBWT.l2.s1.8xC64.8xc16.3xbm64.sampledBm64
+    => Buckets 2-levels
+    => Step    1-step
+    => MayorCounters.length 8x64bits
+    => MinorCounters.length 8x16bits
+    => Bitmap.Bitwise 3x64bits
+    => Sampled.Positions
+      => Sampling.MayorCounters 64bits
+      => Sampling.MinorCounters 16bits
+      => Sampling.Bitmap        64bits
+  => Total.length 102005
+  => Total.Size 0 MB
+    => Mayor.counters 2 (0 MB) [0.167%]
+    => Minor.Blocks 1594 (0 MB) [99.667%]
+      => Minor.Counters (0 MB) [33.222%]
+      => Minor.Bitmap (0 MB) [49.833%]
+      => Minor.Sampling (0 MB) [16.611%]
+  => Occurrences	A=[24582] C=[26419] G=[26419] T=[24582] N=[0] |=[3]
+  => Cumulative.Occ	A=[0] C=[24582] G=[51001] T=[77420] N=[102002] |=[102002]
+[GEM]>Rank.Table
+  => Total.Cells        6990507
+  => Total.Size         53 MB
+  => Num.Levels         12
+  => Min.matching.depth 4

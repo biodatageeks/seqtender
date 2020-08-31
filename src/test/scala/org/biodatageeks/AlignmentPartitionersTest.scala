@@ -55,8 +55,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFaReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFaReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -69,8 +68,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameFaReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidNameFaReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -84,8 +82,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceFqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -98,8 +95,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameFqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidNameFqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -112,8 +108,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorFqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorFqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -126,8 +121,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidQualityFqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidQualityFqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -141,8 +135,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceIfqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSequenceIfqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -155,8 +148,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidNameIfqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidNameIfqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -169,8 +161,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorIfqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidSeparatorIfqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
@@ -183,8 +174,7 @@ class AlignmentPartitionersTest extends FunSuite
     val command = "command"
 
     val thrown = intercept[SparkException] {
-      val collected = SeqTenderAlignment.pipeReads(InputPaths.invalidQualityIfqReadsPath, command).collect
-      collected.count(it => it.getReadName != "")
+      SeqTenderAlignment.pipeReads(InputPaths.invalidQualityIfqReadsPath, command).collect
     }
 
     // unfortunately thrown exception is SparkException,
