@@ -23,7 +23,7 @@ do
 	do
 		for DIVISOR in {1..10}
 		do
-			SPLTI_SIZE=$((DEFAULT_SPLIT / DIVISOR))
+			SPLIT_SIZE=$((DEFAULT_SPLIT / DIVISOR))
 			for EXEC_NUM in {40,30,20,10,9,8,7,6,5,4,3,2,1}
 			do 
 				kinit -kt /data/work/projects/seqtender-perf/bdg-perf.keytab  bdg-perf@CL.II.PW.EDU.PL 
@@ -33,8 +33,8 @@ do
 				--conf spark.sql.catalogImplementation=in-memory \
 				--conf spark.hadoop.yarn.timeline-service.enabled=false  \
 				--conf spark.dynamicAllocation.enabled=false \
-				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLTI_SIZE \
-				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLTI_SIZE \
+				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLIT_SIZE \
+				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLIT_SIZE \
 				--master=yarn-client \
 				--num-executors=$EXEC_NUM \
 				--executor-memory=2g \
@@ -56,8 +56,8 @@ do
 				spark-shell  -v \
 				--conf spark.sql.catalogImplementation=in-memory \
 				--conf spark.dynamicAllocation.enabled=false \
-				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLTI_SIZE \
-				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLTI_SIZE \
+				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLIT_SIZE \
+				--conf spark.hadoop.mapreduce.input.fileinputformat.split.maxsize=$SPLIT_SIZE \
 				--master=local[$EXEC_NUM] \
 				--driver-memory=2g \
 				--jars $SEQTENDER_JAR,$CANNOLI_JAR \
