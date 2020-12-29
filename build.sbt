@@ -73,11 +73,11 @@ outputStrategy := Some(StdoutOutput)
 
 resolvers ++= Seq(
   "Job Server Bintray" at "https://dl.bintray.com/spark-jobserver/maven",
-  "zsibio-snapshots" at "http://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/",
-  "spring" at "http://repo.spring.io/libs-milestone/",
+  "zsibio-snapshots" at "https://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/",
+  "spring" at "https://repo.spring.io/libs-milestone/",
   "Cloudera" at "https://repository.cloudera.com/content/repositories/releases/",
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  "komiya" at "http://dl.bintray.com/komiya-atsushi/maven"
+  "komiya" at "https://dl.bintray.com/komiya-atsushi/maven"
 )
 
 
@@ -116,7 +116,7 @@ publishTo := {
   if (!version.value.toLowerCase.contains("snapshot"))
     sonatypePublishToBundle.value
   else {
-    val nexus = "http://zsibio.ii.pw.edu.pl/nexus/repository/"
+    val nexus = "https://zsibio.ii.pw.edu.pl/nexus/repository/"
     Some("snapshots" at nexus + "maven-snapshots")
   }
 }
