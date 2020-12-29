@@ -4,7 +4,7 @@ object InputPaths {
   val dataDirectory = "alignment"
   val readsDirectory = s"${dataDirectory}/reads"
 
-  val referenceGenomePath: String = adjustPathToJenkins(
+  val referenceGenomePath: String = adjustPathToGitlab(
     getClass.getClassLoader.getResource(s"${dataDirectory}/bwa_index/e_coli_short.fa").getPath)
   val bwaIndex: String = referenceGenomePath
   val bwaIndexDirectory: String = bwaIndex.splitAt(bwaIndex.lastIndexOf("/") + 1)._1
@@ -53,9 +53,9 @@ object InputPaths {
     tmp.splitAt(splitAt)._1
   }
 
-  private def adjustPathToJenkins(path: String): String = {
-    if(path.contains("/var/jenkins_home"))
-      return path.replace("/var/jenkins_home", "/data/samples/jenkins")
+  private def adjustPathToGitlab(path: String): String = {
+    if(path.startsWith("/builds/biodatageeks"))
+      return path.replace("/builds/biodatageeks", "/data/work/builds/biodatageeks")
 
     path
   }
