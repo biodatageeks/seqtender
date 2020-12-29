@@ -110,13 +110,6 @@ assemblyMergeStrategy in assembly := {
     oldStrategy(x)
 }
 
-/* only for releasing assemblies*/
-artifact in (Compile, assembly) := {
- val art = (artifact in (Compile, assembly)).value
- art.withClassifier(Some("assembly"))
-}
-addArtifact(artifact in (Compile, assembly), assembly)
-
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
 publishTo := {
