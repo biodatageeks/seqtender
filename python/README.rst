@@ -1,1 +1,0 @@
-from seqtender.seqtender import *
