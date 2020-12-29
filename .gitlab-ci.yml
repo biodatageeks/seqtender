@@ -52,7 +52,7 @@ version-tag:
 test:
   stage: test
   image:
-    name: biodatageeks/jdk-sbt:$JDK_VERSION-$SBT_VERSION
+    name: biodatageeks/jdk-sbt-docker:$JDK_VERSION-$SBT_VERSION
   variables:
     SBT_OPTS: "-Dsbt.ivy.home=sbt-cache/ivy"
   cache:
@@ -69,7 +69,7 @@ test:
 build:
   stage: build
   image:
-    name: biodatageeks/jdk-sbt:$JDK_VERSION-$SBT_VERSION
+    name: biodatageeks/jdk-sbt-docker:$JDK_VERSION-$SBT_VERSION
   variables:
     SBT_OPTS: "-Dsbt.ivy.home=sbt-cache/ivy"
   cache:
@@ -92,7 +92,7 @@ build:
 publish:
   stage: publish
   image:
-    name: biodatageeks/jdk-sbt:$JDK_VERSION-$SBT_VERSION
+    name: biodatageeks/jdk-sbt-docker:$JDK_VERSION-$SBT_VERSION
   variables:
     SBT_OPTS: "-Dsbt.ivy.home=sbt-cache/ivy"
   cache:
@@ -113,7 +113,7 @@ publish:
 release:
   stage: release
   image:
-    name: biodatageeks/jdk-sbt:$JDK_VERSION-$SBT_VERSION
+    name: biodatageeks/jdk-sbt-docker:$JDK_VERSION-$SBT_VERSION
   variables:
     SBT_OPTS: "-Dsbt.ivy.home=sbt-cache/ivy"
   cache:
