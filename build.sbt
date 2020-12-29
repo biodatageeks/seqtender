@@ -1,8 +1,8 @@
 import scala.util.Properties
 
-name := """bdg-seqtender"""
+name := """seqtender"""
 
-version := "0.3-SNAPSHOT"
+version := s"${sys.env.getOrElse("VERSION", "0.3.0")}"
 
 organization := "org.biodatageeks"
 
@@ -40,8 +40,7 @@ libraryDependencies += "ch.cern.sparkmeasure" %% "spark-measure" % "0.13"
 libraryDependencies += "org.apache.logging.log4j" % "log4j-core" % "2.11.0"
 libraryDependencies += "org.apache.logging.log4j" % "log4j-api" % "2.11.0"
 
-libraryDependencies += "com.intel.gkl" % "gkl" % "0.8.5-1-darwin-SNAPSHOT"
-libraryDependencies += "com.intel.gkl" % "gkl" % "0.8.5-1-linux-SNAPSHOT"
+libraryDependencies += "com.intel.gkl" % "gkl" % "0.8.6"
 
 libraryDependencies += "de.ruedigermoeller" % "fst" % "2.57"
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.7"
@@ -74,9 +73,11 @@ outputStrategy := Some(StdoutOutput)
 
 resolvers ++= Seq(
   "Job Server Bintray" at "https://dl.bintray.com/spark-jobserver/maven",
-  "zsibio-snapshots" at "http://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/",
-  "spring" at "http://repo.spring.io/libs-milestone/",
-  "Cloudera" at "https://repository.cloudera.com/content/repositories/releases/"
+  "zsibio-snapshots" at "https://zsibio.ii.pw.edu.pl/nexus/repository/maven-snapshots/",
+  "spring" at "https://repo.spring.io/libs-milestone/",
+  "Cloudera" at "https://repository.cloudera.com/content/repositories/releases/",
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  "komiya" at "https://dl.bintray.com/komiya-atsushi/maven"
 )
 
 
@@ -109,20 +110,13 @@ assemblyMergeStrategy in assembly := {
     oldStrategy(x)
 }
 
-/* only for releasing assemblies*/
-artifact in (Compile, assembly) := {
- val art = (artifact in (Compile, assembly)).value
- art.withClassifier(Some("assembly"))
-}
-addArtifact(artifact in (Compile, assembly), assembly)
-
-publishConfiguration := publishConfiguration.value.withOverwrite(true)
-
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+publishConfiguration := publishConfiguration.value.withOverwrite(true)
 publishTo := {
-  val nexus = "http://zsibio.ii.pw.edu.pl/nexus/repository/"
-  if (isSnapshot.value)
+  if (!version.value.toLowerCase.contains("snapshot"))
+    sonatypePublishToBundle.value
+  else {
+    val nexus = "https://zsibio.ii.pw.edu.pl/nexus/repository/"
     Some("snapshots" at nexus + "maven-snapshots")
-  else
-    Some("releases" at nexus + "maven-releases")
+  }
 }
