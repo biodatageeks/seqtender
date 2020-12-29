@@ -18,23 +18,23 @@ case class VariantContextWithHeaderRDD(headers:mutable.HashMap[String, VCFHeader
 
 object SeqTenderVCF {
 
-  def pipeVCF(inputPath: String, command: String, spark: SparkSession): RDD[VariantContextWithHeader] = {
+  def pipeVCF(inputPath: String, command: String, spark: SparkSession, partitions: Option[Int] = None): RDD[VariantContextWithHeader] = {
     spark
       .sparkContext.hadoopConfiguration.setStrings("io.compression.codecs",
       classOf[BGZFCodec].getCanonicalName,
       classOf[BGZFEnhancedGzipCodec].getCanonicalName)
-    val rdds = makeVCFRDDs(spark, inputPath)
+    val rdds = makeVCFRDDs(spark, inputPath, partitions)
     rdds.pipeVCF(command)
   }
 
-  def makeVCFRDDs(spark: SparkSession, inputPath: String): RDD[Text] = {
+  def makeVCFRDDs(spark: SparkSession, inputPath: String, partitions: Option[Int] = None): RDD[Text] = {
     val bc = broadCastVCFHeaders(inputPath, spark)
     spark
       .sparkContext
       .hadoopFile(inputPath,
         classOf[TextInputFormat],
         classOf[LongWritable],
-        classOf[Text], spark.sparkContext.defaultMinPartitions)
+        classOf[Text], partitions.getOrElse(spark.sparkContext.defaultMinPartitions))
       .asInstanceOf[HadoopRDD[LongWritable, Text]]
       .mapPartitionsWithInputSplit { (inputSplit, iterator) ⇒
         val file = inputSplit.asInstanceOf[FileSplit]
