@@ -4,6 +4,7 @@ import htsjdk.variant.variantcontext.VariantContext
 import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder
 import htsjdk.variant.vcf.VCFHeader
 import org.apache.commons.io.output.ByteArrayOutputStream
+import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
 import org.apache.hadoop.mapred.{FileSplit, TextInputFormat}
@@ -57,7 +58,12 @@ object SeqTenderVCF {
   }
 
    def broadCastVCFHeaders(path: String, ss: SparkSession) = {
-    val fs = FileSystem.get(ss.sparkContext.hadoopConfiguration)
+    val fs = if(path.toLowerCase.startsWith("hdfs"))
+          FileSystem.get(ss.sparkContext.hadoopConfiguration)
+      else {
+        new Path(path)
+        .getFileSystem(ss.sparkContext.hadoopConfiguration)
+      }
     val status = fs.globStatus(new Path(path))
     val headerMap = new mutable.HashMap[String, VCFHeader]()
 
