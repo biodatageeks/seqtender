@@ -1,0 +1,311 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##GLnexusVersion=v1.2.6-0-g4d057dc
+##GLnexusConfigName=DeepVariant
+##GLnexusConfigCRC32C=2857227159
+##GLnexusConfig={unifier_config: {drop_filtered: false, min_allele_copy_number: 1, min_AQ1: 10, min_AQ2: 10, min_GQ: 0, max_alleles_per_site: 32, monoallelic_sites_for_lost_alleles: true, preference: common}, genotyper_config: {revise_genotypes: true, min_assumed_allele_frequency: 9.99999975e-05, required_dp: 0, allow_partial_data: true, allele_dp_format: AD, ref_dp_format: MIN_DP, output_residuals: false, more_PL: true, squeeze: false, trim_uncalled_alleles: true, output_format: BCF, liftover_fields: [{orig_names: [MIN_DP, DP], name: DP, description: "##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Approximate read depth (reads with MQ=255 or with bad mates are filtered)\">", type: int, number: basic, default_type: missing, count: 1, combi_method: min, ignore_non_variants: true}, {orig_names: [AD], name: AD, description: "##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allelic depths for the ref and alt alleles in the order listed\">", type: int, number: alleles, default_type: zero, count: 0, combi_method: min, ignore_non_variants: false}, {orig_names: [GQ], name: GQ, description: "##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Genotype Quality\">", type: int, number: basic, default_type: missing, count: 1, combi_method: min, ignore_non_variants: true}, {orig_names: [PL], name: PL, description: "##FORMAT=<ID=PL,Number=G,Type=Integer,Description=\"Phred-scaled genotype Likelihoods\">", type: int, number: genotype, default_type: missing, count: 0, combi_method: missing, ignore_non_variants: true}]}}
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency estimate for each alternate allele">
+##INFO=<ID=AQ,Number=A,Type=Integer,Description="Allele Quality score reflecting evidence for each alternate allele (Phred scale)">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FILTER=<ID=MONOALLELIC,Description="Site represents one ALT allele in a region with multiple variants that could not be unified into non-overlapping multi-allelic sites">
+##contig=<ID=chr1,length=248956422>
+##contig=<ID=chr2,length=242193529>
+##contig=<ID=chr3,length=198295559>
+##contig=<ID=chr4,length=190214555>
+##contig=<ID=chr5,length=181538259>
+##contig=<ID=chr6,length=170805979>
+##contig=<ID=chr7,length=159345973>
+##contig=<ID=chr8,length=145138636>
+##contig=<ID=chr9,length=138394717>
+##contig=<ID=chr10,length=133797422>
+##contig=<ID=chr11,length=135086622>
+##contig=<ID=chr12,length=133275309>
+##contig=<ID=chr13,length=114364328>
+##contig=<ID=chr14,length=107043718>
+##contig=<ID=chr15,length=101991189>
+##contig=<ID=chr16,length=90338345>
+##contig=<ID=chr17,length=83257441>
+##contig=<ID=chr18,length=80373285>
+##contig=<ID=chr19,length=58617616>
+##contig=<ID=chr20,length=64444167>
+##contig=<ID=chr21,length=46709983>
+##contig=<ID=chr22,length=50818468>
+##contig=<ID=chrX,length=156040895>
+##contig=<ID=chrY,length=57227415>
+##contig=<ID=chrM,length=16569>
+##contig=<ID=chr1_KI270706v1_random,length=175055>
+##contig=<ID=chr1_KI270707v1_random,length=32032>
+##contig=<ID=chr1_KI270708v1_random,length=127682>
+##contig=<ID=chr1_KI270709v1_random,length=66860>
+##contig=<ID=chr1_KI270710v1_random,length=40176>
+##contig=<ID=chr1_KI270711v1_random,length=42210>
+##contig=<ID=chr1_KI270712v1_random,length=176043>
+##contig=<ID=chr1_KI270713v1_random,length=40745>
+##contig=<ID=chr1_KI270714v1_random,length=41717>
+##contig=<ID=chr2_KI270715v1_random,length=161471>
+##contig=<ID=chr2_KI270716v1_random,length=153799>
+##contig=<ID=chr3_GL000221v1_random,length=155397>
+##contig=<ID=chr4_GL000008v2_random,length=209709>
+##contig=<ID=chr5_GL000208v1_random,length=92689>
+##contig=<ID=chr9_KI270717v1_random,length=40062>
+##contig=<ID=chr9_KI270718v1_random,length=38054>
+##contig=<ID=chr9_KI270719v1_random,length=176845>
+##contig=<ID=chr9_KI270720v1_random,length=39050>
+##contig=<ID=chr11_KI270721v1_random,length=100316>
+##contig=<ID=chr14_GL000009v2_random,length=201709>
+##contig=<ID=chr14_GL000225v1_random,length=211173>
+##contig=<ID=chr14_KI270722v1_random,length=194050>
+##contig=<ID=chr14_GL000194v1_random,length=191469>
+##contig=<ID=chr14_KI270723v1_random,length=38115>
+##contig=<ID=chr14_KI270724v1_random,length=39555>
+##contig=<ID=chr14_KI270725v1_random,length=172810>
+##contig=<ID=chr14_KI270726v1_random,length=43739>
+##contig=<ID=chr15_KI270727v1_random,length=448248>
+##contig=<ID=chr16_KI270728v1_random,length=1872759>
+##contig=<ID=chr17_GL000205v2_random,length=185591>
+##contig=<ID=chr17_KI270729v1_random,length=280839>
+##contig=<ID=chr17_KI270730v1_random,length=112551>
+##contig=<ID=chr22_KI270731v1_random,length=150754>
+##contig=<ID=chr22_KI270732v1_random,length=41543>
+##contig=<ID=chr22_KI270733v1_random,length=179772>
+##contig=<ID=chr22_KI270734v1_random,length=165050>
+##contig=<ID=chr22_KI270735v1_random,length=42811>
+##contig=<ID=chr22_KI270736v1_random,length=181920>
+##contig=<ID=chr22_KI270737v1_random,length=103838>
+##contig=<ID=chr22_KI270738v1_random,length=99375>
+##contig=<ID=chr22_KI270739v1_random,length=73985>
+##contig=<ID=chrY_KI270740v1_random,length=37240>
+##contig=<ID=chrUn_KI270302v1,length=2274>
+##contig=<ID=chrUn_KI270304v1,length=2165>
+##contig=<ID=chrUn_KI270303v1,length=1942>
+##contig=<ID=chrUn_KI270305v1,length=1472>
+##contig=<ID=chrUn_KI270322v1,length=21476>
+##contig=<ID=chrUn_KI270320v1,length=4416>
+##contig=<ID=chrUn_KI270310v1,length=1201>
+##contig=<ID=chrUn_KI270316v1,length=1444>
+##contig=<ID=chrUn_KI270315v1,length=2276>
+##contig=<ID=chrUn_KI270312v1,length=998>
+##contig=<ID=chrUn_KI270311v1,length=12399>
+##contig=<ID=chrUn_KI270317v1,length=37690>
+##contig=<ID=chrUn_KI270412v1,length=1179>
+##contig=<ID=chrUn_KI270411v1,length=2646>
+##contig=<ID=chrUn_KI270414v1,length=2489>
+##contig=<ID=chrUn_KI270419v1,length=1029>
+##contig=<ID=chrUn_KI270418v1,length=2145>
+##contig=<ID=chrUn_KI270420v1,length=2321>
+##contig=<ID=chrUn_KI270424v1,length=2140>
+##contig=<ID=chrUn_KI270417v1,length=2043>
+##contig=<ID=chrUn_KI270422v1,length=1445>
+##contig=<ID=chrUn_KI270423v1,length=981>
+##contig=<ID=chrUn_KI270425v1,length=1884>
+##contig=<ID=chrUn_KI270429v1,length=1361>
+##contig=<ID=chrUn_KI270442v1,length=392061>
+##contig=<ID=chrUn_KI270466v1,length=1233>
+##contig=<ID=chrUn_KI270465v1,length=1774>
+##contig=<ID=chrUn_KI270467v1,length=3920>
+##contig=<ID=chrUn_KI270435v1,length=92983>
+##contig=<ID=chrUn_KI270438v1,length=112505>
+##contig=<ID=chrUn_KI270468v1,length=4055>
+##contig=<ID=chrUn_KI270510v1,length=2415>
+##contig=<ID=chrUn_KI270509v1,length=2318>
+##contig=<ID=chrUn_KI270518v1,length=2186>
+##contig=<ID=chrUn_KI270508v1,length=1951>
+##contig=<ID=chrUn_KI270516v1,length=1300>
+##contig=<ID=chrUn_KI270512v1,length=22689>
+##contig=<ID=chrUn_KI270519v1,length=138126>
+##contig=<ID=chrUn_KI270522v1,length=5674>
+##contig=<ID=chrUn_KI270511v1,length=8127>
+##contig=<ID=chrUn_KI270515v1,length=6361>
+##contig=<ID=chrUn_KI270507v1,length=5353>
+##contig=<ID=chrUn_KI270517v1,length=3253>
+##contig=<ID=chrUn_KI270529v1,length=1899>
+##contig=<ID=chrUn_KI270528v1,length=2983>
+##contig=<ID=chrUn_KI270530v1,length=2168>
+##contig=<ID=chrUn_KI270539v1,length=993>
+##contig=<ID=chrUn_KI270538v1,length=91309>
+##contig=<ID=chrUn_KI270544v1,length=1202>
+##contig=<ID=chrUn_KI270548v1,length=1599>
+##contig=<ID=chrUn_KI270583v1,length=1400>
+##contig=<ID=chrUn_KI270587v1,length=2969>
+##contig=<ID=chrUn_KI270580v1,length=1553>
+##contig=<ID=chrUn_KI270581v1,length=7046>
+##contig=<ID=chrUn_KI270579v1,length=31033>
+##contig=<ID=chrUn_KI270589v1,length=44474>
+##contig=<ID=chrUn_KI270590v1,length=4685>
+##contig=<ID=chrUn_KI270584v1,length=4513>
+##contig=<ID=chrUn_KI270582v1,length=6504>
+##contig=<ID=chrUn_KI270588v1,length=6158>
+##contig=<ID=chrUn_KI270593v1,length=3041>
+##contig=<ID=chrUn_KI270591v1,length=5796>
+##contig=<ID=chrUn_KI270330v1,length=1652>
+##contig=<ID=chrUn_KI270329v1,length=1040>
+##contig=<ID=chrUn_KI270334v1,length=1368>
+##contig=<ID=chrUn_KI270333v1,length=2699>
+##contig=<ID=chrUn_KI270335v1,length=1048>
+##contig=<ID=chrUn_KI270338v1,length=1428>
+##contig=<ID=chrUn_KI270340v1,length=1428>
+##contig=<ID=chrUn_KI270336v1,length=1026>
+##contig=<ID=chrUn_KI270337v1,length=1121>
+##contig=<ID=chrUn_KI270363v1,length=1803>
+##contig=<ID=chrUn_KI270364v1,length=2855>
+##contig=<ID=chrUn_KI270362v1,length=3530>
+##contig=<ID=chrUn_KI270366v1,length=8320>
+##contig=<ID=chrUn_KI270378v1,length=1048>
+##contig=<ID=chrUn_KI270379v1,length=1045>
+##contig=<ID=chrUn_KI270389v1,length=1298>
+##contig=<ID=chrUn_KI270390v1,length=2387>
+##contig=<ID=chrUn_KI270387v1,length=1537>
+##contig=<ID=chrUn_KI270395v1,length=1143>
+##contig=<ID=chrUn_KI270396v1,length=1880>
+##contig=<ID=chrUn_KI270388v1,length=1216>
+##contig=<ID=chrUn_KI270394v1,length=970>
+##contig=<ID=chrUn_KI270386v1,length=1788>
+##contig=<ID=chrUn_KI270391v1,length=1484>
+##contig=<ID=chrUn_KI270383v1,length=1750>
+##contig=<ID=chrUn_KI270393v1,length=1308>
+##contig=<ID=chrUn_KI270384v1,length=1658>
+##contig=<ID=chrUn_KI270392v1,length=971>
+##contig=<ID=chrUn_KI270381v1,length=1930>
+##contig=<ID=chrUn_KI270385v1,length=990>
+##contig=<ID=chrUn_KI270382v1,length=4215>
+##contig=<ID=chrUn_KI270376v1,length=1136>
+##contig=<ID=chrUn_KI270374v1,length=2656>
+##contig=<ID=chrUn_KI270372v1,length=1650>
+##contig=<ID=chrUn_KI270373v1,length=1451>
+##contig=<ID=chrUn_KI270375v1,length=2378>
+##contig=<ID=chrUn_KI270371v1,length=2805>
+##contig=<ID=chrUn_KI270448v1,length=7992>
+##contig=<ID=chrUn_KI270521v1,length=7642>
+##contig=<ID=chrUn_GL000195v1,length=182896>
+##contig=<ID=chrUn_GL000219v1,length=179198>
+##contig=<ID=chrUn_GL000220v1,length=161802>
+##contig=<ID=chrUn_GL000224v1,length=179693>
+##contig=<ID=chrUn_KI270741v1,length=157432>
+##contig=<ID=chrUn_GL000226v1,length=15008>
+##contig=<ID=chrUn_GL000213v1,length=164239>
+##contig=<ID=chrUn_KI270743v1,length=210658>
+##contig=<ID=chrUn_KI270744v1,length=168472>
+##contig=<ID=chrUn_KI270745v1,length=41891>
+##contig=<ID=chrUn_KI270746v1,length=66486>
+##contig=<ID=chrUn_KI270747v1,length=198735>
+##contig=<ID=chrUn_KI270748v1,length=93321>
+##contig=<ID=chrUn_KI270749v1,length=158759>
+##contig=<ID=chrUn_KI270750v1,length=148850>
+##contig=<ID=chrUn_KI270751v1,length=150742>
+##contig=<ID=chrUn_KI270752v1,length=27745>
+##contig=<ID=chrUn_KI270753v1,length=62944>
+##contig=<ID=chrUn_KI270754v1,length=40191>
+##contig=<ID=chrUn_KI270755v1,length=36723>
+##contig=<ID=chrUn_KI270756v1,length=79590>
+##contig=<ID=chrUn_KI270757v1,length=71251>
+##contig=<ID=chrUn_GL000214v1,length=137718>
+##contig=<ID=chrUn_KI270742v1,length=186739>
+##contig=<ID=chrUn_GL000216v2,length=176608>
+##contig=<ID=chrUn_GL000218v1,length=161147>
+##contig=<ID=chrEBV,length=171823>
+##bcftools_viewVersion=1.9+htslib-1.9
+##bcftools_viewCommand=view -; Date=Wed May  5 20:06:55 2021
+##INFO=<ID=OLD_MULTIALLELIC,Number=1,Type=String,Description="Original chr:pos:ref:alt encoding">
+##INFO=<ID=OLD_VARIANT,Number=.,Type=String,Description="Original chr:pos:ref:alt encoding">
+##bcftools_pluginVersion=1.12+htslib-1.12
+##bcftools_pluginCommand=plugin fill-tags -Ob -o multisample_20210505.dv.norm.ACAN.vcf.gz -- /mnt/vault1/mnmorigin_pipeline_out/multisample_20210505.dv.norm.vcf.gz -t AN,AC; Date=Thu May 13 13:22:15 2021
+##bcftools_viewVersion=1.12+htslib-1.12
+##bcftools_viewCommand=view --drop-genotypes -Oz -o multisample_20210505.dv.norm.ACAFAN.vcf.gz multisample_20210505.dv.norm.ACAN.vcf.gz; Date=Thu May 13 23:32:02 2021
+##bcftools_filterVersion=1.12+htslib-1.12
+##bcftools_filterCommand=filter -e INFO/AC[0]<2 -o multisample_20210505.dv.norm.ACAFAN.ACgt1.vcf.gz multisample_20210505.dv.norm.ACAFAN.vcf.gz; Date=Fri May 14 02:00:20 2021
+##bcftools_annotateVersion=1.12+htslib-1.12
+##bcftools_annotateCommand=annotate --set-id %CHROM\_%POS\_%REF\_%FIRST_ALT -o multisample_20210505.dv.norm.ACAFAN.ACgt1.ID.vcf.gz multisample_20210505.dv.norm.ACAFAN.ACgt1.vcf.gz; Date=Fri May 14 14:13:12 2021
+##VEP="v101" time="2021-06-06 07:12:02" cache="/mnt/data/annotation/vep_data/homo_sapiens_merged/101_GRCh38" ensembl-variation=101.819eef2 ensembl-funcgen=101.b918a49 ensembl=101.856c8e8 ensembl-io=101.943b6c2 1000genomes="phase3" COSMIC="90" ClinVar="202003" ESP="V2-SSA137" HGMD-PUBLIC="20194" assembly="GRCh38.p13" dbSNP="153" gencode="GENCODE 35" genebuild="2014-07" gnomAD="r2.1" polyphen="2.2.2" refseq="2020-03-24 16:45:50 - GCF_000001405.39_GRCh38.p13_genomic.gff" regbuild="1.0" sift="sift5.2.2"
+##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|IND|ZYG|REF_ALLELE|DISTANCE|STRAND|FLAGS|VARIANT_CLASS|SYMBOL_SOURCE|HGNC_ID|MANE|ENSP|REFSEQ_MATCH|SOURCE|REFSEQ_OFFSET|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|HGVS_OFFSET|CHECK_REF|LoFtool|DisGeNET_PMID|DisGeNET_SCORE|DisGeNET_disease|ExACpLI|ada_score|rf_score|SpliceRegion|SpliceAI_cutoff|SpliceAI_pred_DP_AG|SpliceAI_pred_DP_AL|SpliceAI_pred_DP_DG|SpliceAI_pred_DP_DL|SpliceAI_pred_DS_AG|SpliceAI_pred_DS_AL|SpliceAI_pred_DS_DG|SpliceAI_pred_DS_DL|SpliceAI_pred_SYMBOL|BayesDel_addAF_pred|BayesDel_addAF_rankscore|BayesDel_noAF_pred|BayesDel_noAF_rankscore|CADD_phred|CADD_phred_hg19|DANN_score|DEOGEN2_pred|Eigen-PC-raw_coding_rankscore|Eigen-raw_coding_rankscore|GERP++_RS_rankscore|Interpro_domain|LIST-S2_pred|LIST-S2_rankscore|LRT_converted_rankscore|LRT_pred|M-CAP_pred|M-CAP_rankscore|MPC_rankscore|MVP_rankscore|MetaLR_pred|MetaLR_rankscore|MetaSVM_pred|MetaSVM_rankscore|MutPred_Top5features|MutPred_protID|MutPred_rankscore|MutPred_score|MutationAssessor_pred|MutationAssessor_rankscore|MutationTaster_pred|MutationTaster_score|PROVEAN_converted_rankscore|PROVEAN_pred|Polyphen2_HDIV_pred|Polyphen2_HDIV_rankscore|PrimateAI_pred|PrimateAI_rankscore|REVEL_rankscore|SIFT4G_converted_rankscore|SIFT4G_pred|SiPhy_29way_logOdds|SiPhy_29way_logOdds_rankscore|VEST4_rankscore|clinvar_MedGen_id|clinvar_Orphanet_id|fathmm-MKL_coding_pred|fathmm-MKL_coding_rankscore|fathmm-XF_coding_pred|fathmm-XF_coding_rankscore|hg19_pos(1-based)|integrated_fitCons_rankscore|phastCons100way_vertebrate_rankscore|phastCons17way_primate_rankscore|phastCons30way_mammalian_rankscore|phyloP100way_vertebrate_rankscore|phyloP17way_primate_rankscore|phyloP30way_mammalian_rankscore|OMIMinheritance|geneMIM|OMIMphenotype|OMIMcytoband|clinvar.vcf.gz|clinvar.vcf.gz_CLNSIG|clinvar.vcf.gz_CLNDN|clinvar.vcf.gz_CLNREVSTAT">
+##LoFtool=LoFtool score for gene
+##DisGeNET_PMID=PMID of the publication reporting the Variant-Disease association
+##DisGeNET_SCORE=DisGENET score for the Variant-Disease association
+##DisGeNET_disease=Name of the disease reporting the Variant-pmid association
+##ExACpLI=ExACpLI value for gene
+##ada_score=dbscSNV ADA score
+##rf_score=dbscSNV RF score
+##SpliceRegion=SpliceRegion predictions
+##SpliceAI_cutoff=Flag if delta score pass the cutoff (PASS) or if it does not (FAIL)
+##SpliceAI_pred_DP_AG=SpliceAI predicted effect on splicing. Delta position for acceptor gain
+##SpliceAI_pred_DP_AL=SpliceAI predicted effect on splicing. Delta position for acceptor loss
+##SpliceAI_pred_DP_DG=SpliceAI predicted effect on splicing. Delta position for donor gain
+##SpliceAI_pred_DP_DL=SpliceAI predicted effect on splicing. Delta position for donor loss
+##SpliceAI_pred_DS_AG=SpliceAI predicted effect on splicing. Delta score for acceptor gain
+##SpliceAI_pred_DS_AL=SpliceAI predicted effect on splicing. Delta score for acceptor loss
+##SpliceAI_pred_DS_DG=SpliceAI predicted effect on splicing. Delta score for donor gain
+##SpliceAI_pred_DS_DL=SpliceAI predicted effect on splicing. Delta score for donor loss
+##SpliceAI_pred_SYMBOL=SpliceAI gene symbol
+##BayesDel_addAF_pred=(from dbNSFP) Prediction of BayesDel_addAF score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.0692655.
+##BayesDel_addAF_rankscore=(from dbNSFP) BayesDel_addAF scores were ranked among all BayesDel_addAF scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of BayesDel_addAF scores in dbNSFP. 
+##BayesDel_noAF_pred=(from dbNSFP) Prediction of BayesDel_noAF score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is -0.0570105.
+##BayesDel_noAF_rankscore=(from dbNSFP) BayesDel_noAF scores were ranked among all BayesDel_noAF scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of BayesDel_noAF scores in dbNSFP.
+##CADD_phred=(from dbNSFP) CADD phred-like score. This is phred-like rank score based on whole genome CADD raw scores. Please refer to Kircher et al. (2014) Nature Genetics 46(3):310-5 for details. The larger the score the more likely the SNP has damaging effect. Please note the following copyright statement for CADD: "CADD scores (http://cadd.gs.washington.edu/) are Copyright 2013 University of Washington and Hudson-Alpha Institute for Biotechnology (all rights reserved) but are freely available for all academic, non-commercial applications. For commercial licensing information contact Jennifer McCullar (mccullaj@uw.edu)."
+##CADD_phred_hg19=(from dbNSFP) CADD phred-like score using the hg19 model. This is phred-like rank score based on whole genome CADD raw scores. Please refer to Kircher et al. (2014) Nature Genetics 46(3):310-5 for details. The larger the score the more likely the SNP has damaging effect. Please note the following copyright statement for CADD: "CADD scores (http://cadd.gs.washington.edu/) are Copyright 2013 University of Washington and Hudson-Alpha Institute for Biotechnology (all rights reserved) but are freely available for all academic, non-commercial applications. For commercial licensing information contact Jennifer McCullar (mccullaj@uw.edu)."
+##DANN_score=(from dbNSFP) DANN is a functional prediction score retrained based on the training data of CADD using deep neural network. Scores range from 0 to 1. A larger number indicate a higher probability to be damaging. More information of this score can be found in doi: 10.1093/bioinformatics/btu703. 
+##DEOGEN2_pred=(from dbNSFP) Prediction of DEOGEN2 score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.5.
+##Eigen-PC-raw_coding_rankscore=(from dbNSFP) Eigen-PC-raw scores were ranked among all Eigen-PC-raw scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of Eigen-PC-raw scores in dbNSFP.
+##Eigen-raw_coding_rankscore=(from dbNSFP) Eigen-raw scores were ranked among all Eigen-raw scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of Eigen-raw scores in dbNSFP.
+##GERP++_RS_rankscore=(from dbNSFP) GERP++ RS scores were ranked among all GERP++ RS scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of GERP++ RS scores in dbNSFP.
+##Interpro_domain=(from dbNSFP) domain or conserved site on which the variant locates. Domain annotations come from Interpro database. The number in the brackets following a specific domain is the count of times Interpro assigns the variant position to that domain, typically coming from different predicting databases. Multiple entries separated by ";".
+##LIST-S2_pred=(from dbNSFP) Prediction of LIST-S2 score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.85.
+##LIST-S2_rankscore=(from dbNSFP) LIST-S2 scores were ranked among all LIST-S2 scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of LIST-S2 scores in dbNSFP.
+##LRT_converted_rankscore=(from dbNSFP) LRTori scores were first converted as LRTnew=1-LRTori*0.5 if Omega<1, or LRTnew=LRTori*0.5 if Omega>=1. Then LRTnew scores were ranked among all LRTnew scores in dbNSFP. The rankscore is the ratio of the rank over the total number of the scores in dbNSFP. The scores range from 0.00162 to 0.8433.
+##LRT_pred=(from dbNSFP) LRT prediction, D(eleterious), N(eutral) or U(nknown), which is not solely determined by the score. 
+##M-CAP_pred=(from dbNSFP) Prediction of M-CAP score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.025.
+##M-CAP_rankscore=(from dbNSFP) M-CAP scores were ranked among all M-CAP scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of M-CAP scores in dbNSFP.
+##MPC_rankscore=(from dbNSFP) MPC scores were ranked among all MPC scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MPC scores in dbNSFP. 
+##MVP_rankscore=(from dbNSFP) MVP scores were ranked among all MVP scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MVP scores in dbNSFP. 
+##MetaLR_pred=(from dbNSFP) Prediction of our MetaLR based ensemble prediction score,"T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.5. The rankscore cutoff between "D" and "T" is 0.81101.
+##MetaLR_rankscore=(from dbNSFP) MetaLR scores were ranked among all MetaLR scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MetaLR scores in dbNSFP. The scores range from 0 to 1.
+##MetaSVM_pred=(from dbNSFP) Prediction of our SVM based ensemble prediction score,"T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0. The rankscore cutoff between "D" and "T" is 0.82257.
+##MetaSVM_rankscore=(from dbNSFP) MetaSVM scores were ranked among all MetaSVM scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MetaSVM scores in dbNSFP. The scores range from 0 to 1.
+##MutPred_Top5features=(from dbNSFP) Top 5 features (molecular mechanisms of disease) as predicted by MutPred with p values. MutPred_score > 0.5 and p < 0.05 are referred to as actionable hypotheses. MutPred_score > 0.75 and p < 0.05 are referred to as confident hypotheses. MutPred_score > 0.75 and p < 0.01 are referred to as very confident hypotheses.
+##MutPred_protID=(from dbNSFP) UniProt accession or Ensembl transcript ID used for MutPred_score calculation.
+##MutPred_rankscore=(from dbNSFP) MutPred scores were ranked among all MutPred scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MutPred scores in dbNSFP.
+##MutPred_score=(from dbNSFP) General MutPred score. Scores range from 0 to 1. The larger the score the more likely the SNP has damaging effect.
+##MutationAssessor_pred=(from dbNSFP) MutationAssessor's functional impact of a variant - predicted functional, i.e. high ("H") or medium ("M"), or predicted non-functional, i.e. low ("L") or neutral ("N"). The MAori score cutoffs between "H" and "M", "M" and "L", and "L" and "N", are 3.5, 1.935 and 0.8, respectively. The rankscore cutoffs between "H" and "M", "M" and "L", and "L" and "N", are 0.9307, 0.52043 and 0.19675, respectively.
+##MutationAssessor_rankscore=(from dbNSFP) MAori scores were ranked among all MAori scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of MAori scores in dbNSFP. The scores range from 0 to 1.
+##MutationTaster_pred=(from dbNSFP) MutationTaster prediction, "A" ("disease_causing_automatic"), "D" ("disease_causing"), "N" ("polymorphism") or "P" ("polymorphism_automatic"). The score cutoff between "D" and "N" is 0.5 for MTnew and 0.31733 for the rankscore.
+##MutationTaster_score=(from dbNSFP) MutationTaster p-value (MTori), ranges from 0 to 1. Multiple scores are separated by ";". Information on corresponding transcript(s) can be found by querying http://www.mutationtaster.org/ChrPos.html
+##PROVEAN_converted_rankscore=(from dbNSFP) PROVEANori were first converted to PROVEANnew=1-(PROVEANori+14)/28, then ranked among all PROVEANnew scores in dbNSFP. The rankscore is the ratio of the rank the PROVEANnew score over the total number of PROVEANnew scores in dbNSFP. If there are multiple scores, only the most damaging (largest) rankscore is presented. The scores range from 0 to 1.
+##PROVEAN_pred=(from dbNSFP) If PROVEANori <= -2.5 (rankscore>=0.54382) the corresponding nsSNV is predicted as "D(amaging)"; otherwise it is predicted as "N(eutral)". Multiple predictions separated by ";", corresponding to Ensembl_proteinid.
+##Polyphen2_HDIV_pred=(from dbNSFP) Polyphen2 prediction based on HumDiv, "D" ("probably damaging", HDIV score in [0.957,1] or rankscore in [0.55859,0.91137]), "P" ("possibly damaging", HDIV score in [0.454,0.956] or rankscore in [0.37043,0.55681]) and "B" ("benign", HDIV score in [0,0.452] or rankscore in [0.03061,0.36974]). Score cutoff for binary classification is 0.5 for HDIV score or 0.38028 for rankscore, i.e. the prediction is "neutral" if the HDIV score is smaller than 0.5 (rankscore is smaller than 0.38028), and "deleterious" if the HDIV score is larger than 0.5 (rankscore is larger than 0.38028). Multiple entries are separated by ";", corresponding to Uniprot_acc.
+##Polyphen2_HDIV_rankscore=(from dbNSFP) Polyphen2 HDIV scores were first ranked among all HDIV scores in dbNSFP. The rankscore is the ratio of the rank the score over the total number of the scores in dbNSFP. If there are multiple scores, only the most damaging (largest) rankscore is presented. The scores range from 0.03061 to 0.91137.
+##PrimateAI_pred=(from dbNSFP) Prediction of PrimateAI score based on the authors' recommendation, "T(olerated)" or "D(amaging)". The score cutoff between "D" and "T" is 0.803.
+##PrimateAI_rankscore=(from dbNSFP) PrimateAI scores were ranked among all PrimateAI scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of PrimateAI scores in dbNSFP. 
+##REVEL_rankscore=(from dbNSFP) REVEL scores were ranked among all REVEL scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of REVEL scores in dbNSFP.
+##SIFT4G_converted_rankscore=(from dbNSFP) SIFT4G scores were first converted to SIFT4Gnew=1-SIFT4G, then ranked among all SIFT4Gnew scores in dbNSFP. The rankscore is the ratio of the rank the SIFT4Gnew score over the total number of SIFT4Gnew scores in dbNSFP. If there are multiple scores, only the most damaging (largest) rankscore is presented.
+##SIFT4G_pred=(from dbNSFP) If SIFT4G is < 0.05 the corresponding nsSNV is predicted as "D(amaging)"; otherwise it is predicted as "T(olerated)". Multiple scores separated by ",", corresponding to Ensembl_transcriptid
+##SiPhy_29way_logOdds=(from dbNSFP) SiPhy score based on 29 mammals genomes. The larger the score, the more conserved the site. Scores range from 0 to 37.9718 in dbNSFP.
+##SiPhy_29way_logOdds_rankscore=(from dbNSFP) SiPhy_29way_logOdds scores were ranked among all SiPhy_29way_logOdds scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of SiPhy_29way_logOdds scores in dbNSFP.
+##VEST4_rankscore=(from dbNSFP) VEST4 scores were ranked among all VEST4 scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of VEST4 scores in dbNSFP. In case there are multiple scores for the same variant, the largest score (most damaging) is presented. The scores range from 0 to 1. Please note VEST score is free for non-commercial use. For more details please refer to http://wiki.chasmsoftware.org/index.php/SoftwareLicense. Commercial users should contact the Johns Hopkins Technology Transfer office.
+##clinvar_MedGen_id=(from dbNSFP) MedGen ID of the trait/disease the clinvar_trait referring to
+##clinvar_Orphanet_id=(from dbNSFP) Orphanet ID of the trait/disease the clinvar_trait referring to
+##fathmm-MKL_coding_pred=(from dbNSFP) If a fathmm-MKL_coding_score is >0.5 (or rankscore >0.28317) the corresponding nsSNV is predicted as "D(AMAGING)"; otherwise it is predicted as "N(EUTRAL)".
+##fathmm-MKL_coding_rankscore=(from dbNSFP) fathmm-MKL coding scores were ranked among all fathmm-MKL coding scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of fathmm-MKL coding scores in dbNSFP.
+##fathmm-XF_coding_pred=(from dbNSFP) If a fathmm-XF_coding_score is >0.5, the corresponding nsSNV is predicted as "D(AMAGING)"; otherwise it is predicted as "N(EUTRAL)".
+##fathmm-XF_coding_rankscore=(from dbNSFP) fathmm-XF coding scores were ranked among all fathmm-XF coding scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of fathmm-XF coding scores in dbNSFP.
+##hg19_pos(1-based)=(from dbNSFP) physical position on the chromosome as to hg19 (1-based coordinate). For mitochondrial SNV, this position refers to a YRI sequence (GenBank: AF347015)
+##integrated_fitCons_rankscore=(from dbNSFP) integrated fitCons scores were ranked among all integrated fitCons scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of integrated fitCons scores in dbNSFP.
+##phastCons100way_vertebrate_rankscore=(from dbNSFP) phastCons100way_vertebrate scores were ranked among all phastCons100way_vertebrate scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of phastCons100way_vertebrate scores in dbNSFP.
+##phastCons17way_primate_rankscore=(from dbNSFP) the rank of the phastCons17way_primate score among all phastCons17way_primate scores in dbNSFP.
+##phastCons30way_mammalian_rankscore=(from dbNSFP) phastCons30way_mammalian scores were ranked among all phastCons30way_mammalian scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of phastCons30way_mammalian scores in dbNSFP.
+##phyloP100way_vertebrate_rankscore=(from dbNSFP) phyloP100way_vertebrate scores were ranked among all phyloP100way_vertebrate scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of phyloP100way_vertebrate scores in dbNSFP.
+##phyloP17way_primate_rankscore=(from dbNSFP) the rank of the phyloP17way_primate score among all phyloP17way_primate scores in dbNSFP.
+##phyloP30way_mammalian_rankscore=(from dbNSFP) phyloP30way_mammalian scores were ranked among all phyloP30way_mammalian scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of phyloP30way_mammalian scores in dbNSFP.
+##INFO=<ID=OMIMinheritance,Number=.,Type=String,Description="/mnt/data/annotation/vep_data/plugins_data/OMIM/omim_inheritance.bed.gz (overlap)">
+##INFO=<ID=geneMIM,Number=.,Type=String,Description="/mnt/data/annotation/vep_data/plugins_data/OMIM/omim_geneMIM.bed.gz (overlap)">
+##INFO=<ID=OMIMphenotype,Number=.,Type=String,Description="/mnt/data/annotation/vep_data/plugins_data/OMIM/omim_phenotype.bed.gz (overlap)">
+##INFO=<ID=OMIMcytoband,Number=.,Type=String,Description="/mnt/data/annotation/vep_data/plugins_data/OMIM/omim_cytoBand.bed.gz (overlap)">
+##INFO=<ID=clinvar.vcf.gz,Number=.,Type=String,Description="/mnt/data/annotation/vep_data/plugins_data/clinvar.vcf.gz (exact)">
+##INFO=<ID=clinvar.vcf.gz_CLNSIG,Number=.,Type=String,Description="CLNSIG field from /mnt/data/annotation/vep_data/plugins_data/clinvar.vcf.gz">
+##INFO=<ID=clinvar.vcf.gz_CLNDN,Number=.,Type=String,Description="CLNDN field from /mnt/data/annotation/vep_data/plugins_data/clinvar.vcf.gz">
+##INFO=<ID=clinvar.vcf.gz_CLNREVSTAT,Number=.,Type=String,Description="CLNREVSTAT field from /mnt/data/annotation/vep_data/plugins_data/clinvar.vcf.gz">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	TGP-PL
+chr1	644694	rs1207020613	G	A	141	PASS	AF=1.17192e-05;AF_ami=0;AF_oth=0;AF_afr=0.000126775;AF_sas=0;AF_asj=0;nhomalt=0;AF_fin=0;AF_amr=0;AF_nfe=0;AF_eas=0;CSQ=A|intron_variant&non_coding_transcript_variant|MODIFIER|AL669831.3|ENSG00000230021|Transcript|ENST00000635509|processed_transcript||2/3|ENST00000635509.2:n.313-43117C>T||||||||TGP-PL|HET|G||-1||SNV|Clone_based_ensembl_gene|||||Ensembl||G|G|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||	GT:AD:DP:GQ:PL	0/1:1,1:2:72:73,0,72
