@@ -1,7 +1,7 @@
 package org.biodatageeks.annotation
 
 import htsjdk.variant.variantcontext.VariantContext
-import htsjdk.variant.variantcontext.writer.VariantContextWriterBuilder
+import htsjdk.variant.variantcontext.writer.{Options, VariantContextWriterBuilder}
 import htsjdk.variant.vcf.VCFHeader
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.hadoop.conf.Configuration
@@ -42,6 +42,7 @@ object SeqTenderVCF {
         val outputStream = new ByteArrayOutputStream()
         val vcfWriter = new VariantContextWriterBuilder()
           .clearOptions()
+          .setOption(Options.ALLOW_MISSING_FIELDS_IN_HEADER)
           .setOutputVCFStream(outputStream)
           .build()
         vcfWriter.writeHeader(bc.value(file.getPath.toString))
