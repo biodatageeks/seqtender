@@ -47,6 +47,7 @@ libraryDependencies += "org.apache.derby" % "derbyclient" % "10.14.2.0"
 
 libraryDependencies += "org.disq-bio" % "disq" % "0.3.8"
 
+libraryDependencies += "ch.cern.sparkmeasure" %% "spark-measure" % "0.17" % Provided
 
 
 
@@ -76,34 +77,9 @@ resolvers ++= Seq(
   "komiya" at "https://dl.bintray.com/komiya-atsushi/maven"
 )
 
-
 assemblyMergeStrategy in assembly := {
-  case PathList("org", "apache", xs@_*) => MergeStrategy.first
-  case PathList("org", xs@_*) => MergeStrategy.first
-  case PathList("javax", xs@_*) => MergeStrategy.first
-  case PathList("com", xs@_*) => MergeStrategy.first
-  case PathList("shadeio", xs@_*) => MergeStrategy.first
-
-  case PathList("au", xs@_*) => MergeStrategy.first
-  case ("META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat") => MergeStrategy.first
-  case ("images/ant_logo_large.gif") => MergeStrategy.first
-
-  case "overview.html" => MergeStrategy.rename
-  case "mapred-default.xml" => MergeStrategy.last
-  case "about.html" => MergeStrategy.rename
-  case "META-INF/ECLIPSEF.RSA" => MergeStrategy.last
-  case "META-INF/mailcap" => MergeStrategy.last
-  case "META-INF/mimetypes.default" => MergeStrategy.last
-  case "plugin.properties" => MergeStrategy.last
-  case "log4j.properties" => MergeStrategy.last
-  case "parquet.thrift" => MergeStrategy.last
-  case "plugin.xml" => MergeStrategy.last
-  case "git.properties" => MergeStrategy.last
-  case "codegen/config.fmpp" => MergeStrategy.last
-
-  case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
-    oldStrategy(x)
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
 }
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
