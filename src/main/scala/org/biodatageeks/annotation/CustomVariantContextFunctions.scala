@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession
 import org.disq_bio.disq.{HtsjdkVariantsRdd, HtsjdkVariantsRddStorage, VariantsFormatWriteOption}
 
 
-class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeader]) {
+class CustomVariantContextFunctions(rdd : RDD[VariantContextWithHeader]) extends Serializable {
 
   val logger = Logger.getLogger(getClass.getName)
   def saveAsVCFFile(path:String)(implicit sparkSession: SparkSession) = saveDISQAsVCFFile(path)
